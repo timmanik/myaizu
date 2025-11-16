@@ -1,4 +1,4 @@
-# Aizu - Internal Prompt Library & Management System
+# Aizu - The home to your favorite prompts.
 
 A comprehensive platform for managing, sharing, and discovering AI prompts within your organization.
 
@@ -174,14 +174,6 @@ API runs on `http://localhost:3001`
 - `GET /health` - Health check
 - `GET /api` - API info
 
-## Contributing
-
-This is an internal project. Please follow the implementation plan in `implementation-plan.md`.
-
-## License
-
-Proprietary - Internal use only
-
 ## Testing
 
 See [TESTING-PHASE-1.md](./TESTING-PHASE-1.md) for detailed testing instructions.
@@ -191,6 +183,4 @@ Quick test:
 2. Open http://localhost:5173
 3. Login with `admin@aizu.local` / `admin123456`
 4. Explore the app!
-
----
 
