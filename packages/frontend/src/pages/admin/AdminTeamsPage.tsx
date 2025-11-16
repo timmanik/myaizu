@@ -17,6 +17,8 @@ import { Plus, Search, Users, FileText, Edit, Trash2, UserPlus } from 'lucide-re
 import type { TeamWithDetails } from '@aizu/shared';
 import { useToast } from '../../hooks/use-toast';
 import { useConfirm } from '../../hooks/use-confirm';
+import { UserSearchInput } from '../../components/shared/UserSearchInput';
+import type { SearchUser } from '../../services/api/search';
 
 const AdminTeamsPage = () => {
   const [search, setSearch] = useState('');
@@ -24,6 +26,7 @@ const AdminTeamsPage = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAddAdminOpen, setIsAddAdminOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<TeamWithDetails | null>(null);
+  const [selectedUser, setSelectedUser] = useState<SearchUser | null>(null);
 
   const { data: teams, isLoading } = useAdminTeams(search);
   const createTeam = useCreateTeam();
@@ -113,23 +116,20 @@ const AdminTeamsPage = () => {
 
   const handleAssignAdmin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedTeam) return;
-
-    const formData = new FormData(e.currentTarget);
-    const userId = formData.get('userId') as string;
+    if (!selectedTeam || !selectedUser) return;
 
     try {
       await assignTeamAdmin.mutateAsync({
         teamId: selectedTeam.id,
-        data: { userId },
+        data: { userId: selectedUser.id },
       });
       setIsAddAdminOpen(false);
       setSelectedTeam(null);
+      setSelectedUser(null);
       toast({
         title: 'Success',
         description: 'Team admin assigned successfully',
       });
-      (e.target as HTMLFormElement).reset();
     } catch (error: any) {
       toast({
         title: 'Error',
@@ -347,7 +347,15 @@ const AdminTeamsPage = () => {
       </Dialog>
 
       {/* Assign Admin Dialog */}
-      <Dialog open={isAddAdminOpen} onOpenChange={setIsAddAdminOpen}>
+      <Dialog
+        open={isAddAdminOpen}
+        onOpenChange={(open) => {
+          setIsAddAdminOpen(open);
+          if (!open) {
+            setSelectedUser(null);
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Assign Team Admin</DialogTitle>
@@ -357,22 +365,28 @@ const AdminTeamsPage = () => {
           </DialogHeader>
           <form onSubmit={handleAssignAdmin} className="space-y-4">
             <div>
-              <Label htmlFor="userId">User ID *</Label>
-              <Input
-                id="userId"
-                name="userId"
-                required
-                placeholder="Enter user ID"
+              <Label htmlFor="userId">Search User *</Label>
+              <UserSearchInput
+                value={selectedUser}
+                onSelect={setSelectedUser}
+                placeholder="Search by name or email..."
               />
               <p className="text-xs text-muted-foreground mt-1">
-                You can find user IDs in the Users page
+                Type at least 2 characters to search for users
               </p>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsAddAdminOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsAddAdminOpen(false);
+                  setSelectedUser(null);
+                }}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={assignTeamAdmin.isPending}>
+              <Button type="submit" disabled={assignTeamAdmin.isPending || !selectedUser}>
                 {assignTeamAdmin.isPending ? 'Assigning...' : 'Assign Admin'}
               </Button>
             </div>
