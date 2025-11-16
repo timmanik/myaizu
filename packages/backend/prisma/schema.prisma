@@ -1,0 +1,237 @@
+// Prisma Schema for Aizu
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with role-based access
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role          Role     @default(MEMBER)
+  avatarUrl     String?  @map("avatar_url")
+  pinnedPrompts String[] @default([]) @map("pinned_prompts") // Array of prompt IDs (max 3)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  invites         Invite[]       @relation("InviteCreator")
+  prompts         Prompt[]       @relation("PromptAuthor")
+  favorites       Favorite[]
+  teamMemberships TeamMember[]
+  collections     Collection[]   @relation("CollectionOwner")
+
+  @@map("users")
+}
+
+// Organization model
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String?  @map("logo_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("organizations")
+}
+
+// Invite model for user registration
+model Invite {
+  id        String    @id @default(cuid())
+  token     String    @unique @default(cuid())
+  email     String
+  role      Role      @default(MEMBER)
+  createdBy String    @map("created_by")
+  creator   User      @relation("InviteCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([token])
+  @@index([email])
+  @@map("invites")
+}
+
+// Role enum
+enum Role {
+  SUPER_ADMIN
+  TEAM_ADMIN
+  MEMBER
+}
+
+// Prompt visibility enum
+enum PromptVisibility {
+  PUBLIC  // Visible to everyone in the organization
+  TEAM    // Visible only to team members
+  PRIVATE // Visible only to the author
+}
+
+// AI Platform enum
+enum Platform {
+  CHATGPT
+  CLAUDE
+  GEMINI
+  COPILOT
+  MIDJOURNEY
+  STABLE_DIFFUSION
+  OTHER
+}
+
+// Prompt Type enum
+enum PromptType {
+  STANDARD_PROMPT
+  CUSTOM_GPT
+  CLAUDE_PROJECT
+  GEMINI_GEM
+  CUSTOM_APP
+  OTHER
+}
+
+// Prompt model for storing AI prompts
+model Prompt {
+  id          String           @id @default(cuid())
+  title       String
+  content     String           @db.Text
+  description String?          @db.Text
+  variables   Json?            // Array of variable definitions: [{ name, description, defaultValue }]
+  platform    Platform         @default(OTHER)
+  visibility  PromptVisibility @default(PRIVATE)
+  tags        String[]         // Array of tag strings
+  
+  // Prompt type and configuration
+  promptType              PromptType @default(STANDARD_PROMPT) @map("prompt_type")
+  additionalInstructions  String?    @map("additional_instructions") @db.Text
+  config                  Json?      // Stores { useWebSearch, useDeepResearch }
+  
+  // Ownership
+  authorId    String           @map("author_id")
+  author      User             @relation("PromptAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  teamId      String?          @map("team_id")
+  team        Team?            @relation("TeamPrompts", fields: [teamId], references: [id], onDelete: SetNull)
+  
+  // Stats
+  copyCount   Int              @default(0) @map("copy_count")
+  favoriteCount Int            @default(0) @map("favorite_count")
+  
+  // Timestamps
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  favorites         Favorite[]
+  collectionPrompts CollectionPrompt[]
+
+  @@index([authorId])
+  @@index([teamId])
+  @@index([platform])
+  @@index([visibility])
+  @@index([createdAt])
+  @@map("prompts")
+}
+
+// Favorite model for user-prompt favorites
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  promptId  String   @map("prompt_id")
+  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, promptId])
+  @@index([userId])
+  @@index([promptId])
+  @@map("favorites")
+}
+
+// Team member role enum
+enum TeamMemberRole {
+  ADMIN  // Can manage team members and settings
+  MEMBER // Regular team member
+}
+
+// Collection visibility enum
+enum CollectionVisibility {
+  PUBLIC  // Visible to everyone in the organization
+  TEAM    // Visible only to team members
+  PRIVATE // Visible only to the owner
+}
+
+// Team model
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  members     TeamMember[]
+  prompts     Prompt[]      @relation("TeamPrompts")
+  collections Collection[]  @relation("TeamCollections")
+  pinnedPrompts String[]    @map("pinned_prompts") // Array of prompt IDs
+
+  @@map("teams")
+}
+
+// TeamMember junction model
+model TeamMember {
+  id        String         @id @default(cuid())
+  userId    String         @map("user_id")
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId    String         @map("team_id")
+  team      Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  role      TeamMemberRole @default(MEMBER)
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+  @@map("team_members")
+}
+
+// Collection model
+model Collection {
+  id          String               @id @default(cuid())
+  name        String
+  description String?              @db.Text
+  visibility  CollectionVisibility @default(PRIVATE)
+  ownerId     String               @map("owner_id")
+  owner       User                 @relation("CollectionOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  teamId      String?              @map("team_id")
+  team        Team?                @relation("TeamCollections", fields: [teamId], references: [id], onDelete: SetNull)
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+
+  // Relations
+  collectionPrompts CollectionPrompt[]
+
+  @@index([ownerId])
+  @@index([teamId])
+  @@index([visibility])
+  @@map("collections")
+}
+
+// CollectionPrompt junction model
+model CollectionPrompt {
+  id           String     @id @default(cuid())
+  collectionId String     @map("collection_id")
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  promptId     String     @map("prompt_id")
+  prompt       Prompt     @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  order        Int        @default(0) // For custom ordering within collection
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@unique([collectionId, promptId])
+  @@index([collectionId])
+  @@index([promptId])
+  @@map("collection_prompts")
+}
+
