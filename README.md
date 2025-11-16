@@ -96,40 +96,6 @@ pnpm dev:backend
 pnpm build
 ```
 
-## Project Structure
-
-```
-myaizu/
-├── packages/
-│   ├── frontend/          # React frontend application
-│   │   ├── src/
-│   │   │   ├── components/    # UI components
-│   │   │   ├── pages/         # Page components
-│   │   │   ├── contexts/      # React contexts
-│   │   │   ├── hooks/         # Custom hooks
-│   │   │   ├── services/      # API services
-│   │   │   └── utils/         # Utility functions
-│   │   └── package.json
-│   ├── backend/           # Express backend API
-│   │   ├── src/
-│   │   │   ├── routes/        # API routes
-│   │   │   ├── controllers/   # Route controllers
-│   │   │   ├── services/      # Business logic
-│   │   │   ├── models/        # Data models
-│   │   │   ├── middleware/    # Express middleware
-│   │   │   └── utils/         # Utility functions
-│   │   ├── prisma/            # Database schema & migrations
-│   │   └── package.json
-│   └── shared/            # Shared types and constants
-│       ├── src/
-│       │   ├── types/         # TypeScript types
-│       │   └── constants/     # Shared constants
-│       └── package.json
-├── docker-compose.yml     # Docker services configuration
-├── pnpm-workspace.yaml    # pnpm workspace configuration
-└── package.json           # Root package.json
-```
-
 ## Database
 
 ### Run migrations
@@ -227,12 +193,4 @@ Quick test:
 4. Explore the app!
 
 ---
-
-**Current Status**: Phase 1 - Authentication & Core Layout ✅
-
-**Completed**:
-- ✅ Phase 0 - Foundation & Infrastructure
-- ✅ Phase 1 - Authentication & Core Layout
-
-**Next Steps**: Phase 2 - Prompt Management Core
 
