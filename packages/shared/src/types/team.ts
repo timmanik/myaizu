@@ -78,5 +78,6 @@ export interface TeamPromptsFilters {
   tags?: string[];
   sortField?: 'createdAt' | 'updatedAt' | 'title' | 'favoriteCount';
   sortOrder?: 'asc' | 'desc';
+  viewAsPublic?: boolean;
 }
 

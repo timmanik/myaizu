@@ -19,7 +19,7 @@ import { useToast } from '../../hooks/use-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
 import { TeamMemberRole, type Prompt } from '@aizu/shared';
-import { ArrowLeft, Users, Pin } from 'lucide-react';
+import { ArrowLeft, Users, Pin, Eye, EyeOff } from 'lucide-react';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,19 +28,24 @@ export default function TeamPage() {
   const { toast } = useToast();
   const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewAsPublic, setViewAsPublic] = useState(false);
 
   const { data: team, isLoading: loadingTeam } = useTeam(id!);
-  const { data: prompts, isLoading: loadingPrompts } = useTeamPrompts(id!);
-  const { data: pinnedPrompts, isLoading: loadingPinnedPrompts } = usePinnedPrompts(id!);
+  
+  // Check if current user is a team member
+  const currentUserMembership = team?.members?.find((m) => m.userId === user?.id);
+  const isTeamMember = !!currentUserMembership;
+  const isTeamAdmin = currentUserMembership?.role === TeamMemberRole.ADMIN;
+  
+  // Fetch prompts and pinned prompts with view mode
+  const { data: prompts, isLoading: loadingPrompts } = useTeamPrompts(id!, { viewAsPublic });
+  const { data: pinnedPrompts, isLoading: loadingPinnedPrompts } = usePinnedPrompts(id!, viewAsPublic);
+  
   const { mutate: pinPrompt } = usePinPrompt();
   const { mutate: unpinPrompt } = useUnpinPrompt();
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const addToCollectionMutation = useAddToCollection();
-
-  // Check if current user is a team admin
-  const currentUserMembership = team?.members?.find((m) => m.userId === user?.id);
-  const isTeamAdmin = currentUserMembership?.role === TeamMemberRole.ADMIN;
   
   // Get list of pinned prompt IDs for easy checking
   const pinnedPromptIds = team?.pinnedPrompts || [];
@@ -150,11 +155,34 @@ export default function TeamPage() {
         </Button>
       </div>
 
-      <PageHeader
-        title={team.name}
-        description={team.description || undefined}
-        icon={<Users className="h-6 w-6" />}
-      />
+      <div className="flex items-start justify-between mb-6">
+        <PageHeader
+          title={team.name}
+          description={team.description || undefined}
+          icon={<Users className="h-6 w-6" />}
+        />
+        
+        {isTeamMember && (
+          <div className="flex items-center gap-2 mt-2">
+            <Button
+              variant={viewAsPublic ? "outline" : "default"}
+              size="sm"
+              onClick={() => setViewAsPublic(false)}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Member View
+            </Button>
+            <Button
+              variant={viewAsPublic ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewAsPublic(true)}
+            >
+              <EyeOff className="h-4 w-4 mr-2" />
+              Public View
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -237,14 +265,25 @@ export default function TeamPage() {
 
       {/* Team Prompts */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">All Team Prompts</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">All Team Prompts</h2>
+          {isTeamMember && viewAsPublic && (
+            <span className="text-sm text-muted-foreground italic">
+              Viewing as public - only PUBLIC prompts visible
+            </span>
+          )}
+        </div>
         {loadingPrompts ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-muted-foreground">Loading prompts...</div>
           </div>
         ) : !prompts || prompts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-center">
-            <p className="text-muted-foreground">No prompts in this team yet</p>
+            <p className="text-muted-foreground">
+              {viewAsPublic 
+                ? "No public prompts from team members yet"
+                : "No prompts in this team yet"}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

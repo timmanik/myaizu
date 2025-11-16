@@ -46,6 +46,7 @@ export const teamsApi = {
     if (filters?.tags) params.append('tags', filters.tags.join(','));
     if (filters?.sortField) params.append('sortField', filters.sortField);
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);
+    if (filters?.viewAsPublic) params.append('viewAsPublic', 'true');
 
     const response = await apiClient.get(`/teams/${id}/prompts?${params.toString()}`);
     return response.data;
@@ -54,8 +55,11 @@ export const teamsApi = {
   /**
    * Get pinned prompts for a team
    */
-  getPinnedPrompts: async (id: string): Promise<Prompt[]> => {
-    const response = await apiClient.get(`/teams/${id}/pinned`);
+  getPinnedPrompts: async (id: string, viewAsPublic?: boolean): Promise<Prompt[]> => {
+    const params = new URLSearchParams();
+    if (viewAsPublic) params.append('viewAsPublic', 'true');
+
+    const response = await apiClient.get(`/teams/${id}/pinned?${params.toString()}`);
     return response.data;
   },
 

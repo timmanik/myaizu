@@ -46,7 +46,7 @@ export const getTeams = async (req: Request, res: Response) => {
 
 /**
  * GET /api/teams/:id
- * Get a single team by ID (with members)
+ * Get a single team by ID (with members) - publicly accessible
  */
 export const getTeamById = async (req: Request, res: Response) => {
   try {
@@ -62,11 +62,6 @@ export const getTeamById = async (req: Request, res: Response) => {
   } catch (error: any) {
     if (error.message.includes('not found')) {
       res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('Access denied')) {
-      res.status(403).json({
         success: false,
         error: error.message,
       });
@@ -94,6 +89,7 @@ export const getTeamPrompts = async (req: Request, res: Response) => {
       tags: req.query.tags ? (req.query.tags as string).split(',') : undefined,
       sortField: (req.query.sortField as any) || 'createdAt',
       sortOrder: (req.query.sortOrder as any) || 'desc',
+      viewAsPublic: req.query.viewAsPublic === 'true',
     };
 
     const prompts = await teamService.getTeamPrompts(id, userId, filters);
@@ -103,17 +99,10 @@ export const getTeamPrompts = async (req: Request, res: Response) => {
       data: prompts,
     });
   } catch (error: any) {
-    if (error.message.includes('Access denied')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to fetch team prompts',
-      });
-    }
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch team prompts',
+    });
   }
 };
 
@@ -125,8 +114,9 @@ export const getPinnedPrompts = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.userId;
     const { id } = req.params;
+    const viewAsPublic = req.query.viewAsPublic === 'true';
 
-    const prompts = await teamService.getPinnedPrompts(id, userId);
+    const prompts = await teamService.getPinnedPrompts(id, userId, viewAsPublic);
 
     res.json({
       success: true,
@@ -135,11 +125,6 @@ export const getPinnedPrompts = async (req: Request, res: Response) => {
   } catch (error: any) {
     if (error.message.includes('not found')) {
       res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('Access denied')) {
-      res.status(403).json({
         success: false,
         error: error.message,
       });

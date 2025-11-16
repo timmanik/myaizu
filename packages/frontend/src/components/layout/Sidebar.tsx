@@ -59,7 +59,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { user } = useAuth();
   const { organization } = useOrganization();
   const location = useLocation();
-  const { data: teams } = useTeams();
+  const { data: teams } = useTeams(user?.id ? { memberUserId: user.id } : undefined);
 
   const showAdminSection = user?.role === 'SUPER_ADMIN';
   

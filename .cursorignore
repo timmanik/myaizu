@@ -1,3 +1,5 @@
 !local-docs
 !local-docs/*
 !local-docs/
+
+!.env*
