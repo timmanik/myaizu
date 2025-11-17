@@ -22,11 +22,18 @@ FROM node:20-alpine AS backend
 RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm@8.15.0
 WORKDIR /app
 
-# Copy package.json for production dependency installation
-COPY --from=base /app/packages/backend/package.json ./package.json
-
-# Install only production dependencies (external packages not bundled)
-RUN pnpm install --prod --no-lockfile
+# Install only the external dependencies that aren't bundled
+# (matching the external list in esbuild.config.js)
+RUN pnpm add --save-prod \
+    express@^4.18.2 \
+    cors@^2.8.5 \
+    helmet@^7.1.0 \
+    dotenv@^16.3.1 \
+    zod@^3.22.4 \
+    bcrypt@^5.1.1 \
+    jsonwebtoken@^9.0.2 \
+    prisma@^5.7.0 \
+    @prisma/client@^5.7.0
 
 # Copy the bundled application (includes @aizu/shared)
 COPY --from=backend-build /app/packages/backend/dist/index.js ./dist/index.js
