@@ -26,6 +26,7 @@ WORKDIR /app
 COPY --from=base /app/packages/backend/package.json ./package.json
 COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
 COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Install only production dependencies (external packages needed by bundle)
 RUN pnpm install --prod --frozen-lockfile
