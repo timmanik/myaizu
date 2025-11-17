@@ -29,9 +29,8 @@ COPY --from=backend-build /app/packages/backend/dist ./packages/backend/dist
 COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
 COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
 COPY --from=base /app/packages/backend/prisma ./packages/backend/prisma
-WORKDIR /app/packages/backend
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+CMD ["node", "packages/backend/dist/index.js"]
 
 FROM nginx:1.25-alpine AS frontend
 COPY packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
