@@ -18,37 +18,37 @@ ENV VITE_API_URL=${VITE_API_URL}
 RUN pnpm --filter @aizu/shared build \
     && pnpm --filter @aizu/frontend build
 
-FROM node:20-alpine AS backend
+FROM node:20-alpine AS backend-deploy
 RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm@8.15.0
-WORKDIR /app
+WORKDIR /tmp/build
 
-# Copy workspace configuration files
+# Copy full workspace for pnpm deploy
 COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
-
-# Copy package.json files maintaining workspace structure
 COPY --from=base /app/packages/backend/package.json ./packages/backend/package.json
 COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
 
-# Install only production dependencies (external packages needed by bundle)
-RUN pnpm install --prod --frozen-lockfile
+# Use pnpm deploy to create a clean production deployment
+RUN pnpm deploy --filter=@aizu/backend --prod /app
+
+FROM node:20-alpine AS backend
+RUN apk add --no-cache libc6-compat openssl
+WORKDIR /app
+
+# Copy deployed backend with all dependencies
+COPY --from=backend-deploy /app ./
 
 # Copy the bundled application
 COPY --from=backend-build /app/packages/backend/dist/index.js ./dist/index.js
 
-# Copy shared package build output (referenced by bundle)
-COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
+# Copy Prisma schema and migrations
+COPY --from=base /app/packages/backend/prisma ./prisma
 
-# Copy Prisma schema and migrations (needed at runtime)
-COPY --from=base /app/packages/backend/prisma ./packages/backend/prisma
+# Generate Prisma client for production
+RUN npm install -g pnpm@8.15.0 && pnpm prisma generate && npm uninstall -g pnpm
 
-# Generate Prisma client for production (run from backend directory)
-WORKDIR /app/packages/backend
-RUN pnpm prisma generate
-
-# Return to app root for execution
-WORKDIR /app
 ENV NODE_ENV=production
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
