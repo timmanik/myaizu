@@ -11,6 +11,12 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: ApiError;
   message?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages?: number;
+  };
 }
 
 class ApiClient {
@@ -112,4 +118,3 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
-

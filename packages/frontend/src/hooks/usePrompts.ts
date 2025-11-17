@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { promptsApi } from '@/services/api/prompts';
 import type { PromptFilters, PromptSort } from '@aizu/shared';
 
+type PromptsResult = Awaited<ReturnType<typeof promptsApi.list>>;
+
 export const usePrompts = (
   filters?: PromptFilters,
   sort?: PromptSort,
@@ -13,10 +15,9 @@ export const usePrompts = (
   const hasAuthorIdFilter = filters && 'authorId' in filters;
   const isEnabled = hasAuthorIdFilter ? !!filters.authorId : true;
   
-  return useQuery({
+  return useQuery<PromptsResult>({
     queryKey: ['prompts', filters, sort, page, limit],
     queryFn: () => promptsApi.list(filters, sort, page, limit),
     enabled: isEnabled,
   });
 };
-

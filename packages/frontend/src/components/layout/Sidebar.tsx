@@ -1,4 +1,4 @@
-import { Home, Heart, Folder, Users, TrendingUp, Settings, Shield, ChevronLeft, Layers, FileText, LayoutDashboard, UserCog, Mail, Building2 } from 'lucide-react';
+import { Home, Heart, Users, TrendingUp, ChevronLeft, Layers, FileText, LayoutDashboard, UserCog, Mail, Building2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
@@ -320,4 +320,3 @@ function TeamLink({ team, isActive, isCollapsed }: TeamLinkProps) {
     </motion.div>
   );
 }
-

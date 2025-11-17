@@ -14,18 +14,6 @@ interface PromptListResponse {
   limit: number;
 }
 
-interface PromptResponse {
-  success: boolean;
-  data: Prompt;
-}
-
-interface FavoriteResponse {
-  success: boolean;
-  data: {
-    isFavorited: boolean;
-  };
-}
-
 export const promptsApi = {
   /**
    * List prompts with filters and pagination
@@ -54,43 +42,37 @@ export const promptsApi = {
     params.append('page', page.toString());
     params.append('limit', limit.toString());
 
-    const response = await apiClient.get<any>(
+    const response = await apiClient.get<Prompt[]>(
       `/prompts?${params.toString()}`
     );
     
-    // Backend returns { success: true, data: Prompt[], pagination: {...} }
-    // Transform to match PromptListResponse interface
     return {
       prompts: response.data || [],
-      total: response.pagination?.total || 0,
-      page: response.pagination?.page || 1,
-      limit: response.pagination?.limit || 20,
+      total: response.pagination?.total || response.data?.length || 0,
+      page: response.pagination?.page || page,
+      limit: response.pagination?.limit || limit,
     };
   },
 
   /**
    * Get a single prompt by ID
    */
-  get: async (id: string): Promise<PromptResponse> => {
-    const response = await apiClient.get<PromptResponse>(`/prompts/${id}`);
-    // Backend returns { success: true, data: prompt }, so return the whole response
-    return response as PromptResponse;
+  get: async (id: string) => {
+    return apiClient.get<Prompt>(`/prompts/${id}`);
   },
 
   /**
    * Create a new prompt
    */
-  create: async (data: CreatePromptDto): Promise<PromptResponse> => {
-    const response = await apiClient.post<PromptResponse>('/prompts', data);
-    return response as PromptResponse;
+  create: async (data: CreatePromptDto) => {
+    return apiClient.post<Prompt>('/prompts', data);
   },
 
   /**
    * Update a prompt
    */
-  update: async (id: string, data: UpdatePromptDto): Promise<PromptResponse> => {
-    const response = await apiClient.put<PromptResponse>(`/prompts/${id}`, data);
-    return response as PromptResponse;
+  update: async (id: string, data: UpdatePromptDto) => {
+    return apiClient.put<Prompt>(`/prompts/${id}`, data);
   },
 
   /**
@@ -103,11 +85,10 @@ export const promptsApi = {
   /**
    * Toggle favorite status
    */
-  toggleFavorite: async (id: string): Promise<FavoriteResponse> => {
-    const response = await apiClient.post<FavoriteResponse>(
+  toggleFavorite: async (id: string) => {
+    return apiClient.post<{ isFavorited: boolean }>(
       `/prompts/${id}/favorite`
     );
-    return response as FavoriteResponse;
   },
 
   /**
@@ -120,9 +101,7 @@ export const promptsApi = {
   /**
    * Fork/remix a prompt
    */
-  fork: async (id: string): Promise<PromptResponse> => {
-    const response = await apiClient.post<PromptResponse>(`/prompts/${id}/fork`);
-    return response as PromptResponse;
+  fork: async (id: string) => {
+    return apiClient.post<Prompt>(`/prompts/${id}/fork`);
   },
 };
-

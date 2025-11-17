@@ -19,8 +19,7 @@ export const teamsApi = {
       if (filters?.search) params.append('search', filters.search);
       if (filters?.memberUserId) params.append('memberUserId', filters.memberUserId);
 
-      const response = await apiClient.get(`/teams?${params.toString()}`);
-      // Backend returns { success: true, data: teams }
+      const response = await apiClient.get<Team[]>(`/teams?${params.toString()}`);
       return response.data || [];
     } catch (error) {
       console.error('Failed to fetch teams:', error);
@@ -32,8 +31,8 @@ export const teamsApi = {
    * Get a single team by ID
    */
   getTeamById: async (id: string): Promise<TeamWithMembers> => {
-    const response = await apiClient.get(`/teams/${id}`);
-    return response.data;
+    const response = await apiClient.get<TeamWithMembers>(`/teams/${id}`);
+    return response.data!;
   },
 
   /**
@@ -48,8 +47,10 @@ export const teamsApi = {
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);
     if (filters?.viewAsPublic) params.append('viewAsPublic', 'true');
 
-    const response = await apiClient.get(`/teams/${id}/prompts?${params.toString()}`);
-    return response.data;
+    const response = await apiClient.get<Prompt[]>(
+      `/teams/${id}/prompts?${params.toString()}`
+    );
+    return response.data || [];
   },
 
   /**
@@ -77,4 +78,3 @@ export const teamsApi = {
     await apiClient.put(`/teams/${teamId}/members/${userId}/role`, data);
   },
 };
-

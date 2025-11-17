@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { teamsApi } from '../services/api/teams';
-import type { TeamFilters } from '@aizu/shared';
+import type { TeamFilters, Team } from '@aizu/shared';
 
 export const useTeams = (filters?: TeamFilters) => {
-  return useQuery({
+  return useQuery<Team[]>({
     queryKey: ['teams', filters],
     queryFn: () => teamsApi.getTeams(filters),
   });
 };
-

@@ -22,7 +22,7 @@ import { useViewMode } from '../../hooks/useViewMode';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
 import { ArrowLeft, Layers, Pencil, Trash2 } from 'lucide-react';
-import type { Prompt, PromptVisibility, TeamMemberRole } from '@aizu/shared';
+import type { Prompt, PromptVisibility } from '@aizu/shared';
 
 export default function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -58,7 +58,7 @@ export default function CollectionDetailPage() {
       if (!p) return null;
       return {
         ...p,
-        authorName: (p as any).author?.name || p.authorName,
+        authorName: (p as any).author?.name,
         createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
         updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
         promptType: 'STANDARD_PROMPT' as const,
@@ -421,4 +421,3 @@ export default function CollectionDetailPage() {
     </PageContainer>
   );
 }
-

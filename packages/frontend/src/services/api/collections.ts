@@ -20,8 +20,9 @@ export const collectionsApi = {
     if (filters?.sortField) params.append('sortField', filters.sortField);
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);
 
-    const response = await apiClient.get(`/collections?${params.toString()}`);
-    // Backend returns { success: true, data: collections }, so access response.data
+    const response = await apiClient.get<Collection[]>(
+      `/collections?${params.toString()}`
+    );
     return response.data || [];
   },
 
@@ -29,24 +30,24 @@ export const collectionsApi = {
    * Get a single collection by ID
    */
   getCollectionById: async (id: string): Promise<CollectionWithPrompts> => {
-    const response = await apiClient.get(`/collections/${id}`);
-    return response.data;
+    const response = await apiClient.get<CollectionWithPrompts>(`/collections/${id}`);
+    return response.data!;
   },
 
   /**
    * Create a new collection
    */
   createCollection: async (data: CreateCollectionDto): Promise<Collection> => {
-    const response = await apiClient.post('/collections', data);
-    return response.data;
+    const response = await apiClient.post<Collection>('/collections', data);
+    return response.data!;
   },
 
   /**
    * Update a collection
    */
   updateCollection: async (id: string, data: UpdateCollectionDto): Promise<Collection> => {
-    const response = await apiClient.put(`/collections/${id}`, data);
-    return response.data;
+    const response = await apiClient.put<Collection>(`/collections/${id}`, data);
+    return response.data!;
   },
 
   /**
@@ -70,4 +71,3 @@ export const collectionsApi = {
     await apiClient.delete(`/collections/${collectionId}/prompts/${promptId}`);
   },
 };
-

@@ -12,8 +12,9 @@ export const useUpdatePrompt = () => {
       // Invalidate and refetch prompts list
       await queryClient.invalidateQueries({ queryKey: ['prompts'] });
       // Invalidate specific prompt
-      await queryClient.invalidateQueries({ queryKey: ['prompt', response.data.id] });
+      if (response.data) {
+        await queryClient.invalidateQueries({ queryKey: ['prompt', response.data.id] });
+      }
     },
   });
 };
-

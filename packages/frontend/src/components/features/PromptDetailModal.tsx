@@ -105,6 +105,7 @@ export const PromptDetailModal = ({
         title: 'Success',
         description: 'Prompt copied to clipboard with your variable values!',
       });
+      onCopy?.(prompt.id);
     } catch (error) {
       console.error('Failed to copy prompt:', error);
       toast({
@@ -149,4 +150,3 @@ export const PromptDetailModal = ({
     </Dialog>
   );
 };
-

@@ -20,11 +20,14 @@ export const useForkPrompt = () => {
       });
 
       // Navigate to the edit page for the new forked prompt
-      if (response.data) {
-        setTimeout(() => {
-          navigate(`/prompts/${response.data.id}/edit`);
-        }, 500);
+      const forkedPrompt = response.data;
+      if (!forkedPrompt) {
+        return;
       }
+
+      setTimeout(() => {
+        navigate(`/prompts/${forkedPrompt.id}/edit`);
+      }, 500);
     },
     onError: (error: any) => {
       toast({
@@ -35,4 +38,3 @@ export const useForkPrompt = () => {
     },
   });
 };
-

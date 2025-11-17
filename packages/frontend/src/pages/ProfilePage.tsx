@@ -53,15 +53,14 @@ export function ProfilePage() {
           icon={User}
           title="User not found"
           description="This user profile could not be found."
-          action={
-            <Link to="/">
-              <Button>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Home
-              </Button>
-            </Link>
-          }
-        />
+        >
+          <Link to="/">
+            <Button>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
+        </EmptyState>
       </PageContainer>
     );
   }
@@ -375,4 +374,3 @@ export function ProfilePage() {
     </PageContainer>
   );
 }
-

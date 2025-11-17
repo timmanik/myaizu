@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronDown, FileText, Layers } from 'lucide-react';
@@ -66,4 +65,3 @@ export function NewItemDropdown() {
     </>
   );
 }
-

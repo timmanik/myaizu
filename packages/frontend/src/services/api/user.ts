@@ -5,13 +5,37 @@ import type {
   ChangePasswordDto,
   PublicUserProfile,
   Prompt,
+  Collection,
 } from '@aizu/shared';
+
+interface UserPublicPromptsResponse {
+  prompts: Prompt[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+interface UserPublicCollectionsResponse {
+  collections: Collection[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 /**
  * Get current user's profile
  */
 export async function getUserProfile(): Promise<UserProfile> {
-  const response = await apiClient.get('/user/profile');
+  const response = await apiClient.get<{ user: UserProfile }>('/user/profile');
+  if (!response.data?.user) {
+    throw new Error('Failed to load profile');
+  }
   return response.data.user;
 }
 
@@ -19,7 +43,10 @@ export async function getUserProfile(): Promise<UserProfile> {
  * Update current user's profile
  */
 export async function updateUserProfile(data: UpdateProfileDto): Promise<UserProfile> {
-  const response = await apiClient.put('/user/profile', data);
+  const response = await apiClient.put<{ user: UserProfile }>('/user/profile', data);
+  if (!response.data?.user) {
+    throw new Error('Failed to update profile');
+  }
   return response.data.user;
 }
 
@@ -34,7 +61,10 @@ export async function changePassword(data: ChangePasswordDto): Promise<void> {
  * Get public profile of a user
  */
 export async function getPublicProfile(userId: string): Promise<PublicUserProfile> {
-  const response = await apiClient.get(`/users/${userId}`);
+  const response = await apiClient.get<{ user: PublicUserProfile }>(`/users/${userId}`);
+  if (!response.data?.user) {
+    throw new Error('User not found');
+  }
   return response.data.user;
 }
 
@@ -45,10 +75,17 @@ export async function getUserPublicPrompts(
   userId: string,
   page: number = 1,
   limit: number = 20
-) {
-  const response = await apiClient.get(`/users/${userId}/prompts`, {
-    params: { page, limit },
+): Promise<UserPublicPromptsResponse> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
   });
+  const response = await apiClient.get<UserPublicPromptsResponse>(
+    `/users/${userId}/prompts?${params.toString()}`
+  );
+  if (!response.data) {
+    throw new Error('Failed to load public prompts');
+  }
   return response.data;
 }
 
@@ -59,10 +96,17 @@ export async function getUserPublicCollections(
   userId: string,
   page: number = 1,
   limit: number = 20
-) {
-  const response = await apiClient.get(`/users/${userId}/collections`, {
-    params: { page, limit },
+): Promise<UserPublicCollectionsResponse> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
   });
+  const response = await apiClient.get<UserPublicCollectionsResponse>(
+    `/users/${userId}/collections?${params.toString()}`
+  );
+  if (!response.data) {
+    throw new Error('Failed to load public collections');
+  }
   return response.data;
 }
 
@@ -70,7 +114,7 @@ export async function getUserPublicCollections(
  * Get current user's pinned prompts
  */
 export async function getPinnedPrompts(): Promise<Prompt[]> {
-  const response = await apiClient.get<{ data: Prompt[] }>('/user/me/pinned');
+  const response = await apiClient.get<Prompt[]>('/user/me/pinned');
   return response.data || [];
 }
 
@@ -87,4 +131,3 @@ export async function pinPrompt(promptId: string): Promise<void> {
 export async function unpinPrompt(promptId: string): Promise<void> {
   await apiClient.delete(`/user/me/pin/${promptId}`);
 }
-

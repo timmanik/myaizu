@@ -122,9 +122,11 @@ export const TeamMemberManagement = ({
     navigate(`/users/${userId}`);
   };
 
+  const canManageMembers = isAdmin && !readOnly;
+
   return (
     <div className="space-y-4">
-      {!readOnly && (
+      {canManageMembers && (
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
@@ -244,7 +246,7 @@ export const TeamMemberManagement = ({
       <div className="grid grid-cols-1 gap-3">
         {members.map((member) => {
           const isCurrentUser = member.userId === currentUser?.id;
-          const canModify = !isCurrentUser && !readOnly;
+          const canModify = canManageMembers && !isCurrentUser;
 
           return (
             <Card key={member.id} className="p-4">
@@ -268,7 +270,7 @@ export const TeamMemberManagement = ({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {!readOnly && canModify ? (
+                  {canManageMembers && canModify ? (
                     <Select
                       value={member.role}
                       onValueChange={(value) =>
@@ -290,7 +292,7 @@ export const TeamMemberManagement = ({
                     </div>
                   )}
 
-                  {!readOnly && canModify && (
+                  {canManageMembers && canModify && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -317,4 +319,3 @@ export const TeamMemberManagement = ({
     </div>
   );
 };
-
