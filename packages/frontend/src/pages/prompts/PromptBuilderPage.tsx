@@ -249,11 +249,17 @@ export const PromptBuilderPage = () => {
                 {/* Formatted text overlay - shows the highlighted variables */}
                 <div
                   ref={overlayRef}
-                  className="absolute inset-0 pointer-events-none px-3 py-2 whitespace-pre-wrap break-words font-mono text-sm overflow-auto rounded-md hide-scrollbar"
+                  className="absolute pointer-events-none whitespace-pre-wrap break-words font-mono text-sm overflow-auto hide-scrollbar"
                   aria-hidden="true"
                   style={{
-                    lineHeight: '1.5',
+                    top: '1px',
+                    left: '1px',
+                    right: '1px',
+                    bottom: '1px',
+                    padding: '0.5rem 0.75rem',
+                    lineHeight: '1.5rem',
                     color: 'black',
+                    borderRadius: 'calc(0.375rem - 1px)',
                   }}
                 >
                   {renderContentWithHighlightedVariables()}
@@ -273,6 +279,7 @@ export const PromptBuilderPage = () => {
                     color: 'transparent',
                     caretColor: 'black',
                     resize: 'vertical',
+                    lineHeight: '1.5rem',
                     WebkitTextFillColor: 'transparent',
                   }}
                 />
