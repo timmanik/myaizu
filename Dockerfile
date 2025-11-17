@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.6
 
 FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat && npm install -g pnpm
+RUN apk add --no-cache libc6-compat && npm install -g pnpm@8.15.0
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
@@ -19,7 +19,7 @@ RUN pnpm --filter @aizu/shared build \
     && pnpm --filter @aizu/frontend build
 
 FROM node:20-alpine AS backend
-RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm
+RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm@8.15.0
 WORKDIR /app
 
 # Copy only package files for production dependency installation
