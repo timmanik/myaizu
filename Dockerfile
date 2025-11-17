@@ -18,36 +18,24 @@ ENV VITE_API_URL=${VITE_API_URL}
 RUN pnpm --filter @aizu/shared build \
     && pnpm --filter @aizu/frontend build
 
-FROM node:20-alpine AS backend-deploy
-RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm@8.15.0
-WORKDIR /tmp/build
-
-# Copy full workspace for pnpm deploy
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=base /app/packages/backend/package.json ./packages/backend/package.json
-COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
-COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
-
-# Use pnpm deploy to create a clean production deployment
-RUN pnpm deploy --filter=@aizu/backend --prod /app
-
 FROM node:20-alpine AS backend
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm@8.15.0
 WORKDIR /app
 
-# Copy deployed backend with all dependencies
-COPY --from=backend-deploy /app ./
+# Copy package.json for production dependency installation
+COPY --from=base /app/packages/backend/package.json ./package.json
 
-# Copy the bundled application
+# Install only production dependencies (external packages not bundled)
+RUN pnpm install --prod --no-lockfile
+
+# Copy the bundled application (includes @aizu/shared)
 COPY --from=backend-build /app/packages/backend/dist/index.js ./dist/index.js
 
 # Copy Prisma schema and migrations
 COPY --from=base /app/packages/backend/prisma ./prisma
 
 # Generate Prisma client for production
-RUN npm install -g pnpm@8.15.0 && pnpm prisma generate && npm uninstall -g pnpm
+RUN pnpm prisma generate
 
 ENV NODE_ENV=production
 EXPOSE 3001

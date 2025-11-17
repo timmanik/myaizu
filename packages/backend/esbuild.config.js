@@ -20,7 +20,6 @@ const config = {
   external: [
     '@prisma/client',
     '.prisma/client',
-    '@aizu/shared',
     // Native modules
     'bcrypt',
     // Large dependencies better kept external
