@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -45,6 +45,18 @@ export const PromptBuilderPage = () => {
     useWebSearch: false,
     useDeepResearch: false,
   });
+
+  // Refs for scroll synchronization
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Synchronize scroll between textarea and overlay
+  const handleScroll = () => {
+    if (textareaRef.current && overlayRef.current) {
+      overlayRef.current.scrollTop = textareaRef.current.scrollTop;
+      overlayRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    }
+  };
 
   // Render content with highlighted variables for overlay
   const renderContentWithHighlightedVariables = () => {
@@ -236,7 +248,8 @@ export const PromptBuilderPage = () => {
               <div className="relative mt-2">
                 {/* Formatted text overlay - shows the highlighted variables */}
                 <div
-                  className="absolute inset-0 pointer-events-none px-3 py-2 whitespace-pre-wrap break-words font-mono text-sm overflow-hidden rounded-md"
+                  ref={overlayRef}
+                  className="absolute inset-0 pointer-events-none px-3 py-2 whitespace-pre-wrap break-words font-mono text-sm overflow-auto rounded-md hide-scrollbar"
                   aria-hidden="true"
                   style={{
                     lineHeight: '1.5',
@@ -247,9 +260,11 @@ export const PromptBuilderPage = () => {
                 </div>
                 {/* Actual textarea - invisible but captures input */}
               <Textarea
+                ref={textareaRef}
                 id="content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                onScroll={handleScroll}
                 placeholder="Enter your prompt content here..."
                 required
                 rows={10}
