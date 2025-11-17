@@ -9,7 +9,8 @@ export const useFavoritePrompt = () => {
     onSuccess: () => {
       // Invalidate prompts list to update UI
       queryClient.invalidateQueries({ queryKey: ['prompts'] });
+      // Trending views have their own cache keys, so refresh them as well
+      queryClient.invalidateQueries({ queryKey: ['trending'] });
     },
   });
 };
-
