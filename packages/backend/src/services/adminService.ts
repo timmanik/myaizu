@@ -18,7 +18,6 @@ export const createTeam = async (data: {
     data: {
       name: data.name,
       description: data.description,
-      pinnedPrompts: [],
     },
     include: {
       _count: {
@@ -516,4 +515,3 @@ export const getAdminStats = async () => {
     recentUsers,
   };
 };
-
