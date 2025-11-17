@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,14 +31,17 @@ interface TeamMemberManagementProps {
   teamId: string;
   members: TeamMember[];
   isAdmin: boolean;
+  readOnly?: boolean;
 }
 
 export const TeamMemberManagement = ({
   teamId,
   members,
   isAdmin,
+  readOnly = false,
 }: TeamMemberManagementProps) => {
   const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
   const confirm = useConfirm();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,18 +118,19 @@ export const TeamMemberManagement = ({
     });
   };
 
-  if (!isAdmin) {
-    return null;
-  }
+  const handleMemberClick = (userId: string) => {
+    navigate(`/users/${userId}`);
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
-          Manage Members
-        </h3>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      {!readOnly && (
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Shield className="h-5 w-5 text-primary" />
+            Manage Members
+          </h3>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm">
               <UserPlus className="h-4 w-4 mr-2" />
@@ -234,19 +239,23 @@ export const TeamMemberManagement = ({
           </DialogContent>
         </Dialog>
       </div>
+      )}
 
       <div className="grid grid-cols-1 gap-3">
         {members.map((member) => {
           const isCurrentUser = member.userId === currentUser?.id;
-          const canModify = !isCurrentUser;
+          const canModify = !isCurrentUser && !readOnly;
 
           return (
             <Card key={member.id} className="p-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1">
+                <div 
+                  className="flex items-center gap-3 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => handleMemberClick(member.userId)}
+                >
                   <User className="h-10 w-10 text-muted-foreground flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">
+                    <div className="font-medium truncate hover:underline">
                       {member.user?.name}
                       {isCurrentUser && (
                         <span className="text-sm text-muted-foreground ml-2">(You)</span>
@@ -259,7 +268,7 @@ export const TeamMemberManagement = ({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {canModify ? (
+                  {!readOnly && canModify ? (
                     <Select
                       value={member.role}
                       onValueChange={(value) =>
@@ -281,7 +290,7 @@ export const TeamMemberManagement = ({
                     </div>
                   )}
 
-                  {canModify && (
+                  {!readOnly && canModify && (
                     <Button
                       variant="ghost"
                       size="sm"

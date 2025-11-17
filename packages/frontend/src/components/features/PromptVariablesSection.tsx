@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import type { PromptVariable } from '@aizu/shared';
 
 interface PromptVariablesSectionProps {
@@ -19,9 +18,6 @@ export const PromptVariablesSection = ({
   promptContent,
 }: PromptVariablesSectionProps) => {
   const [showPreview, setShowPreview] = useState(false);
-  const [newVariableName, setNewVariableName] = useState('');
-  const [newVariableDescription, setNewVariableDescription] = useState('');
-  const [newVariableDefaultValue, setNewVariableDefaultValue] = useState('');
 
   // Extract variable names from prompt content (looking for {variable_name} pattern)
   const extractedVariables = Array.from(
@@ -30,31 +26,47 @@ export const PromptVariablesSection = ({
   );
   const uniqueExtractedVars = [...new Set(extractedVariables)];
 
-  const handleAddVariable = () => {
-    if (!newVariableName.trim()) return;
+  // Sync variables with detected ones in prompt content
+  useEffect(() => {
+    // Create a map of existing variables by name for quick lookup
+    const existingVarsMap = new Map(
+      variables.map((v) => [v.name, v])
+    );
 
-    const newVariable: PromptVariable = {
-      name: newVariableName.trim(),
-      description: newVariableDescription.trim() || undefined,
-      defaultValue: newVariableDefaultValue.trim() || undefined,
-    };
+    // Build new variables array based on detected variables
+    const syncedVariables: PromptVariable[] = uniqueExtractedVars.map((varName) => {
+      // If variable already exists, keep its description and default value
+      const existing = existingVarsMap.get(varName);
+      if (existing) {
+        return existing;
+      }
+      // Otherwise, create a new variable with just the name
+      return {
+        name: varName,
+        description: undefined,
+        defaultValue: undefined,
+      };
+    });
 
-    onChange([...variables, newVariable]);
-    setNewVariableName('');
-    setNewVariableDescription('');
-    setNewVariableDefaultValue('');
-  };
+    // Only update if the variables have actually changed
+    const hasChanged =
+      syncedVariables.length !== variables.length ||
+      syncedVariables.some((v, i) => v.name !== variables[i]?.name);
 
-  const handleRemoveVariable = (index: number) => {
-    onChange(variables.filter((_, i) => i !== index));
-  };
+    if (hasChanged) {
+      onChange(syncedVariables);
+    }
+  }, [uniqueExtractedVars.join(',')]); // Depend on the detected variable names
 
-  const handleUpdateVariable = (index: number, field: keyof PromptVariable, value: string) => {
-    const updated = [...variables];
-    updated[index] = {
-      ...updated[index],
-      [field]: value || undefined,
-    };
+  const handleUpdateVariable = (varName: string, field: keyof PromptVariable, value: string) => {
+    const updated = variables.map((v) =>
+      v.name === varName
+        ? {
+            ...v,
+            [field]: value || undefined,
+          }
+        : v
+    );
     onChange(updated);
   };
 
@@ -100,130 +112,51 @@ export const PromptVariablesSection = ({
           </Button>
         </div>
 
-        {/* Detected Variables Info */}
-        {uniqueExtractedVars.length > 0 && (
-          <div className="mb-4 p-3 bg-blue-50 rounded-md">
-            <p className="text-sm font-medium text-blue-900 mb-2">
-              Variables detected in prompt:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {uniqueExtractedVars.map((varName) => (
-                <Badge key={varName} variant="secondary">
-                  {'{' + varName + '}'}
-                </Badge>
-              ))}
-            </div>
+        {/* Variables List */}
+        {variables.length > 0 ? (
+          <div className="space-y-3">
+            {variables.map((variable) => (
+              <Card key={variable.name} className="p-3 bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <div>
+                    <Label className="text-xs">Variable name</Label>
+                    <Input
+                      value={variable.name}
+                      disabled
+                      className="mt-1 bg-gray-100 cursor-not-allowed"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Description (optional)</Label>
+                    <Input
+                      value={variable.description || ''}
+                      onChange={(e) =>
+                        handleUpdateVariable(variable.name, 'description', e.target.value)
+                      }
+                      placeholder="Describe this variable"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Default value (optional)</Label>
+                    <Input
+                      value={variable.defaultValue || ''}
+                      onChange={(e) =>
+                        handleUpdateVariable(variable.name, 'defaultValue', e.target.value)
+                      }
+                      placeholder="Default value for preview"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-sm text-muted-foreground">
+            No variables detected. Use {'{variable_name}'} syntax in your prompt content to add variables.
           </div>
         )}
-
-        {/* Existing Variables */}
-        <div className="space-y-3 mb-4">
-          {variables.map((variable, index) => (
-            <Card key={index} className="p-3">
-              <div className="space-y-2">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 space-y-2">
-                    <div>
-                      <Label className="text-xs">Variable Name</Label>
-                      <Input
-                        value={variable.name}
-                        onChange={(e) =>
-                          handleUpdateVariable(index, 'name', e.target.value)
-                        }
-                        placeholder="variable_name"
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">Description (Optional)</Label>
-                      <Input
-                        value={variable.description || ''}
-                        onChange={(e) =>
-                          handleUpdateVariable(index, 'description', e.target.value)
-                        }
-                        placeholder="Describe this variable"
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">Default Value (Optional)</Label>
-                      <Input
-                        value={variable.defaultValue || ''}
-                        onChange={(e) =>
-                          handleUpdateVariable(index, 'defaultValue', e.target.value)
-                        }
-                        placeholder="Default value for preview"
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveVariable(index)}
-                    className="ml-2"
-                  >
-                    <Trash2 className="h-4 w-4 text-red-600" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Add New Variable */}
-        <Card className="p-3 bg-gray-50">
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold">Add New Variable</Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <Input
-                value={newVariableName}
-                onChange={(e) => setNewVariableName(e.target.value)}
-                placeholder="Variable name"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddVariable();
-                  }
-                }}
-              />
-              <Input
-                value={newVariableDescription}
-                onChange={(e) => setNewVariableDescription(e.target.value)}
-                placeholder="Description (optional)"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddVariable();
-                  }
-                }}
-              />
-              <Input
-                value={newVariableDefaultValue}
-                onChange={(e) => setNewVariableDefaultValue(e.target.value)}
-                placeholder="Default value (optional)"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddVariable();
-                  }
-                }}
-              />
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddVariable}
-              disabled={!newVariableName.trim()}
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Variable
-            </Button>
-          </div>
-        </Card>
       </Card>
 
       {/* Preview Section */}

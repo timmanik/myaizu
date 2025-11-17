@@ -19,6 +19,8 @@ import CollectionsPage from './pages/collections/CollectionsPage';
 import CollectionDetailPage from './pages/collections/CollectionDetailPage';
 import AllTeamsPage from './pages/teams/AllTeamsPage';
 import TeamPage from './pages/teams/TeamPage';
+import TeamMembersPage from './pages/teams/TeamMembersPage';
+import TeamPromptsPage from './pages/teams/TeamPromptsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminTeamsPage from './pages/admin/AdminTeamsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
@@ -72,6 +74,8 @@ function App() {
               <Route path="trending" element={<TrendingPage />} />
               <Route path="teams" element={<AllTeamsPage />} />
               <Route path="teams/:id" element={<TeamPage />} />
+              <Route path="teams/:id/members" element={<TeamMembersPage />} />
+              <Route path="teams/:id/prompts" element={<TeamPromptsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="users/:id" element={<ProfilePage />} />
               

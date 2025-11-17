@@ -4,7 +4,6 @@ import { PageContainer } from '../../components/layout/PageContainer';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { PromptCard } from '../../components/features/PromptCard';
 import { PromptDetailModal } from '../../components/features/PromptDetailModal';
-import { TeamMemberManagement } from '../../components/features/TeamMemberManagement';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { useTeam } from '../../hooks/useTeam';
@@ -19,7 +18,7 @@ import { useToast } from '../../hooks/use-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
 import { TeamMemberRole, type Prompt } from '@aizu/shared';
-import { ArrowLeft, Users, Pin, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Users, Pin, Eye, EyeOff, FileText } from 'lucide-react';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -186,7 +185,10 @@ export default function TeamPage() {
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="p-6">
+        <Card 
+          className="p-6 cursor-pointer hover:bg-accent transition-colors"
+          onClick={() => navigate(`/teams/${id}/members`)}
+        >
           <div className="flex items-center gap-3">
             <Users className="h-8 w-8 text-primary" />
             <div>
@@ -195,9 +197,12 @@ export default function TeamPage() {
             </div>
           </div>
         </Card>
-        <Card className="p-6">
+        <Card 
+          className="p-6 cursor-pointer hover:bg-accent transition-colors"
+          onClick={() => navigate(`/teams/${id}/prompts`)}
+        >
           <div className="flex items-center gap-3">
-            <Users className="h-8 w-8 text-primary" />
+            <FileText className="h-8 w-8 text-primary" />
             <div>
               <div className="text-2xl font-bold">{team._count?.prompts || 0}</div>
               <div className="text-sm text-muted-foreground">Prompts</div>
@@ -206,23 +211,13 @@ export default function TeamPage() {
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <Users className="h-8 w-8 text-primary" />
+            <Pin className="h-8 w-8 text-primary" />
             <div>
               <div className="text-2xl font-bold">{team.pinnedPrompts?.length || 0}</div>
               <div className="text-sm text-muted-foreground">Pinned Prompts</div>
             </div>
           </div>
         </Card>
-      </div>
-
-      {/* Team Members */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Team Members</h2>
-        <TeamMemberManagement
-          teamId={id!}
-          members={team.members || []}
-          isAdmin={isTeamAdmin}
-        />
       </div>
 
       {/* Pinned Prompts */}
