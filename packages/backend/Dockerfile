@@ -16,6 +16,9 @@ COPY packages/backend ./packages/backend
 # Install dependencies for the monorepo (backend relies on @aizu/shared)
 RUN pnpm install
 
+# Build the shared package
+RUN pnpm --filter @aizu/shared build
+
 WORKDIR /app/packages/backend
 
 EXPOSE 3001

@@ -15,6 +15,9 @@ COPY packages/frontend ./packages/frontend
 # Install dependencies for the monorepo (frontend relies on @aizu/shared)
 RUN pnpm install
 
+# Build the shared package
+RUN pnpm --filter @aizu/shared build
+
 WORKDIR /app/packages/frontend
 
 EXPOSE 5173
