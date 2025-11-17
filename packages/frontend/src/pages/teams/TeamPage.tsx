@@ -7,6 +7,8 @@ import { PromptDetailModal } from '../../components/features/PromptDetailModal';
 import { CollectionCard } from '../../components/features/CollectionCard';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { Switch } from '../../components/ui/switch';
+import { Label } from '../../components/ui/label';
 import { useTeam } from '../../hooks/useTeam';
 import { useTeams } from '../../hooks/useTeams';
 import { useTeamPrompts } from '../../hooks/useTeamPrompts';
@@ -18,7 +20,7 @@ import { useToast } from '../../hooks/use-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
 import { type Prompt, type TeamMemberRole } from '@aizu/shared';
-import { ArrowLeft, Users, Eye, EyeOff, FileText, Layers } from 'lucide-react';
+import { ArrowLeft, Users, Eye, FileText, Layers } from 'lucide-react';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -167,23 +169,16 @@ export default function TeamPage() {
         />
         
         {isTeamMember && (
-          <div className="flex items-center gap-2 mt-2">
-            <Button
-              variant={viewAsPublic ? "outline" : "default"}
-              size="sm"
-              onClick={() => setViewAsPublic(false)}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Member View
-            </Button>
-            <Button
-              variant={viewAsPublic ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewAsPublic(true)}
-            >
-              <EyeOff className="h-4 w-4 mr-2" />
-              Public View
-            </Button>
+          <div className="flex items-center gap-3 mt-2 bg-muted px-4 py-2 rounded-lg">
+            <Eye className="h-4 w-4 text-muted-foreground" />
+            <Label htmlFor="view-toggle" className="text-sm font-medium cursor-pointer">
+              {viewAsPublic ? "Public View" : "Member View"}
+            </Label>
+            <Switch
+              id="view-toggle"
+              checked={viewAsPublic}
+              onCheckedChange={setViewAsPublic}
+            />
           </div>
         )}
       </div>
@@ -271,11 +266,6 @@ export default function TeamPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">All Team Prompts</h2>
-          {isTeamMember && viewAsPublic && (
-            <span className="text-sm text-muted-foreground italic">
-              Viewing as public - only PUBLIC prompts visible
-            </span>
-          )}
         </div>
         {loadingPrompts ? (
           <div className="flex items-center justify-center h-32">
