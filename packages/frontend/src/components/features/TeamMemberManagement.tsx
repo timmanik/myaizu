@@ -221,7 +221,7 @@ export const TeamMemberManagement = ({
                     </Select>
                     <p className="text-xs text-muted-foreground">
                       {selectedRole === TeamMemberRole.ADMIN
-                        ? 'Admins can manage team members and pin prompts.'
+                        ? 'Admins can manage team members and settings.'
                         : 'Members can view and contribute to team prompts.'}
                     </p>
                   </div>

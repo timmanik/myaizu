@@ -13,9 +13,6 @@ const updateMemberRoleSchema = z.object({
   role: z.nativeEnum(TeamMemberRole),
 });
 
-const pinPromptSchema = z.object({
-  promptId: z.string(),
-});
 
 /**
  * GET /api/teams
@@ -103,37 +100,6 @@ export const getTeamPrompts = async (req: Request, res: Response) => {
       success: false,
       error: error.message || 'Failed to fetch team prompts',
     });
-  }
-};
-
-/**
- * GET /api/teams/:id/pinned
- * Get pinned prompts for a team
- */
-export const getPinnedPrompts = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user!.userId;
-    const { id } = req.params;
-    const viewAsPublic = req.query.viewAsPublic === 'true';
-
-    const prompts = await teamService.getPinnedPrompts(id, userId, viewAsPublic);
-
-    res.json({
-      success: true,
-      data: prompts,
-    });
-  } catch (error: any) {
-    if (error.message.includes('not found')) {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to fetch pinned prompts',
-      });
-    }
   }
 };
 
@@ -270,86 +236,3 @@ export const updateTeamMemberRole = async (req: Request, res: Response) => {
     }
   }
 };
-
-/**
- * POST /api/teams/:id/pin
- * Pin a prompt to a team (Team Admin only)
- */
-export const pinPrompt = async (req: Request, res: Response) => {
-  try {
-    const adminUserId = req.user!.userId;
-    const { id } = req.params;
-    const validatedData = pinPromptSchema.parse(req.body);
-
-    const team = await teamService.pinPrompt(id, adminUserId, validatedData.promptId);
-
-    res.json({
-      success: true,
-      data: team,
-    });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        details: error.errors,
-      });
-    } else if (error.message.includes('not found')) {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('already pinned')) {
-      res.status(409).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('admin') || error.message.includes('does not belong')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to pin prompt',
-      });
-    }
-  }
-};
-
-/**
- * DELETE /api/teams/:id/pin/:promptId
- * Unpin a prompt from a team (Team Admin only)
- */
-export const unpinPrompt = async (req: Request, res: Response) => {
-  try {
-    const adminUserId = req.user!.userId;
-    const { id, promptId } = req.params;
-
-    const team = await teamService.unpinPrompt(id, adminUserId, promptId);
-
-    res.json({
-      success: true,
-      data: team,
-    });
-  } catch (error: any) {
-    if (error.message.includes('not found') || error.message.includes('not pinned')) {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('admin')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to unpin prompt',
-      });
-    }
-  }
-};
-

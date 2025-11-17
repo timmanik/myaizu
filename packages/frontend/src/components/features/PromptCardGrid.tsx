@@ -17,11 +17,6 @@ interface PromptCardGridProps {
   isPinnedToHome?: (promptId: string) => boolean;
   onPinToHome?: (promptId: string) => void;
   onUnpinFromHome?: (promptId: string) => void;
-  // Team pinning
-  showPinAction?: boolean;
-  isPinned?: (promptId: string) => boolean;
-  onPin?: (promptId: string) => void;
-  onUnpin?: (promptId: string) => void;
 }
 
 export const PromptCardGrid = ({
@@ -39,10 +34,6 @@ export const PromptCardGrid = ({
   isPinnedToHome,
   onPinToHome,
   onUnpinFromHome,
-  showPinAction,
-  isPinned,
-  onPin,
-  onUnpin,
 }: PromptCardGridProps) => {
   if (prompts.length === 0) {
     return null;
@@ -67,10 +58,6 @@ export const PromptCardGrid = ({
           isPinnedToHome={isPinnedToHome ? isPinnedToHome(prompt.id) : false}
           onPinToHome={onPinToHome}
           onUnpinFromHome={onUnpinFromHome}
-          showPinAction={showPinAction}
-          isPinned={isPinned ? isPinned(prompt.id) : false}
-          onPin={onPin}
-          onUnpin={onUnpin}
         />
       ))}
     </div>

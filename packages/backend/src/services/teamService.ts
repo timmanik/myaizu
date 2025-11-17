@@ -275,13 +275,17 @@ export const getTeamPrompts = async (
           avatarUrl: true,
         },
       },
+      favorites: {
+        where: { userId },
+        select: { userId: true },
+      },
     },
     orderBy: {
       [sortField]: sortOrder,
     },
   });
 
-  return prompts;
+  return prompts.map(p => mapPromptToShared(p, userId));
 };
 
 /**
@@ -484,142 +488,31 @@ export const updateTeamMemberRole = async (
   return updated;
 };
 
-/**
- * Pin a prompt to a team (Team Admin only)
- */
-export const pinPrompt = async (teamId: string, adminUserId: string, promptId: string) => {
-  // Verify admin has permission
-  const adminRole = await getUserTeamRole(teamId, adminUserId);
-  if (adminRole !== PrismaTeamMemberRole.ADMIN) {
-    throw new Error('Only team admins can pin prompts');
-  }
-
-  // Verify prompt exists and belongs to team
-  const prompt = await prisma.prompt.findUnique({
-    where: { id: promptId },
-  });
-
-  if (!prompt) {
-    throw new Error('Prompt not found');
-  }
-
-  if (prompt.teamId !== teamId) {
-    throw new Error('Prompt does not belong to this team');
-  }
-
-  // Get team and update pinned prompts
-  const team = await prisma.team.findUnique({
-    where: { id: teamId },
-  });
-
-  if (!team) {
-    throw new Error('Team not found');
-  }
-
-  // Check if already pinned
-  if (team.pinnedPrompts.includes(promptId)) {
-    throw new Error('Prompt is already pinned');
-  }
-
-  const updated = await prisma.team.update({
-    where: { id: teamId },
-    data: {
-      pinnedPrompts: [...team.pinnedPrompts, promptId],
-    },
-  });
-
-  return updated;
-};
 
 /**
- * Unpin a prompt from a team (Team Admin only)
+ * Helper function to transform Prisma prompt to shared Prompt type
  */
-export const unpinPrompt = async (teamId: string, adminUserId: string, promptId: string) => {
-  // Verify admin has permission
-  const adminRole = await getUserTeamRole(teamId, adminUserId);
-  if (adminRole !== PrismaTeamMemberRole.ADMIN) {
-    throw new Error('Only team admins can unpin prompts');
-  }
-
-  // Get team
-  const team = await prisma.team.findUnique({
-    where: { id: teamId },
-  });
-
-  if (!team) {
-    throw new Error('Team not found');
-  }
-
-  // Check if pinned
-  if (!team.pinnedPrompts.includes(promptId)) {
-    throw new Error('Prompt is not pinned');
-  }
-
-  const updated = await prisma.team.update({
-    where: { id: teamId },
-    data: {
-      pinnedPrompts: team.pinnedPrompts.filter((id) => id !== promptId),
-    },
-  });
-
-  return updated;
-};
-
-/**
- * Get pinned prompts for a team
- * Filters based on user's membership and view mode
- */
-export const getPinnedPrompts = async (teamId: string, userId: string, viewAsPublic: boolean = false) => {
-  // Check if user is a member
-  const isMember = await isTeamMember(teamId, userId);
-  
-  // Determine view mode
-  const shouldViewAsPublic = viewAsPublic || !isMember;
-
-  const team = await prisma.team.findUnique({
-    where: { id: teamId },
-  });
-
-  if (!team) {
-    throw new Error('Team not found');
-  }
-
-  if (team.pinnedPrompts.length === 0) {
-    return [];
-  }
-
-  // Build where clause based on view mode
-  const where: any = {
-    id: { in: team.pinnedPrompts },
+const mapPromptToShared = (prompt: any, userId: string): any => {
+  return {
+    id: prompt.id,
+    title: prompt.title,
+    content: prompt.content,
+    description: prompt.description,
+    variables: prompt.variables,
+    platform: prompt.platform,
+    visibility: prompt.visibility,
+    tags: prompt.tags,
+    promptType: prompt.promptType,
+    additionalInstructions: prompt.additionalInstructions,
+    config: prompt.config,
+    authorId: prompt.authorId,
+    authorName: prompt.author?.name,
+    teamId: prompt.teamId,
+    copyCount: prompt.copyCount,
+    favoriteCount: prompt.favoriteCount,
+    isFavorited: prompt.favorites?.some((f: any) => f.userId === userId) || false,
+    createdAt: prompt.createdAt.toISOString(),
+    updatedAt: prompt.updatedAt.toISOString(),
   };
-
-  if (shouldViewAsPublic) {
-    // Public view: only show PUBLIC prompts
-    where.visibility = 'PUBLIC';
-  } else {
-    // Member view: show PUBLIC and TEAM prompts
-    where.visibility = { in: ['PUBLIC', 'TEAM'] };
-  }
-
-  const prompts = await prisma.prompt.findMany({
-    where,
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          avatarUrl: true,
-        },
-      },
-    },
-  });
-
-  // Maintain the order from pinnedPrompts array
-  const orderedPrompts = team.pinnedPrompts
-    .map((id) => prompts.find((p) => p.id === id))
-    .filter((p) => p !== undefined);
-
-  return orderedPrompts;
 };
 

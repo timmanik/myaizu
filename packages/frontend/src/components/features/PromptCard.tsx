@@ -11,7 +11,6 @@ import {
   Pencil,
   Trash2,
   Pin,
-  PinOff,
   GitBranch,
   Plus,
   ChevronRight,
@@ -26,12 +25,7 @@ interface PromptCardProps {
   onEdit?: (promptId: string) => void;
   onDelete?: (promptId: string) => void;
   onClick?: (promptId: string) => void;
-  // Team pinning (existing)
-  onPin?: (promptId: string) => void;
-  onUnpin?: (promptId: string) => void;
-  isPinned?: boolean;
-  showPinAction?: boolean;
-  // User/Home pinning (new)
+  // User/Home pinning
   onPinToHome?: (promptId: string) => void;
   onUnpinFromHome?: (promptId: string) => void;
   isPinnedToHome?: boolean;
@@ -52,8 +46,6 @@ export const PromptCard = ({
   onEdit,
   onDelete,
   onClick,
-  onPin,
-  onUnpin,
   onPinToHome,
   onUnpinFromHome,
   onFork,
@@ -61,8 +53,6 @@ export const PromptCard = ({
   onCreateCollection,
   showActions = true,
   isOwner = false,
-  isPinned = false,
-  showPinAction = false,
   isPinnedToHome = false,
   showUserPinAction = false,
   showForkAction = true,
@@ -131,20 +121,6 @@ export const PromptCard = ({
     }
   };
 
-  const handlePin = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onPin) {
-      onPin(prompt.id);
-    }
-  };
-
-  const handleUnpin = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onUnpin) {
-      onUnpin(prompt.id);
-    }
-  };
-
   const handleFork = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onFork) {
@@ -200,99 +176,101 @@ export const PromptCard = ({
 
   return (
     <Card
-      className={`p-4 hover:shadow-lg transition-shadow ${
+      className={`p-4 hover:shadow-lg transition-shadow flex flex-col h-full ${
         onClick ? 'cursor-pointer' : ''
       }`}
       onClick={handleCardClick}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold truncate mb-1">{prompt.title}</h3>
-          <p className="text-sm text-muted-foreground">
-            by {prompt.authorName || 'Unknown'}
-          </p>
-        </div>
-        {showActions && isOwner && (
-          <div className="relative" ref={menuRef}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMenu(!showMenu);
-              }}
-              className="h-8 w-8 p-0"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-            {showMenu && (
-              <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md shadow-lg z-10">
-                <div className="relative">
-                  <button
-                    onClick={handleAddToCollection}
-                    onMouseEnter={handleAddToCollection}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Plus className="h-3 w-3" />
-                      Add to collection
-                    </div>
-                    <ChevronRight className="h-3 w-3" />
-                  </button>
-                  {showCollectionPicker && (
-                    <CollectionPicker
-                      isOpen={showCollectionPicker}
-                      onClose={handleCloseCollectionPicker}
-                      onSelect={handleCollectionSelect}
-                      onCreateNew={onCreateCollection}
-                      position={pickerPosition}
-                    />
-                  )}
-                </div>
-                <button
-                  onClick={handleEdit}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
-                >
-                  <Pencil className="h-3 w-3" />
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
-                >
-                  <Trash2 className="h-3 w-3" />
-                  Delete
-                </button>
-              </div>
-            )}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold truncate mb-1">{prompt.title}</h3>
+            <p className="text-sm text-muted-foreground">
+              by {prompt.authorName || 'Unknown'}
+            </p>
           </div>
-        )}
-      </div>
+          {showActions && isOwner && (
+            <div className="relative" ref={menuRef}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className="h-8 w-8 p-0"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+              {showMenu && (
+                <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md shadow-lg z-10">
+                  <div className="relative">
+                    <button
+                      onClick={handleAddToCollection}
+                      onMouseEnter={handleAddToCollection}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Plus className="h-3 w-3" />
+                        Add to collection
+                      </div>
+                      <ChevronRight className="h-3 w-3" />
+                    </button>
+                    {showCollectionPicker && (
+                      <CollectionPicker
+                        isOpen={showCollectionPicker}
+                        onClose={handleCloseCollectionPicker}
+                        onSelect={handleCollectionSelect}
+                        onCreateNew={onCreateCollection}
+                        position={pickerPosition}
+                      />
+                    )}
+                  </div>
+                  <button
+                    onClick={handleEdit}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
-      {/* Description */}
-      {prompt.description && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-          {prompt.description}
-        </p>
-      )}
-
-      {/* Badges */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        <PlatformBadge platform={prompt.platform} />
-        <VisibilityBadge visibility={prompt.visibility} />
-        {prompt.tags.slice(0, 3).map((tag) => (
-          <TagBadge key={tag} tag={tag} />
-        ))}
-        {prompt.tags.length > 3 && (
-          <span className="text-xs text-muted-foreground self-center">
-            +{prompt.tags.length - 3} more
-          </span>
+        {/* Description */}
+        {prompt.description && (
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            {prompt.description}
+          </p>
         )}
+
+        {/* Badges */}
+        <div className="flex flex-wrap gap-2 mb-3 min-h-[28px]">
+          <PlatformBadge platform={prompt.platform} />
+          <VisibilityBadge visibility={prompt.visibility} />
+          {prompt.tags.slice(0, 3).map((tag) => (
+            <TagBadge key={tag} tag={tag} />
+          ))}
+          {prompt.tags.length > 3 && (
+            <span className="text-xs text-muted-foreground self-center">
+              +{prompt.tags.length - 3} more
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Stats and Actions */}
-      <div className="flex items-center justify-between pt-3 border-t">
+      <div className="flex items-center justify-between pt-3 border-t mt-auto">
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Heart className="h-4 w-4" />
@@ -319,22 +297,6 @@ export const PromptCard = ({
                   <Pin className="h-4 w-4 text-orange-500 fill-orange-500" />
                 ) : (
                   <Pin className="h-4 w-4 text-orange-500" />
-                )}
-              </Button>
-            )}
-            {/* Team Pin Action (blue) */}
-            {showPinAction && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={isPinned ? handleUnpin : handlePin}
-                className="h-8 px-2"
-                title={isPinned ? 'Unpin from Team' : 'Pin to Team'}
-              >
-                {isPinned ? (
-                  <PinOff className="h-4 w-4 text-blue-500" />
-                ) : (
-                  <Pin className="h-4 w-4 text-blue-500" />
                 )}
               </Button>
             )}

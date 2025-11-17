@@ -9,7 +9,6 @@ export interface Team {
   id: string;
   name: string;
   description: string | null;
-  pinnedPrompts: string[];
   createdAt: Date;
   updatedAt: Date;
   
@@ -60,10 +59,6 @@ export interface AddTeamMemberDto {
 
 export interface UpdateTeamMemberRoleDto {
   role: TeamMemberRole;
-}
-
-export interface PinPromptDto {
-  promptId: string;
 }
 
 // Filter and query types

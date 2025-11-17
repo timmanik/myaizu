@@ -53,17 +53,6 @@ export const teamsApi = {
   },
 
   /**
-   * Get pinned prompts for a team
-   */
-  getPinnedPrompts: async (id: string, viewAsPublic?: boolean): Promise<Prompt[]> => {
-    const params = new URLSearchParams();
-    if (viewAsPublic) params.append('viewAsPublic', 'true');
-
-    const response = await apiClient.get(`/teams/${id}/pinned?${params.toString()}`);
-    return response.data;
-  },
-
-  /**
    * Add a member to a team
    */
   addTeamMember: async (teamId: string, data: AddTeamMemberDto): Promise<void> => {
@@ -86,20 +75,6 @@ export const teamsApi = {
     data: UpdateTeamMemberRoleDto
   ): Promise<void> => {
     await apiClient.put(`/teams/${teamId}/members/${userId}/role`, data);
-  },
-
-  /**
-   * Pin a prompt to a team
-   */
-  pinPrompt: async (teamId: string, promptId: string): Promise<void> => {
-    await apiClient.post(`/teams/${teamId}/pin`, { promptId });
-  },
-
-  /**
-   * Unpin a prompt from a team
-   */
-  unpinPrompt: async (teamId: string, promptId: string): Promise<void> => {
-    await apiClient.delete(`/teams/${teamId}/pin/${promptId}`);
   },
 };
 

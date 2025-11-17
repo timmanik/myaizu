@@ -8,17 +8,14 @@ import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { useTeam } from '../../hooks/useTeam';
 import { useTeamPrompts } from '../../hooks/useTeamPrompts';
-import { usePinnedPrompts } from '../../hooks/usePinnedPrompts';
-import { usePinPrompt } from '../../hooks/usePinPrompt';
-import { useUnpinPrompt } from '../../hooks/useUnpinPrompt';
 import { useFavoritePrompt } from '../../hooks/useFavoritePrompt';
 import { useForkPrompt } from '../../hooks/useForkPrompt';
 import { useAddToCollection } from '../../hooks/useAddToCollection';
 import { useToast } from '../../hooks/use-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
-import { TeamMemberRole, type Prompt } from '@aizu/shared';
-import { ArrowLeft, Users, Pin, Eye, EyeOff, FileText } from 'lucide-react';
+import { type Prompt } from '@aizu/shared';
+import { ArrowLeft, Users, Eye, EyeOff, FileText } from 'lucide-react';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,32 +31,13 @@ export default function TeamPage() {
   // Check if current user is a team member
   const currentUserMembership = team?.members?.find((m) => m.userId === user?.id);
   const isTeamMember = !!currentUserMembership;
-  const isTeamAdmin = currentUserMembership?.role === TeamMemberRole.ADMIN;
   
-  // Fetch prompts and pinned prompts with view mode
+  // Fetch prompts with view mode
   const { data: prompts, isLoading: loadingPrompts } = useTeamPrompts(id!, { viewAsPublic });
-  const { data: pinnedPrompts, isLoading: loadingPinnedPrompts } = usePinnedPrompts(id!, viewAsPublic);
   
-  const { mutate: pinPrompt } = usePinPrompt();
-  const { mutate: unpinPrompt } = useUnpinPrompt();
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const addToCollectionMutation = useAddToCollection();
-  
-  // Get list of pinned prompt IDs for easy checking
-  const pinnedPromptIds = team?.pinnedPrompts || [];
-
-  const handlePin = (promptId: string) => {
-    if (id) {
-      pinPrompt({ teamId: id, promptId });
-    }
-  };
-
-  const handleUnpin = (promptId: string) => {
-    if (id) {
-      unpinPrompt({ teamId: id, promptId });
-    }
-  };
 
   const handleFavoritePrompt = async (promptId: string) => {
     try {
@@ -70,8 +48,7 @@ export default function TeamPage() {
   };
 
   const handleCopyPrompt = async (promptId: string) => {
-    const allPrompts = [...(pinnedPrompts || []), ...(prompts || [])];
-    const prompt = allPrompts.find((p: any) => p.id === promptId);
+    const prompt = prompts?.find((p: any) => p.id === promptId);
     if (prompt) {
       try {
         await navigator.clipboard.writeText(prompt.content);
@@ -108,8 +85,7 @@ export default function TeamPage() {
   };
 
   const handlePromptClick = (promptId: string) => {
-    const allPrompts = [...(pinnedPrompts || []), ...(prompts || [])];
-    const prompt = allPrompts.find((p: any) => p.id === promptId);
+    const prompt = prompts?.find((p: any) => p.id === promptId);
     if (prompt) {
       setSelectedPrompt(prompt);
       setIsModalOpen(true);
@@ -184,7 +160,7 @@ export default function TeamPage() {
       </div>
 
       {/* Team Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card 
           className="p-6 cursor-pointer hover:bg-accent transition-colors"
           onClick={() => navigate(`/teams/${id}/members`)}
@@ -209,54 +185,7 @@ export default function TeamPage() {
             </div>
           </div>
         </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <Pin className="h-8 w-8 text-primary" />
-            <div>
-              <div className="text-2xl font-bold">{team.pinnedPrompts?.length || 0}</div>
-              <div className="text-sm text-muted-foreground">Pinned Prompts</div>
-            </div>
-          </div>
-        </Card>
       </div>
-
-      {/* Pinned Prompts */}
-      {pinnedPrompts && pinnedPrompts.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Pin className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-semibold">Pinned Prompts</h2>
-          </div>
-          {loadingPinnedPrompts ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="text-muted-foreground">Loading pinned prompts...</div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pinnedPrompts.map((prompt: any) => (
-                <div key={prompt.id} className="relative">
-                  <div className="absolute -top-2 -right-2 z-10 bg-primary text-primary-foreground rounded-full p-2 shadow-lg">
-                    <Pin className="h-3 w-3" />
-                  </div>
-                  <PromptCard 
-                    prompt={prompt}
-                    showPinAction={isTeamAdmin}
-                    isPinned={true}
-                    onPin={handlePin}
-                    onUnpin={handleUnpin}
-                    onFavorite={handleFavoritePrompt}
-                    onCopy={handleCopyPrompt}
-                    onFork={handleForkPrompt}
-                    onClick={handlePromptClick}
-                    onAddToCollection={handleAddToCollection}
-                    isOwner={user?.id === prompt.authorId}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Team Prompts */}
       <div>
@@ -286,10 +215,6 @@ export default function TeamPage() {
               <PromptCard 
                 key={prompt.id} 
                 prompt={prompt}
-                showPinAction={isTeamAdmin}
-                isPinned={pinnedPromptIds.includes(prompt.id)}
-                onPin={handlePin}
-                onUnpin={handleUnpin}
                 onFavorite={handleFavoritePrompt}
                 onCopy={handleCopyPrompt}
                 onFork={handleForkPrompt}

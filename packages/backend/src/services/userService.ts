@@ -317,15 +317,47 @@ export async function getUserPinnedPrompts(userId: string) {
           name: true,
         },
       },
+      favorites: {
+        where: { userId },
+        select: { userId: true },
+      },
     },
   });
 
   // Return prompts in the order they were pinned
   const orderedPrompts = user.pinnedPrompts
     .map((pinnedId) => prompts.find((p) => p.id === pinnedId))
-    .filter((p) => p !== undefined);
+    .filter((p) => p !== undefined)
+    .map((prompt) => mapPromptToShared(prompt, userId));
 
   return orderedPrompts;
+}
+
+/**
+ * Helper function to map Prisma prompt to shared Prompt type
+ */
+function mapPromptToShared(prompt: any, userId: string): any {
+  return {
+    id: prompt.id,
+    title: prompt.title,
+    content: prompt.content,
+    description: prompt.description,
+    variables: prompt.variables,
+    platform: prompt.platform,
+    visibility: prompt.visibility,
+    tags: prompt.tags,
+    promptType: prompt.promptType,
+    additionalInstructions: prompt.additionalInstructions,
+    config: prompt.config,
+    authorId: prompt.authorId,
+    authorName: prompt.author?.name,
+    teamId: prompt.teamId,
+    copyCount: prompt.copyCount,
+    favoriteCount: prompt.favoriteCount,
+    isFavorited: prompt.favorites?.some((f: any) => f.userId === userId) || false,
+    createdAt: prompt.createdAt.toISOString(),
+    updatedAt: prompt.updatedAt.toISOString(),
+  };
 }
 
 /**

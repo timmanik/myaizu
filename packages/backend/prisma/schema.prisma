@@ -176,7 +176,6 @@ model Team {
   members     TeamMember[]
   prompts     Prompt[]      @relation("TeamPrompts")
   collections Collection[]  @relation("TeamCollections")
-  pinnedPrompts String[]    @map("pinned_prompts") // Array of prompt IDs
 
   @@map("teams")
 }
