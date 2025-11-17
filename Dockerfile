@@ -22,27 +22,33 @@ FROM node:20-alpine AS backend
 RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm@8.15.0
 WORKDIR /app
 
-# Copy only package files for production dependency installation
-COPY --from=base /app/packages/backend/package.json ./package.json
-COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
+# Copy workspace configuration files
+COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
+
+# Copy package.json files maintaining workspace structure
+COPY --from=base /app/packages/backend/package.json ./packages/backend/package.json
+COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
 
 # Install only production dependencies (external packages needed by bundle)
 RUN pnpm install --prod --frozen-lockfile
 
 # Copy the bundled application
-COPY --from=backend-build /app/packages/backend/dist ./dist
+COPY --from=backend-build /app/packages/backend/dist/index.js ./dist/index.js
 
 # Copy shared package build output (referenced by bundle)
 COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
 
 # Copy Prisma schema and migrations (needed at runtime)
-COPY --from=base /app/packages/backend/prisma ./prisma
+COPY --from=base /app/packages/backend/prisma ./packages/backend/prisma
 
-# Generate Prisma client for production
+# Generate Prisma client for production (run from backend directory)
+WORKDIR /app/packages/backend
 RUN pnpm prisma generate
 
+# Return to app root for execution
+WORKDIR /app
 ENV NODE_ENV=production
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
