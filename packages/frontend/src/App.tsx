@@ -14,6 +14,7 @@ import { HomePage } from './pages/HomePage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { MyPromptsPage } from './pages/prompts/MyPromptsPage';
 import { PromptBuilderPage } from './pages/prompts/PromptBuilderPage';
+import { PromptDetailPage } from './pages/prompts/PromptDetailPage';
 import FavoritesPage from './pages/prompts/FavoritesPage';
 import CollectionsPage from './pages/collections/CollectionsPage';
 import CollectionDetailPage from './pages/collections/CollectionDetailPage';
@@ -67,6 +68,7 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="prompts" element={<MyPromptsPage />} />
               <Route path="prompts/new" element={<PromptBuilderPage />} />
+              <Route path="prompts/:id" element={<PromptDetailPage />} />
               <Route path="prompts/:id/edit" element={<PromptBuilderPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="collections" element={<CollectionsPage />} />

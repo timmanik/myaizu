@@ -1,49 +1,32 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import type { Prompt } from '@aizu/shared';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from '@/components/ui/dialog';
+import { useParams, useNavigate } from 'react-router-dom';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { usePrompt } from '@/hooks/usePrompt';
+import { useFavoritePrompt } from '@/hooks/useFavoritePrompt';
+import { useForkPrompt } from '@/hooks/useForkPrompt';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { promptsApi } from '@/services/api/prompts';
-import { PromptDetailHeader } from './PromptDetailHeader';
-import { PromptDetailActions } from './PromptDetailActions';
-import { PromptDetailContent } from './PromptDetailContent';
+import { PromptDetailHeader } from '@/components/features/PromptDetailHeader';
+import { PromptDetailActions } from '@/components/features/PromptDetailActions';
+import { PromptDetailContent } from '@/components/features/PromptDetailContent';
 
-interface PromptDetailModalProps {
-  prompt: Prompt | null;
-  open: boolean;
-  onClose: () => void;
-  onFavorite?: (promptId: string) => void;
-  onCopy?: (promptId: string) => void;
-  onFork?: (promptId: string) => void;
-  isOwner?: boolean;
-}
-
-export const PromptDetailModal = ({
-  prompt,
-  open,
-  onClose,
-  onFavorite,
-  onCopy,
-  onFork,
-  isOwner,
-}: PromptDetailModalProps) => {
+export const PromptDetailPage = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [variableValues, setVariableValues] = useState<Record<string, string>>(
     {}
   );
-  const { toast } = useToast();
 
-  if (!prompt) return null;
+  const { data: response, isLoading, error } = usePrompt(id);
+  const favoriteMutation = useFavoritePrompt();
+  const forkMutation = useForkPrompt();
 
-  // Handle navigation to detail page
-  const handleTitleClick = () => {
-    navigate(`/prompts/${prompt.id}`);
-    onClose();
-  };
+  const prompt = response?.data;
 
   const handleVariableChange = (name: string, value: string) => {
     setVariableValues((prev) => ({
@@ -52,13 +35,17 @@ export const PromptDetailModal = ({
     }));
   };
 
-  const handleFavorite = () => {
-    if (onFavorite) {
-      onFavorite(prompt.id);
+  const handleFavorite = async () => {
+    if (!prompt) return;
+    try {
+      await favoriteMutation.mutateAsync(prompt.id);
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
     }
   };
 
   const handleCopy = async () => {
+    if (!prompt) return;
     try {
       // Replace variables in content with their values
       let contentToCopy = prompt.content;
@@ -84,7 +71,7 @@ export const PromptDetailModal = ({
       };
 
       const values = getVariableValues();
-      
+
       // Replace all {{variable}} with their values
       Object.keys(values).forEach((varName) => {
         const value = values[varName];
@@ -94,13 +81,13 @@ export const PromptDetailModal = ({
           contentToCopy = contentToCopy.replace(regex, value);
         }
       });
-      
+
       // Copy to clipboard
       await navigator.clipboard.writeText(contentToCopy);
-      
+
       // Increment the copy count on the backend
       await promptsApi.incrementCopy(prompt.id);
-      
+
       toast({
         title: 'Success',
         description: 'Prompt copied to clipboard with your variable values!',
@@ -115,22 +102,55 @@ export const PromptDetailModal = ({
     }
   };
 
-  const handleFork = () => {
-    if (onFork) {
-      onFork(prompt.id);
+  const handleFork = async () => {
+    if (!prompt) return;
+    try {
+      await forkMutation.mutateAsync(prompt.id);
+    } catch (error) {
+      console.error('Failed to fork prompt:', error);
     }
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Loading prompt...</p>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (error || !prompt) {
+    return (
+      <PageContainer>
+        <div className="text-center py-12">
+          <p className="text-red-600">Failed to load prompt</p>
+          <Button onClick={handleBack} className="mt-4">
+            Go Back
+          </Button>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  const isOwner = prompt.authorId === user?.id;
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <PromptDetailHeader
-            prompt={prompt}
-            onTitleClick={handleTitleClick}
-            showClickableTitle={true}
-          />
-        </DialogHeader>
+    <PageContainer>
+      <div className="mb-6">
+        <Button variant="ghost" size="sm" onClick={handleBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+      </div>
+
+      <div className="space-y-6">
+        <PromptDetailHeader prompt={prompt} />
 
         <PromptDetailActions
           prompt={prompt}
@@ -145,8 +165,10 @@ export const PromptDetailModal = ({
           variableValues={variableValues}
           onVariableChange={handleVariableChange}
         />
-      </DialogContent>
-    </Dialog>
+      </div>
+    </PageContainer>
   );
 };
+
+export default PromptDetailPage;
 

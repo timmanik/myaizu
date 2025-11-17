@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { PageContainer } from '../components/layout/PageContainer';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card } from '../components/ui/card';
@@ -133,10 +133,15 @@ export function ProfilePage() {
     <PageContainer>
       {/* Back Button */}
       <div className="mb-4">
-        <Link to="/teams" className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(-1)}
+          className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 p-0"
+        >
           <ArrowLeft className="w-4 h-4" />
           Back
-        </Link>
+        </Button>
       </div>
 
       {/* Profile Header */}

@@ -48,6 +48,7 @@ export default function CollectionDetailPage() {
       if (!p) return null;
       return {
         ...p,
+        authorName: (p as any).author?.name || p.authorName,
         createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
         updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
         promptType: 'STANDARD_PROMPT' as const,
@@ -237,7 +238,17 @@ export default function CollectionDetailPage() {
       <div className="mb-6 flex items-center gap-4 text-sm text-muted-foreground">
         <span>{allPrompts.length} prompts</span>
         <span className="capitalize">{collection.visibility.toLowerCase()}</span>
-        {collection.owner && <span>by {collection.owner.name}</span>}
+        {collection.owner && (
+          <span>
+            by{' '}
+            <button
+              onClick={() => navigate(`/users/${collection.ownerId}`)}
+              className="cursor-pointer hover:underline inline text-left p-0 border-0 bg-transparent text-sm text-muted-foreground"
+            >
+              {collection.owner.name}
+            </button>
+          </span>
+        )}
       </div>
 
       <div className="space-y-6">

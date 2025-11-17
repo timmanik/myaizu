@@ -46,6 +46,34 @@ export const PromptBuilderPage = () => {
     useDeepResearch: false,
   });
 
+  // Render content with highlighted variables for overlay
+  const renderContentWithHighlightedVariables = () => {
+    if (!content) return '';
+    
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    const variableRegex = /\{\{[^}]+\}\}/g;
+    let match;
+    
+    while ((match = variableRegex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(content.substring(lastIndex, match.index));
+      }
+      parts.push(
+        <span key={match.index} className="bg-purple-200 text-purple-800 rounded">
+          {match[0]}
+        </span>
+      );
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < content.length) {
+      parts.push(content.substring(lastIndex));
+    }
+    
+    return parts;
+  };
+
   // Load prompt data when editing
   useEffect(() => {
     if (promptData?.data) {
@@ -119,7 +147,7 @@ export const PromptBuilderPage = () => {
       } else {
         await createMutation.mutateAsync(promptData);
       }
-      navigate('/prompts');
+      navigate(-1);
     } catch (error) {
       console.error('Failed to save prompt:', error);
       toast({
@@ -139,7 +167,7 @@ export const PromptBuilderPage = () => {
     });
 
     if (confirmed) {
-      navigate('/prompts');
+      navigate(-1);
     }
   };
 
@@ -205,6 +233,19 @@ export const PromptBuilderPage = () => {
               <Label htmlFor="content">
                 Prompt Content <span className="text-red-500">*</span>
               </Label>
+              <div className="relative mt-2">
+                {/* Formatted text overlay - shows the highlighted variables */}
+                <div
+                  className="absolute inset-0 pointer-events-none px-3 py-2 whitespace-pre-wrap break-words font-mono text-sm overflow-hidden rounded-md"
+                  aria-hidden="true"
+                  style={{
+                    lineHeight: '1.5',
+                    color: 'black',
+                  }}
+                >
+                  {renderContentWithHighlightedVariables()}
+                </div>
+                {/* Actual textarea - invisible but captures input */}
               <Textarea
                 id="content"
                 value={content}
@@ -212,10 +253,17 @@ export const PromptBuilderPage = () => {
                 placeholder="Enter your prompt content here..."
                 required
                 rows={10}
-                className="mt-2 font-mono"
-              />
+                  className="font-mono relative bg-transparent"
+                  style={{
+                    color: 'transparent',
+                    caretColor: 'black',
+                    resize: 'vertical',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                />
+              </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Tip: Use variables like {'{variable_name}'} in your prompt
+                Tip: Use variables like {'{{variable name}}'} in your prompt
               </p>
             </div>
 

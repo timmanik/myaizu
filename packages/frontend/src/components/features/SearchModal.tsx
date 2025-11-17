@@ -188,7 +188,16 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                                   <PlatformBadge platform={prompt.platform} />
                                   <VisibilityBadge visibility={prompt.visibility} />
                                   <span className="text-xs text-muted-foreground">
-                                    by {prompt.authorName}
+                                    by{' '}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleNavigate(`/users/${prompt.authorId}`);
+                                      }}
+                                      className="cursor-pointer hover:underline inline text-left p-0 border-0 bg-transparent text-xs text-muted-foreground"
+                                    >
+                                      {prompt.authorName}
+                                    </button>
                                   </span>
                                 </div>
                               </div>
@@ -229,7 +238,16 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                               </span>
                               <span className="text-xs text-muted-foreground">•</span>
                               <span className="text-xs text-muted-foreground">
-                                by {collection.ownerName}
+                                by{' '}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleNavigate(`/users/${collection.ownerId}`);
+                                  }}
+                                  className="cursor-pointer hover:underline inline text-left p-0 border-0 bg-transparent text-xs text-muted-foreground"
+                                >
+                                  {collection.ownerName}
+                                </button>
                               </span>
                             </div>
                           </button>
@@ -288,7 +306,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                         {results.users.map((user) => (
                           <button
                             key={user.id}
-                            onClick={() => handleNavigate(`/profile/${user.id}`)}
+                            onClick={() => handleNavigate(`/users/${user.id}`)}
                             className="w-full text-left p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                           >
                             <div className="flex items-center gap-3">

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -57,6 +58,7 @@ export const PromptCard = ({
   showUserPinAction = false,
   showForkAction = true,
 }: PromptCardProps) => {
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [showCollectionPicker, setShowCollectionPicker] = useState(false);
   const [pickerPosition, setPickerPosition] = useState<'left' | 'right'>('right');
@@ -174,6 +176,13 @@ export const PromptCard = ({
     setShowCollectionPicker(false);
   };
 
+  const handleAuthorClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (prompt.authorId) {
+      navigate(`/users/${prompt.authorId}`);
+    }
+  };
+
   return (
     <Card
       className={`p-4 hover:shadow-lg transition-shadow flex flex-col h-full ${
@@ -187,7 +196,13 @@ export const PromptCard = ({
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold truncate mb-1">{prompt.title}</h3>
             <p className="text-sm text-muted-foreground">
-              by {prompt.authorName || 'Unknown'}
+              by{' '}
+              <button
+                onClick={handleAuthorClick}
+                className="cursor-pointer hover:underline inline text-left p-0 border-0 bg-transparent text-sm text-muted-foreground"
+              >
+                {prompt.authorName || 'Unknown'}
+              </button>
             </p>
           </div>
           {showActions && isOwner && (
