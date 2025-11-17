@@ -25,6 +25,7 @@ ENV NODE_ENV=production
 COPY --from=base /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/packages/backend/package.json ./packages/backend/package.json
+COPY --from=base /app/packages/backend/node_modules ./packages/backend/node_modules
 COPY --from=backend-build /app/packages/backend/dist ./packages/backend/dist
 COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
 COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
