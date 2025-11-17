@@ -111,6 +111,11 @@ export const createCollection = async (req: Request, res: Response) => {
         error: 'Validation error',
         details: error.errors,
       });
+    } else if (error.message.includes('team admin') || error.message.includes('private')) {
+      res.status(403).json({
+        success: false,
+        error: error.message,
+      });
     } else {
       res.status(500).json({
         success: false,
@@ -148,7 +153,7 @@ export const updateCollection = async (req: Request, res: Response) => {
         success: false,
         error: error.message,
       });
-    } else if (error.message.includes('owner')) {
+    } else if (error.message.includes('permission') || error.message.includes('admin') || error.message.includes('private')) {
       res.status(403).json({
         success: false,
         error: error.message,
@@ -183,7 +188,7 @@ export const deleteCollection = async (req: Request, res: Response) => {
         success: false,
         error: error.message,
       });
-    } else if (error.message.includes('owner')) {
+    } else if (error.message.includes('permission')) {
       res.status(403).json({
         success: false,
         error: error.message,
@@ -235,7 +240,7 @@ export const addPromptToCollection = async (req: Request, res: Response) => {
         success: false,
         error: error.message,
       });
-    } else if (error.message.includes('owner')) {
+    } else if (error.message.includes('permission')) {
       res.status(403).json({
         success: false,
         error: error.message,
@@ -270,7 +275,7 @@ export const removePromptFromCollection = async (req: Request, res: Response) =>
         success: false,
         error: error.message,
       });
-    } else if (error.message.includes('owner')) {
+    } else if (error.message.includes('permission')) {
       res.status(403).json({
         success: false,
         error: error.message,

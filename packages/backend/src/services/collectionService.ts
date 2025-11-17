@@ -1,10 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TeamMemberRole } from '@prisma/client';
 import {
   CreateCollectionDto,
   UpdateCollectionDto,
   CollectionFilters,
   CollectionVisibility,
 } from '@aizu/shared';
+import { getUserTeamRole } from './teamService';
 
 const prisma = new PrismaClient();
 
@@ -166,11 +167,17 @@ export const getCollectionById = async (collectionId: string, userId: string) =>
 export const createCollection = async (userId: string, data: CreateCollectionDto) => {
   const { name, description, visibility = CollectionVisibility.PRIVATE, teamId } = data;
 
-  // If teamId is provided and visibility is TEAM, verify user is in the team
-  if (teamId && visibility === CollectionVisibility.TEAM) {
-    const isMember = await isUserInTeam(userId, teamId);
-    if (!isMember) {
-      throw new Error('You must be a member of the team to create a team collection');
+  // If teamId is provided, validate team admin permission and visibility
+  if (teamId) {
+    // Check if user is a team admin
+    const userRole = await getUserTeamRole(teamId, userId);
+    if (userRole !== TeamMemberRole.ADMIN) {
+      throw new Error('Only team admins can create team collections');
+    }
+
+    // Ensure team collections cannot be PRIVATE
+    if (visibility === CollectionVisibility.PRIVATE) {
+      throw new Error('Team collections cannot be private. Choose TEAM or PUBLIC visibility.');
     }
   }
 
@@ -225,16 +232,22 @@ export const updateCollection = async (
     throw new Error('Collection not found');
   }
 
-  // Check ownership
-  if (collection.ownerId !== userId) {
-    throw new Error('Only the collection owner can update it');
+  // Check if user can modify this collection
+  const canModify = await canUserModifyCollection(collection, userId);
+  if (!canModify) {
+    throw new Error('You do not have permission to update this collection');
   }
 
-  // If changing to team visibility, verify user is in the team
-  if (data.teamId && data.visibility === CollectionVisibility.TEAM) {
-    const isMember = await isUserInTeam(userId, data.teamId);
-    if (!isMember) {
-      throw new Error('You must be a member of the team to create a team collection');
+  // If setting teamId, validate team admin permission and visibility
+  if (data.teamId) {
+    const userRole = await getUserTeamRole(data.teamId, userId);
+    if (userRole !== TeamMemberRole.ADMIN) {
+      throw new Error('Only team admins can create team collections');
+    }
+
+    // Ensure team collections cannot be PRIVATE
+    if (data.visibility === CollectionVisibility.PRIVATE) {
+      throw new Error('Team collections cannot be private. Choose TEAM or PUBLIC visibility.');
     }
   }
 
@@ -280,9 +293,10 @@ export const deleteCollection = async (collectionId: string, userId: string) => 
     throw new Error('Collection not found');
   }
 
-  // Check ownership
-  if (collection.ownerId !== userId) {
-    throw new Error('Only the collection owner can delete it');
+  // Check if user can modify this collection (owner or team admin)
+  const canModify = await canUserModifyCollection(collection, userId);
+  if (!canModify) {
+    throw new Error('You do not have permission to delete this collection');
   }
 
   await prisma.collection.delete({
@@ -301,7 +315,7 @@ export const addPromptToCollection = async (
   userId: string,
   order?: number
 ) => {
-  // Get collection and verify ownership
+  // Get collection
   const collection = await prisma.collection.findUnique({
     where: { id: collectionId },
   });
@@ -310,8 +324,18 @@ export const addPromptToCollection = async (
     throw new Error('Collection not found');
   }
 
-  if (collection.ownerId !== userId) {
-    throw new Error('Only the collection owner can add prompts');
+  // Check permissions: owner can add to any collection, team members can add to team collections
+  let canAdd = false;
+  if (collection.ownerId === userId) {
+    canAdd = true;
+  } else if (collection.teamId) {
+    // For team collections, any team member can add prompts
+    const isMember = await isUserInTeam(userId, collection.teamId);
+    canAdd = isMember;
+  }
+
+  if (!canAdd) {
+    throw new Error('You do not have permission to add prompts to this collection');
   }
 
   // Verify prompt exists
@@ -373,7 +397,7 @@ export const removePromptFromCollection = async (
   promptId: string,
   userId: string
 ) => {
-  // Get collection and verify ownership
+  // Get collection
   const collection = await prisma.collection.findUnique({
     where: { id: collectionId },
   });
@@ -382,8 +406,18 @@ export const removePromptFromCollection = async (
     throw new Error('Collection not found');
   }
 
-  if (collection.ownerId !== userId) {
-    throw new Error('Only the collection owner can remove prompts');
+  // Check permissions: owner can remove from any collection, team members can remove from team collections
+  let canRemove = false;
+  if (collection.ownerId === userId) {
+    canRemove = true;
+  } else if (collection.teamId) {
+    // For team collections, any team member can remove prompts
+    const isMember = await isUserInTeam(userId, collection.teamId);
+    canRemove = isMember;
+  }
+
+  if (!canRemove) {
+    throw new Error('You do not have permission to remove prompts from this collection');
   }
 
   // Check if in collection
@@ -410,6 +444,28 @@ export const removePromptFromCollection = async (
   });
 
   return { success: true };
+};
+
+/**
+ * Helper: Check if user can modify a collection (rename/delete)
+ * Returns true if user is the owner OR if it's a team collection and user is a team admin
+ */
+const canUserModifyCollection = async (
+  collection: { ownerId: string; teamId: string | null },
+  userId: string
+): Promise<boolean> => {
+  // Owner can always modify
+  if (collection.ownerId === userId) {
+    return true;
+  }
+
+  // If it's a team collection, check if user is a team admin
+  if (collection.teamId) {
+    const userRole = await getUserTeamRole(collection.teamId, userId);
+    return userRole === TeamMemberRole.ADMIN;
+  }
+
+  return false;
 };
 
 /**

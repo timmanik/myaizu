@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -19,25 +19,65 @@ import {
   SelectValue,
 } from '../ui/select';
 import { useCreateCollection } from '../../hooks/useCreateCollection';
-import { CollectionVisibility } from '@aizu/shared';
+import { CollectionVisibility, TeamMemberRole } from '@aizu/shared';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useTeams } from '../../hooks/useTeams';
 
 interface CreateCollectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultTeamId?: string;
 }
 
 export function CreateCollectionModal({
   open,
   onOpenChange,
+  defaultTeamId,
 }: CreateCollectionModalProps) {
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedAuthor, setSelectedAuthor] = useState<string>(defaultTeamId || 'personal');
   const [visibility, setVisibility] = useState<CollectionVisibility>(
-    CollectionVisibility.PRIVATE
+    defaultTeamId ? CollectionVisibility.TEAM : CollectionVisibility.PRIVATE
   );
 
   const createCollection = useCreateCollection();
+  
+  // Fetch user's teams
+  const { data: allTeams = [], isLoading: teamsLoading } = useTeams(
+    user ? { memberUserId: user.id } : undefined
+  );
+  
+  // Update selected author and visibility when defaultTeamId changes
+  useEffect(() => {
+    if (open) {
+      setSelectedAuthor(defaultTeamId || 'personal');
+      setVisibility(defaultTeamId ? CollectionVisibility.TEAM : CollectionVisibility.PRIVATE);
+    }
+  }, [open, defaultTeamId]);
+
+  // Filter to only teams where user is an ADMIN
+  const adminTeams = useMemo(() => {
+    if (!user || !allTeams) return [];
+    
+    return allTeams.filter((team) => {
+      const membership = team.members?.find((m) => m.userId === user.id);
+      return membership?.role === TeamMemberRole.ADMIN;
+    });
+  }, [allTeams, user]);
+
+  // Update visibility when author changes
+  useEffect(() => {
+    if (selectedAuthor === 'personal') {
+      // Personal collections default to PRIVATE
+      setVisibility(CollectionVisibility.PRIVATE);
+    } else {
+      // Team collections default to TEAM (cannot be PRIVATE)
+      setVisibility(CollectionVisibility.TEAM);
+    }
+  }, [selectedAuthor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,16 +87,20 @@ export function CreateCollectionModal({
     }
 
     try {
+      const teamId = selectedAuthor !== 'personal' ? selectedAuthor : undefined;
+      
       await createCollection.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
         visibility,
+        teamId,
       });
 
       // Reset form and close modal
       setName('');
       setDescription('');
-      setVisibility(CollectionVisibility.PRIVATE);
+      setSelectedAuthor(defaultTeamId || 'personal');
+      setVisibility(defaultTeamId ? CollectionVisibility.TEAM : CollectionVisibility.PRIVATE);
       onOpenChange(false);
     } catch (error) {
       console.error('Failed to create collection:', error);
@@ -66,7 +110,8 @@ export function CreateCollectionModal({
   const handleCancel = () => {
     setName('');
     setDescription('');
-    setVisibility(CollectionVisibility.PRIVATE);
+    setSelectedAuthor(defaultTeamId || 'personal');
+    setVisibility(defaultTeamId ? CollectionVisibility.TEAM : CollectionVisibility.PRIVATE);
     onOpenChange(false);
   };
 
@@ -111,6 +156,27 @@ export function CreateCollectionModal({
             </div>
 
             <div className="grid gap-2">
+              <Label htmlFor="author">Author</Label>
+              <Select
+                value={selectedAuthor}
+                onValueChange={setSelectedAuthor}
+                disabled={createCollection.isPending || teamsLoading}
+              >
+                <SelectTrigger id="author">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="personal">Personal</SelectItem>
+                  {adminTeams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name} Team
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
               <Label htmlFor="visibility">Visibility</Label>
               <Select
                 value={visibility}
@@ -123,9 +189,11 @@ export function CreateCollectionModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={CollectionVisibility.PRIVATE}>
-                    Private - Only you can see
-                  </SelectItem>
+                  {selectedAuthor === 'personal' && (
+                    <SelectItem value={CollectionVisibility.PRIVATE}>
+                      Private - Only you can see
+                    </SelectItem>
+                  )}
                   <SelectItem value={CollectionVisibility.TEAM}>
                     Team - Your team members can see
                   </SelectItem>

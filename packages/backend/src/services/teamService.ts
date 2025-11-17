@@ -32,6 +32,20 @@ export const getTeams = async (userId: string, filters: TeamFilters = {}) => {
   const teams = await prisma.team.findMany({
     where,
     include: {
+      members: {
+        select: {
+          userId: true,
+          role: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
       _count: {
         select: {
           members: true,

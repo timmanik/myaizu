@@ -1,21 +1,24 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { PromptCard } from '../../components/features/PromptCard';
 import { PromptDetailModal } from '../../components/features/PromptDetailModal';
+import { CollectionCard } from '../../components/features/CollectionCard';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { useTeam } from '../../hooks/useTeam';
+import { useTeams } from '../../hooks/useTeams';
 import { useTeamPrompts } from '../../hooks/useTeamPrompts';
+import { useCollections } from '../../hooks/useCollections';
 import { useFavoritePrompt } from '../../hooks/useFavoritePrompt';
 import { useForkPrompt } from '../../hooks/useForkPrompt';
 import { useAddToCollection } from '../../hooks/useAddToCollection';
 import { useToast } from '../../hooks/use-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
-import { type Prompt } from '@aizu/shared';
-import { ArrowLeft, Users, Eye, EyeOff, FileText } from 'lucide-react';
+import { type Prompt, type TeamMemberRole } from '@aizu/shared';
+import { ArrowLeft, Users, Eye, EyeOff, FileText, Layers } from 'lucide-react';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +37,32 @@ export default function TeamPage() {
   
   // Fetch prompts with view mode
   const { data: prompts, isLoading: loadingPrompts } = useTeamPrompts(id!, { viewAsPublic });
+  
+  // Fetch team collections
+  const { data: allCollections, isLoading: loadingCollections } = useCollections({ teamId: id });
+  
+  // Fetch all teams for role mapping
+  const { data: allTeams = [] } = useTeams(
+    user ? { memberUserId: user.id } : undefined
+  );
+  
+  // Build a map of team IDs to user's role in that team
+  const userTeamRoles = useMemo(() => {
+    const roleMap = new Map<string, TeamMemberRole>();
+    if (!user) return roleMap;
+
+    allTeams.forEach((team) => {
+      const membership = team.members?.find((m) => m.userId === user.id);
+      if (membership) {
+        roleMap.set(team.id, membership.role);
+      }
+    });
+
+    return roleMap;
+  }, [allTeams, user]);
+  
+  // Show only first 6 collections for preview
+  const previewCollections = allCollections?.slice(0, 6) || [];
   
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
@@ -160,7 +189,7 @@ export default function TeamPage() {
       </div>
 
       {/* Team Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card 
           className="p-6 cursor-pointer hover:bg-accent transition-colors"
           onClick={() => navigate(`/teams/${id}/members`)}
@@ -185,6 +214,57 @@ export default function TeamPage() {
             </div>
           </div>
         </Card>
+        <Card 
+          className="p-6 cursor-pointer hover:bg-accent transition-colors"
+          onClick={() => navigate(`/teams/${id}/collections`)}
+        >
+          <div className="flex items-center gap-3">
+            <Layers className="h-8 w-8 text-primary" />
+            <div>
+              <div className="text-2xl font-bold">{team._count?.collections || 0}</div>
+              <div className="text-sm text-muted-foreground">Collections</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Team Collections */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Team Collections</h2>
+          {allCollections && allCollections.length > 6 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/teams/${id}/collections`)}
+            >
+              View All Collections
+            </Button>
+          )}
+        </div>
+        {loadingCollections ? (
+          <div className="flex items-center justify-center h-32">
+            <div className="text-muted-foreground">Loading collections...</div>
+          </div>
+        ) : !previewCollections || previewCollections.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-32 text-center">
+            <Layers className="h-12 w-12 text-muted-foreground/20 mb-2" />
+            <p className="text-muted-foreground">No collections in this team yet</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {previewCollections.map((collection) => (
+              <CollectionCard
+                key={collection.id}
+                collection={collection}
+                onClick={() => navigate(`/collections/${collection.id}`)}
+                currentUserId={user?.id}
+                userTeamRoles={userTeamRoles}
+                viewMode="grid"
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Team Prompts */}

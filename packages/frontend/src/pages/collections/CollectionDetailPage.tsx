@@ -5,9 +5,13 @@ import { PageHeader } from '../../components/layout/PageHeader';
 import { PromptCardGrid } from '../../components/features/PromptCardGrid';
 import { PromptCardList } from '../../components/features/PromptCardList';
 import { PromptDetailModal } from '../../components/features/PromptDetailModal';
+import { RenameCollectionDialog } from '../../components/features/RenameCollectionDialog';
 import { FilterBar } from '../../components/features/FilterBar';
 import { Button } from '../../components/ui/button';
 import { useCollection } from '../../hooks/useCollection';
+import { useDeleteCollection } from '../../hooks/useDeleteCollection';
+import { useUpdateCollection } from '../../hooks/useUpdateCollection';
+import { useTeams } from '../../hooks/useTeams';
 import { useFavoritePrompt } from '../../hooks/useFavoritePrompt';
 import { useForkPrompt } from '../../hooks/useForkPrompt';
 import { useDeletePrompt } from '../../hooks/useDeletePrompt';
@@ -17,8 +21,8 @@ import { useToast } from '../../hooks/use-toast';
 import { useViewMode } from '../../hooks/useViewMode';
 import { useAuth } from '../../contexts/AuthContext';
 import { promptsApi } from '../../services/api/prompts';
-import { ArrowLeft, Layers } from 'lucide-react';
-import type { Prompt, PromptVisibility } from '@aizu/shared';
+import { ArrowLeft, Layers, Pencil, Trash2 } from 'lucide-react';
+import type { Prompt, PromptVisibility, TeamMemberRole } from '@aizu/shared';
 
 export default function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -29,16 +33,22 @@ export default function CollectionDetailPage() {
   const { viewMode, setViewMode } = useViewMode();
   const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibility, setVisibility] = useState<PromptVisibility | undefined>();
   const [sortField, setSortField] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const { data: collection, isLoading } = useCollection(id!);
+  const { data: allTeams = [] } = useTeams(
+    user ? { memberUserId: user.id } : undefined
+  );
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const deleteMutation = useDeletePrompt();
   const addToCollectionMutation = useAddToCollection();
+  const deleteCollectionMutation = useDeleteCollection();
+  const updateCollectionMutation = useUpdateCollection();
 
   // Extract prompts before any conditional returns to avoid hooks order issues
   const allPrompts = useMemo(() => {
@@ -106,6 +116,76 @@ export default function CollectionDetailPage() {
 
     return filtered;
   }, [allPrompts, searchQuery, visibility, sortField, sortOrder]);
+
+  // Check if user can modify this collection
+  const canModifyCollection = useMemo(() => {
+    if (!user || !collection) return false;
+    
+    // Owner can always modify
+    if (collection.ownerId === user.id) return true;
+    
+    // If it's a team collection, check if user is a team admin
+    if (collection.teamId) {
+      const team = allTeams.find((t) => t.id === collection.teamId);
+      if (team) {
+        const membership = team.members?.find((m) => m.userId === user.id);
+        return membership?.role === 'ADMIN';
+      }
+    }
+    
+    return false;
+  }, [user, collection, allTeams]);
+
+  const handleRenameCollection = () => {
+    setIsRenameDialogOpen(true);
+  };
+
+  const handleRenameSubmit = async (id: string, name: string, description?: string) => {
+    try {
+      await updateCollectionMutation.mutateAsync({
+        id,
+        data: { name, description },
+      });
+      toast({
+        title: 'Success',
+        description: 'Collection updated successfully',
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error?.message || 'Failed to update collection',
+      });
+    }
+  };
+
+  const handleDeleteCollection = async () => {
+    if (!collection) return;
+
+    const confirmed = await confirm({
+      title: 'Delete Collection',
+      description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      variant: 'destructive',
+    });
+
+    if (confirmed) {
+      try {
+        await deleteCollectionMutation.mutateAsync(collection.id);
+        toast({
+          title: 'Success',
+          description: 'Collection deleted successfully',
+        });
+        navigate('/collections');
+      } catch (error: any) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error?.message || 'Failed to delete collection',
+        });
+      }
+    }
+  };
 
   const handleFavoritePrompt = async (promptId: string) => {
     try {
@@ -233,6 +313,20 @@ export default function CollectionDetailPage() {
       <PageHeader
         title={collection.name}
         description={collection.description || undefined}
+        actions={
+          canModifyCollection ? (
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleRenameCollection}>
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleDeleteCollection}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </div>
+          ) : undefined
+        }
       />
 
       <div className="mb-6 flex items-center gap-4 text-sm text-muted-foreground">
@@ -315,6 +409,14 @@ export default function CollectionDetailPage() {
         onCopy={handleCopyPrompt}
         onFork={handleForkPrompt}
         isOwner={selectedPrompt?.authorId === user?.id}
+      />
+
+      <RenameCollectionDialog
+        collection={collection || null}
+        open={isRenameDialogOpen}
+        onOpenChange={setIsRenameDialogOpen}
+        onRename={handleRenameSubmit}
+        isPending={updateCollectionMutation.isPending}
       />
     </PageContainer>
   );

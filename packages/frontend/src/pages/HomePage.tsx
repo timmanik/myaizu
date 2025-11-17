@@ -18,7 +18,7 @@ import { useUnpinPromptFromHome } from '@/hooks/useUnpinPromptFromHome';
 import { useConfirm } from '@/hooks/use-confirm';
 import { useToast } from '@/hooks/use-toast';
 import { promptsApi } from '@/services/api/prompts';
-import { FileText, Heart, FolderOpen, Plus, ArrowRight, Pin } from 'lucide-react';
+import { FileText, Heart, Layers, Plus, ArrowRight, Pin } from 'lucide-react';
 import type { Prompt } from '@aizu/shared';
 
 export function HomePage() {
@@ -194,7 +194,7 @@ export function HomePage() {
                 <div className="text-sm text-muted-foreground">Collections</div>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <FolderOpen className="h-6 w-6 text-purple-600" />
+                <Layers className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </Card>
