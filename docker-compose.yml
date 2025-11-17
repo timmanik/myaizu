@@ -38,10 +38,11 @@ services:
   # Backend API
   backend:
     build:
-      context: ./packages/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/backend/Dockerfile
     container_name: aizu-backend
     restart: unless-stopped
+    working_dir: /app/packages/backend
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3001
@@ -58,17 +59,19 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./packages/backend:/app
+      - ./packages/backend:/app/packages/backend
+      - ./packages/shared:/app/packages/shared
       - /app/node_modules
     command: pnpm dev
 
   # Frontend (nginx for production, or dev server)
   frontend:
     build:
-      context: ./packages/frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/frontend/Dockerfile
     container_name: aizu-frontend
     restart: unless-stopped
+    working_dir: /app/packages/frontend
     ports:
       - "5173:5173"
     environment:
@@ -76,11 +79,11 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./packages/frontend:/app
+      - ./packages/frontend:/app/packages/frontend
+      - ./packages/shared:/app/packages/shared
       - /app/node_modules
     command: pnpm dev
 
 volumes:
   postgres_data:
   redis_data:
-

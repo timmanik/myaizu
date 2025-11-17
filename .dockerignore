@@ -1,0 +1,8 @@
+node_modules
+**/node_modules
+.git
+.DS_Store
+dist
+**/dist
+docker-compose.override.yml
+local-docs

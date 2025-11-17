@@ -1,24 +1,22 @@
-# Development Dockerfile for Frontend
 FROM node:20-alpine
 
 # Install pnpm
 RUN npm install -g pnpm
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
+# Copy workspace manifests
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 
-# Install dependencies
+# Copy only the packages needed for the frontend workspace install
+COPY packages/shared ./packages/shared
+COPY packages/frontend ./packages/frontend
+
+# Install dependencies for the monorepo (frontend relies on @aizu/shared)
 RUN pnpm install
 
-# Copy source code
-COPY . .
+WORKDIR /app/packages/frontend
 
-# Expose port
 EXPOSE 5173
 
-# Start development server
 CMD ["pnpm", "dev", "--host"]
-
