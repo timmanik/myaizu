@@ -1,7 +1,8 @@
 FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm and OpenSSL for Prisma
+RUN npm install -g pnpm && \
+    apk add --no-cache openssl
 
 WORKDIR /app
 
