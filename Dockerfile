@@ -21,17 +21,30 @@ RUN pnpm --filter @aizu/shared build \
 FROM node:20-alpine AS backend
 RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=base /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/packages/backend/package.json ./packages/backend/package.json
-COPY --from=base /app/packages/backend/node_modules ./packages/backend/node_modules
-COPY --from=backend-build /app/packages/backend/dist ./packages/backend/dist
-COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
+
+# Copy only package files for production dependency installation
+COPY --from=base /app/packages/backend/package.json ./package.json
 COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
-COPY --from=base /app/packages/backend/prisma ./packages/backend/prisma
+COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+
+# Install only production dependencies (external packages needed by bundle)
+RUN pnpm install --prod --frozen-lockfile
+
+# Copy the bundled application
+COPY --from=backend-build /app/packages/backend/dist ./dist
+
+# Copy shared package build output (referenced by bundle)
+COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
+
+# Copy Prisma schema and migrations (needed at runtime)
+COPY --from=base /app/packages/backend/prisma ./prisma
+
+# Generate Prisma client for production
+RUN pnpm prisma generate
+
+ENV NODE_ENV=production
 EXPOSE 3001
-CMD ["node", "packages/backend/dist/index.js"]
+CMD ["node", "dist/index.js"]
 
 FROM nginx:1.25-alpine AS frontend
 COPY packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
