@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Organization, UpdateOrganizationDto } from '@aizu/shared';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 // Axios instance with auth
 const api = axios.create({
@@ -21,7 +21,7 @@ api.interceptors.request.use((config) => {
  * Get organization settings
  */
 export const getOrganization = async (): Promise<Organization> => {
-  const response = await api.get('/api/organization');
+  const response = await api.get('/organization');
   // Using axios directly: response.data is the backend response { success, data }
   return response.data.data;
 };
@@ -32,7 +32,7 @@ export const getOrganization = async (): Promise<Organization> => {
 export const updateOrganization = async (
   data: UpdateOrganizationDto
 ): Promise<Organization> => {
-  const response = await api.put('/api/organization', data);
+  const response = await api.put('/organization', data);
   return response.data.data;
 };
 

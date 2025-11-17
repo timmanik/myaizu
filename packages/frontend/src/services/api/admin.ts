@@ -10,7 +10,7 @@ import type {
   UserFilters,
 } from '@aizu/shared';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 // Axios instance with auth
 const api = axios.create({
@@ -31,7 +31,7 @@ api.interceptors.request.use((config) => {
  */
 
 export const getAdminStats = async (): Promise<AdminStats> => {
-  const response = await api.get('/api/admin/stats');
+  const response = await api.get('/admin/stats');
   return response.data.data;
 };
 
@@ -40,12 +40,12 @@ export const getAdminStats = async (): Promise<AdminStats> => {
  */
 
 export const createTeam = async (data: CreateTeamDto): Promise<TeamWithDetails> => {
-  const response = await api.post('/api/admin/teams', data);
+  const response = await api.post('/admin/teams', data);
   return response.data.data;
 };
 
 export const getAllTeams = async (search?: string): Promise<TeamWithDetails[]> => {
-  const response = await api.get('/api/admin/teams', {
+  const response = await api.get('/admin/teams', {
     params: { search },
   });
   return response.data.data;
@@ -55,24 +55,24 @@ export const updateTeam = async (
   teamId: string,
   data: UpdateTeamDto
 ): Promise<TeamWithDetails> => {
-  const response = await api.put(`/api/admin/teams/${teamId}`, data);
+  const response = await api.put(`/admin/teams/${teamId}`, data);
   return response.data.data;
 };
 
 export const deleteTeam = async (teamId: string): Promise<void> => {
-  await api.delete(`/api/admin/teams/${teamId}`);
+  await api.delete(`/admin/teams/${teamId}`);
 };
 
 export const assignTeamAdmin = async (
   teamId: string,
   data: AssignTeamAdminDto
 ): Promise<any> => {
-  const response = await api.post(`/api/admin/teams/${teamId}/admins`, data);
+  const response = await api.post(`/admin/teams/${teamId}/admins`, data);
   return response.data.data;
 };
 
 export const removeTeamAdmin = async (teamId: string, userId: string): Promise<any> => {
-  const response = await api.delete(`/api/admin/teams/${teamId}/admins/${userId}`);
+  const response = await api.delete(`/admin/teams/${teamId}/admins/${userId}`);
   return response.data.data;
 };
 
@@ -81,7 +81,7 @@ export const removeTeamAdmin = async (teamId: string, userId: string): Promise<a
  */
 
 export const getAllUsers = async (filters?: UserFilters): Promise<UserWithStats[]> => {
-  const response = await api.get('/api/admin/users', {
+  const response = await api.get('/admin/users', {
     params: filters,
   });
   return response.data.data;
@@ -91,12 +91,12 @@ export const updateUserRole = async (
   userId: string,
   data: UpdateUserRoleDto
 ): Promise<UserWithStats> => {
-  const response = await api.put(`/api/admin/users/${userId}/role`, data);
+  const response = await api.put(`/admin/users/${userId}/role`, data);
   return response.data.data;
 };
 
 export const deleteUser = async (userId: string): Promise<void> => {
-  await api.delete(`/api/admin/users/${userId}`);
+  await api.delete(`/admin/users/${userId}`);
 };
 
 /**
