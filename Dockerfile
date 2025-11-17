@@ -19,14 +19,17 @@ RUN pnpm --filter @aizu/shared build \
     && pnpm --filter @aizu/frontend build
 
 FROM node:20-alpine AS backend
-RUN apk add --no-cache libc6-compat && npm install -g pnpm
+RUN apk add --no-cache libc6-compat openssl && npm install -g pnpm
 WORKDIR /app
 ENV NODE_ENV=production
+COPY --from=base /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 COPY --from=base /app/node_modules ./node_modules
-COPY --from=backend-build /app/packages/shared ./packages/shared
-COPY --from=base /app/packages/backend/package.json ./package.json
-COPY --from=base /app/packages/backend/prisma ./prisma
-COPY --from=backend-build /app/packages/backend/dist ./dist
+COPY --from=base /app/packages/backend/package.json ./packages/backend/package.json
+COPY --from=backend-build /app/packages/backend/dist ./packages/backend/dist
+COPY --from=backend-build /app/packages/shared/dist ./packages/shared/dist
+COPY --from=base /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=base /app/packages/backend/prisma ./packages/backend/prisma
+WORKDIR /app/packages/backend
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
 
