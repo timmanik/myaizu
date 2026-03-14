@@ -1,5 +1,3 @@
 # Prisma
 *.db
 *.db-journal
-migrations/
-
