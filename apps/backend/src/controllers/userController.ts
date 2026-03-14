@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import * as userService from '../services/userService';
+import { UnauthorizedError } from '../middleware/errorHandler';
+import { sendData, sendMessage } from '../utils/apiResponse';
 
 // Validation schemas
 const updateProfileSchema = z.object({
@@ -14,27 +16,28 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(8, 'New password must be at least 8 characters'),
 });
 
+const pinPromptSchema = z.object({
+  promptId: z.string().min(1, 'Prompt ID is required'),
+});
+
+function getAuthenticatedUserId(req: Request) {
+  if (!req.user) {
+    throw new UnauthorizedError('Not authenticated');
+  }
+
+  return req.user.userId;
+}
+
 /**
  * PUT /api/user/profile
  * Update current user's profile
  */
 export async function updateProfileHandler(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
-      });
-      return;
-    }
-
     const data = updateProfileSchema.parse(req.body);
-    const user = await userService.updateProfile(req.user.userId, data);
+    const user = await userService.updateProfile(getAuthenticatedUserId(req), data);
 
-    res.json({
-      success: true,
-      data: { user },
-    });
+    sendData(res, { user });
   } catch (error) {
     next(error);
   }
@@ -46,21 +49,10 @@ export async function updateProfileHandler(req: Request, res: Response, next: Ne
  */
 export async function changePasswordHandler(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
-      });
-      return;
-    }
-
     const data = changePasswordSchema.parse(req.body);
-    await userService.changePassword(req.user.userId, data);
+    await userService.changePassword(getAuthenticatedUserId(req), data);
 
-    res.json({
-      success: true,
-      message: 'Password changed successfully',
-    });
+    sendMessage(res, 'Password changed successfully');
   } catch (error) {
     next(error);
   }
@@ -72,20 +64,9 @@ export async function changePasswordHandler(req: Request, res: Response, next: N
  */
 export async function getProfileHandler(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
-      });
-      return;
-    }
+    const user = await userService.getUserProfile(getAuthenticatedUserId(req));
 
-    const user = await userService.getUserProfile(req.user.userId);
-
-    res.json({
-      success: true,
-      data: { user },
-    });
+    sendData(res, { user });
   } catch (error) {
     next(error);
   }
@@ -100,10 +81,7 @@ export async function getPublicProfileHandler(req: Request, res: Response, next:
     const { id } = req.params;
     const user = await userService.getPublicProfile(id);
 
-    res.json({
-      success: true,
-      data: { user },
-    });
+    sendData(res, { user });
   } catch (error) {
     next(error);
   }
@@ -121,10 +99,7 @@ export async function getUserPromptsHandler(req: Request, res: Response, next: N
 
     const result = await userService.getUserPublicPrompts(id, page, limit);
 
-    res.json({
-      success: true,
-      data: result,
-    });
+    sendData(res, result);
   } catch (error) {
     next(error);
   }
@@ -134,7 +109,11 @@ export async function getUserPromptsHandler(req: Request, res: Response, next: N
  * GET /api/users/:id/collections
  * Get user's public collections
  */
-export async function getUserCollectionsHandler(req: Request, res: Response, next: NextFunction) {
+export async function getUserCollectionsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const { id } = req.params;
     const page = parseInt(req.query.page as string) || 1;
@@ -142,10 +121,7 @@ export async function getUserCollectionsHandler(req: Request, res: Response, nex
 
     const result = await userService.getUserPublicCollections(id, page, limit);
 
-    res.json({
-      success: true,
-      data: result,
-    });
+    sendData(res, result);
   } catch (error) {
     next(error);
   }
@@ -157,28 +133,13 @@ export async function getUserCollectionsHandler(req: Request, res: Response, nex
  */
 export async function getPinnedPromptsHandler(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
-      });
-      return;
-    }
+    const prompts = await userService.getUserPinnedPrompts(getAuthenticatedUserId(req));
 
-    const prompts = await userService.getUserPinnedPrompts(req.user.userId);
-
-    res.json({
-      success: true,
-      data: prompts,
-    });
+    sendData(res, prompts);
   } catch (error) {
     next(error);
   }
 }
-
-const pinPromptSchema = z.object({
-  promptId: z.string().min(1, 'Prompt ID is required'),
-});
 
 /**
  * POST /api/users/me/pin
@@ -186,21 +147,10 @@ const pinPromptSchema = z.object({
  */
 export async function pinPromptHandler(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
-      });
-      return;
-    }
-
     const { promptId } = pinPromptSchema.parse(req.body);
-    await userService.pinPrompt(req.user.userId, promptId);
+    await userService.pinPrompt(getAuthenticatedUserId(req), promptId);
 
-    res.json({
-      success: true,
-      message: 'Prompt pinned successfully',
-    });
+    sendMessage(res, 'Prompt pinned successfully');
   } catch (error) {
     next(error);
   }
@@ -212,21 +162,10 @@ export async function pinPromptHandler(req: Request, res: Response, next: NextFu
  */
 export async function unpinPromptHandler(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
-      });
-      return;
-    }
-
     const { promptId } = req.params;
-    await userService.unpinPrompt(req.user.userId, promptId);
+    await userService.unpinPrompt(getAuthenticatedUserId(req), promptId);
 
-    res.json({
-      success: true,
-      message: 'Prompt unpinned successfully',
-    });
+    sendMessage(res, 'Prompt unpinned successfully');
   } catch (error) {
     next(error);
   }

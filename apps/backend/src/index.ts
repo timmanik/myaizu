@@ -10,7 +10,8 @@ import collectionRoutes from './routes/collectionRoutes';
 import teamRoutes from './routes/teamRoutes';
 import adminRoutes from './routes/adminRoutes';
 import organizationRoutes from './routes/organizationRoutes';
-import userRoutes from './routes/userRoutes';
+import currentUserRoutes from './routes/currentUserRoutes';
+import publicUserRoutes from './routes/publicUserRoutes';
 import trendingRoutes from './routes/trendingRoutes';
 import searchRoutes from './routes/searchRoutes';
 
@@ -44,8 +45,8 @@ app.use('/api/collections', collectionRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/organization', organizationRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/user', currentUserRoutes);
+app.use('/api/users', publicUserRoutes);
 app.use('/api/trending', trendingRoutes);
 app.use('/api/search', searchRoutes);
 

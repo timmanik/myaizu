@@ -1,21 +1,20 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as adminService from '../services/adminService';
 import { Role } from '@prisma/client';
+import { BadRequestError } from '../middleware/errorHandler';
+import { sendData, sendMessage } from '../utils/apiResponse';
 
 /**
  * TEAM MANAGEMENT
  */
 
-export const createTeam = async (req: Request, res: Response) => {
+export const createTeam = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, description } = req.body;
     const userId = req.user!.userId;
 
     if (!name) {
-      return res.status(400).json({
-        success: false,
-        error: 'Team name is required',
-      });
+      throw new BadRequestError('Team name is required');
     }
 
     const team = await adminService.createTeam({
@@ -24,19 +23,13 @@ export const createTeam = async (req: Request, res: Response) => {
       createdBy: userId,
     });
 
-    return res.status(201).json({
-      success: true,
-      data: team,
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to create team',
-    });
+    return sendData(res, team, 201);
+  } catch (error) {
+    return next(error);
   }
 };
 
-export const getAllTeams = async (req: Request, res: Response) => {
+export const getAllTeams = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { search } = req.query;
 
@@ -44,96 +37,63 @@ export const getAllTeams = async (req: Request, res: Response) => {
       search: search as string,
     });
 
-    res.json({
-      success: true,
-      data: teams,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch teams',
-    });
+    sendData(res, teams);
+  } catch (error) {
+    next(error);
   }
 };
 
-export const updateTeam = async (req: Request, res: Response) => {
+export const updateTeam = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
 
     const team = await adminService.updateTeam(id, { name, description });
 
-    res.json({
-      success: true,
-      data: team,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to update team',
-    });
+    sendData(res, team);
+  } catch (error) {
+    next(error);
   }
 };
 
-export const deleteTeam = async (req: Request, res: Response) => {
+export const deleteTeam = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
     await adminService.deleteTeam(id);
 
-    res.json({
-      success: true,
-      message: 'Team deleted successfully',
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to delete team',
-    });
+    sendMessage(res, 'Team deleted successfully');
+  } catch (error) {
+    next(error);
   }
 };
 
-export const assignTeamAdmin = async (req: Request, res: Response) => {
+export const assignTeamAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id: teamId } = req.params;
     const { userId } = req.body;
 
     if (!userId) {
-      return res.status(400).json({
-        success: false,
-        error: 'User ID is required',
-      });
+      throw new BadRequestError('User ID is required');
     }
 
     const membership = await adminService.assignTeamAdmin(teamId, userId);
 
-    return res.json({
-      success: true,
-      data: membership,
-    });
-  } catch (error: any) {
-    return res.status(400).json({
-      success: false,
-      error: error.message || 'Failed to assign team admin',
-    });
+    return sendData(res, membership);
+  } catch (error) {
+    return next(error);
   }
 };
 
-export const removeTeamAdmin = async (req: Request, res: Response) => {
+export const removeTeamAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id: teamId, userId } = req.params;
 
     const membership = await adminService.removeTeamAdmin(teamId, userId);
 
-    res.json({
-      success: true,
-      data: membership,
-    });
-  } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      error: error.message || 'Failed to remove team admin',
-    });
+    sendData(res, membership);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -141,7 +101,7 @@ export const removeTeamAdmin = async (req: Request, res: Response) => {
  * USER MANAGEMENT
  */
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { search, role } = req.query;
 
@@ -150,74 +110,47 @@ export const getAllUsers = async (req: Request, res: Response) => {
       role: role as Role,
     });
 
-    res.json({
-      success: true,
-      data: users,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch users',
-    });
+    sendData(res, users);
+  } catch (error) {
+    next(error);
   }
 };
 
-export const updateUserRole = async (req: Request, res: Response) => {
+export const updateUserRole = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id: userId } = req.params;
     const { role } = req.body;
 
     if (!role) {
-      return res.status(400).json({
-        success: false,
-        error: 'Role is required',
-      });
+      throw new BadRequestError('Role is required');
     }
 
     if (!Object.values(Role).includes(role)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid role',
-      });
+      throw new BadRequestError('Invalid role');
     }
 
     const user = await adminService.updateUserRole(userId, role);
 
-    return res.json({
-      success: true,
-      data: user,
-    });
-  } catch (error: any) {
-    return res.status(400).json({
-      success: false,
-      error: error.message || 'Failed to update user role',
-    });
+    return sendData(res, user);
+  } catch (error) {
+    return next(error);
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id: userId } = req.params;
 
     // Prevent users from deleting themselves
     if (userId === req.user!.userId) {
-      return res.status(400).json({
-        success: false,
-        error: 'You cannot delete your own account',
-      });
+      throw new BadRequestError('You cannot delete your own account');
     }
 
     await adminService.deleteUser(userId);
 
-    return res.json({
-      success: true,
-      message: 'User deleted successfully',
-    });
-  } catch (error: any) {
-    return res.status(400).json({
-      success: false,
-      error: error.message || 'Failed to delete user',
-    });
+    return sendMessage(res, 'User deleted successfully');
+  } catch (error) {
+    return next(error);
   }
 };
 
@@ -225,18 +158,12 @@ export const deleteUser = async (req: Request, res: Response) => {
  * STATISTICS
  */
 
-export const getAdminStats = async (_req: Request, res: Response) => {
+export const getAdminStats = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const stats = await adminService.getAdminStats();
 
-    res.json({
-      success: true,
-      data: stats,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch statistics',
-    });
+    sendData(res, stats);
+  } catch (error) {
+    next(error);
   }
 };

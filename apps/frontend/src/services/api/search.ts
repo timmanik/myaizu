@@ -49,8 +49,10 @@ export const searchApi = {
     params.append('limit', limit.toString());
 
     const response = await apiClient.get<SearchResults>(`/search?${params.toString()}`);
-    // Search endpoint returns data directly without wrapper
-    return response as any as SearchResults;
+    if (!response.data) {
+      throw new Error('Failed to load search results');
+    }
+    return response.data;
   },
 
   /**
@@ -64,8 +66,10 @@ export const searchApi = {
     const response = await apiClient.get<{ prompts: Prompt[] }>(
       `/search/prompts?${params.toString()}`
     );
-    // Search endpoint returns { prompts } directly
-    return (response as any).prompts;
+    if (!response.data?.prompts) {
+      throw new Error('Failed to load prompt search results');
+    }
+    return response.data.prompts;
   },
 
   /**
@@ -79,8 +83,10 @@ export const searchApi = {
     const response = await apiClient.get<{ collections: SearchCollection[] }>(
       `/search/collections?${params.toString()}`
     );
-    // Search endpoint returns { collections } directly
-    return (response as any).collections;
+    if (!response.data?.collections) {
+      throw new Error('Failed to load collection search results');
+    }
+    return response.data.collections;
   },
 
   /**
@@ -94,8 +100,10 @@ export const searchApi = {
     const response = await apiClient.get<{ teams: SearchTeam[] }>(
       `/search/teams?${params.toString()}`
     );
-    // Search endpoint returns { teams } directly
-    return (response as any).teams;
+    if (!response.data?.teams) {
+      throw new Error('Failed to load team search results');
+    }
+    return response.data.teams;
   },
 
   /**
@@ -109,7 +117,9 @@ export const searchApi = {
     const response = await apiClient.get<{ users: SearchUser[] }>(
       `/search/users?${params.toString()}`
     );
-    // Search endpoint returns { users } directly
-    return (response as any).users;
+    if (!response.data?.users) {
+      throw new Error('Failed to load user search results');
+    }
+    return response.data.users;
   },
 };

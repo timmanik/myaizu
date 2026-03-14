@@ -16,8 +16,10 @@ export async function getMostFavorited(days: number = 7, limit: number = 20): Pr
   params.append('limit', limit.toString());
 
   const response = await apiClient.get<Prompt[]>(`/trending/most-favorited?${params.toString()}`);
-  // Trending endpoint returns array directly without wrapper
-  return response as any as Prompt[];
+  if (!response.data) {
+    throw new Error('Failed to load most favorited prompts');
+  }
+  return response.data;
 }
 
 /**
@@ -29,8 +31,10 @@ export async function getFastRising(days: number = 7, limit: number = 20): Promi
   params.append('limit', limit.toString());
 
   const response = await apiClient.get<Prompt[]>(`/trending/fast-rising?${params.toString()}`);
-  // Trending endpoint returns array directly without wrapper
-  return response as any as Prompt[];
+  if (!response.data) {
+    throw new Error('Failed to load fast rising prompts');
+  }
+  return response.data;
 }
 
 /**
@@ -41,8 +45,10 @@ export async function getNewPrompts(limit: number = 20): Promise<Prompt[]> {
   params.append('limit', limit.toString());
 
   const response = await apiClient.get<Prompt[]>(`/trending/new?${params.toString()}`);
-  // Trending endpoint returns array directly without wrapper
-  return response as any as Prompt[];
+  if (!response.data) {
+    throw new Error('Failed to load new prompts');
+  }
+  return response.data;
 }
 
 /**
@@ -50,6 +56,8 @@ export async function getNewPrompts(limit: number = 20): Promise<Prompt[]> {
  */
 export async function getTrendingOverview(): Promise<TrendingOverview> {
   const response = await apiClient.get<TrendingOverview>('/trending/overview');
-  // Trending endpoint returns object directly without wrapper
-  return response as any as TrendingOverview;
+  if (!response.data) {
+    throw new Error('Failed to load trending overview');
+  }
+  return response.data;
 }

@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import * as collectionService from '../services/collectionService';
 import { CollectionVisibility } from '@aizu/shared';
+import { sendData, sendMessage } from '../utils/apiResponse';
 
 // Validation schemas
 const createCollectionSchema = z.object({
@@ -27,7 +28,7 @@ const addPromptSchema = z.object({
  * GET /api/collections
  * Get all collections accessible to the current user
  */
-export const getCollections = async (req: Request, res: Response) => {
+export const getCollections = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
 
@@ -42,15 +43,9 @@ export const getCollections = async (req: Request, res: Response) => {
 
     const collections = await collectionService.getCollections(userId, filters);
 
-    res.json({
-      success: true,
-      data: collections,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch collections',
-    });
+    sendData(res, collections);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -58,34 +53,16 @@ export const getCollections = async (req: Request, res: Response) => {
  * GET /api/collections/:id
  * Get a single collection by ID (with prompts)
  */
-export const getCollectionById = async (req: Request, res: Response) => {
+export const getCollectionById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
     const { id } = req.params;
 
     const collection = await collectionService.getCollectionById(id, userId);
 
-    res.json({
-      success: true,
-      data: collection,
-    });
-  } catch (error: any) {
-    if (error.message === 'Collection not found') {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message === 'Access denied') {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to fetch collection',
-      });
-    }
+    sendData(res, collection);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -93,35 +70,16 @@ export const getCollectionById = async (req: Request, res: Response) => {
  * POST /api/collections
  * Create a new collection
  */
-export const createCollection = async (req: Request, res: Response) => {
+export const createCollection = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
     const validatedData = createCollectionSchema.parse(req.body);
 
     const collection = await collectionService.createCollection(userId, validatedData);
 
-    res.status(201).json({
-      success: true,
-      data: collection,
-    });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        details: error.errors,
-      });
-    } else if (error.message.includes('team admin') || error.message.includes('private')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to create collection',
-      });
-    }
+    sendData(res, collection, 201);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -129,7 +87,7 @@ export const createCollection = async (req: Request, res: Response) => {
  * PUT /api/collections/:id
  * Update a collection
  */
-export const updateCollection = async (req: Request, res: Response) => {
+export const updateCollection = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
     const { id } = req.params;
@@ -137,37 +95,9 @@ export const updateCollection = async (req: Request, res: Response) => {
 
     const collection = await collectionService.updateCollection(id, userId, validatedData);
 
-    res.json({
-      success: true,
-      data: collection,
-    });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        details: error.errors,
-      });
-    } else if (error.message === 'Collection not found') {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (
-      error.message.includes('permission') ||
-      error.message.includes('admin') ||
-      error.message.includes('private')
-    ) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to update collection',
-      });
-    }
+    sendData(res, collection);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -175,34 +105,16 @@ export const updateCollection = async (req: Request, res: Response) => {
  * DELETE /api/collections/:id
  * Delete a collection
  */
-export const deleteCollection = async (req: Request, res: Response) => {
+export const deleteCollection = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
     const { id } = req.params;
 
     await collectionService.deleteCollection(id, userId);
 
-    res.json({
-      success: true,
-      message: 'Collection deleted successfully',
-    });
-  } catch (error: any) {
-    if (error.message === 'Collection not found') {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('permission')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to delete collection',
-      });
-    }
+    sendMessage(res, 'Collection deleted successfully');
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -210,7 +122,7 @@ export const deleteCollection = async (req: Request, res: Response) => {
  * POST /api/collections/:id/prompts
  * Add a prompt to a collection
  */
-export const addPromptToCollection = async (req: Request, res: Response) => {
+export const addPromptToCollection = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
     const { id } = req.params;
@@ -223,38 +135,9 @@ export const addPromptToCollection = async (req: Request, res: Response) => {
       validatedData.order
     );
 
-    res.status(201).json({
-      success: true,
-      data: collectionPrompt,
-    });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        details: error.errors,
-      });
-    } else if (error.message.includes('not found')) {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('already in collection')) {
-      res.status(409).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('permission')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to add prompt to collection',
-      });
-    }
+    sendData(res, collectionPrompt, 201);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -262,33 +145,19 @@ export const addPromptToCollection = async (req: Request, res: Response) => {
  * DELETE /api/collections/:id/prompts/:promptId
  * Remove a prompt from a collection
  */
-export const removePromptFromCollection = async (req: Request, res: Response) => {
+export const removePromptFromCollection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.user!.userId;
     const { id, promptId } = req.params;
 
     await collectionService.removePromptFromCollection(id, promptId, userId);
 
-    res.json({
-      success: true,
-      message: 'Prompt removed from collection successfully',
-    });
-  } catch (error: any) {
-    if (error.message.includes('not found') || error.message.includes('not in collection')) {
-      res.status(404).json({
-        success: false,
-        error: error.message,
-      });
-    } else if (error.message.includes('permission')) {
-      res.status(403).json({
-        success: false,
-        error: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to remove prompt from collection',
-      });
-    }
+    sendMessage(res, 'Prompt removed from collection successfully');
+  } catch (error) {
+    next(error);
   }
 };

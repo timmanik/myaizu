@@ -78,3 +78,13 @@ export class NotFoundError extends Error implements AppError {
     this.name = 'NotFoundError';
   }
 }
+
+export class ConflictError extends Error implements AppError {
+  statusCode = 409;
+  isOperational = true;
+
+  constructor(message: string = 'Conflict') {
+    super(message);
+    this.name = 'ConflictError';
+  }
+}

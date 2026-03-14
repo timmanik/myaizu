@@ -1,4 +1,9 @@
 import { PrismaClient, Role, TeamMemberRole as PrismaTeamMemberRole } from '@prisma/client';
+import {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from '../middleware/errorHandler';
 
 const prisma = new PrismaClient();
 
@@ -93,7 +98,7 @@ export const updateTeam = async (
   });
 
   if (!team) {
-    throw new Error('Team not found');
+    throw new NotFoundError('Team not found');
   }
 
   const updated = await prisma.team.update({
@@ -146,7 +151,7 @@ export const deleteTeam = async (teamId: string) => {
   });
 
   if (!team) {
-    throw new Error('Team not found');
+    throw new NotFoundError('Team not found');
   }
 
   // Delete team members
@@ -184,7 +189,7 @@ export const assignTeamAdmin = async (teamId: string, userId: string) => {
   });
 
   if (!team) {
-    throw new Error('Team not found');
+    throw new NotFoundError('Team not found');
   }
 
   // Verify user exists
@@ -193,7 +198,7 @@ export const assignTeamAdmin = async (teamId: string, userId: string) => {
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new NotFoundError('User not found');
   }
 
   // Check if user is already a member
@@ -267,11 +272,11 @@ export const removeTeamAdmin = async (teamId: string, userId: string) => {
   });
 
   if (!membership) {
-    throw new Error('User is not a member of this team');
+    throw new NotFoundError('User is not a member of this team');
   }
 
   if (membership.role !== PrismaTeamMemberRole.ADMIN) {
-    throw new Error('User is not an admin of this team');
+    throw new BadRequestError('User is not an admin of this team');
   }
 
   // Check if this is the last admin
@@ -283,7 +288,7 @@ export const removeTeamAdmin = async (teamId: string, userId: string) => {
   });
 
   if (adminCount <= 1) {
-    throw new Error('Cannot remove the last admin from the team');
+    throw new ConflictError('Cannot remove the last admin from the team');
   }
 
   // Demote to member
@@ -370,7 +375,7 @@ export const updateUserRole = async (userId: string, newRole: Role) => {
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new NotFoundError('User not found');
   }
 
   // Prevent downgrading the last Super Admin
@@ -380,7 +385,7 @@ export const updateUserRole = async (userId: string, newRole: Role) => {
     });
 
     if (superAdminCount <= 1) {
-      throw new Error('Cannot downgrade the last Super Admin');
+      throw new ConflictError('Cannot downgrade the last Super Admin');
     }
   }
 
@@ -413,7 +418,7 @@ export const deleteUser = async (userId: string) => {
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new NotFoundError('User not found');
   }
 
   // Prevent deleting the last Super Admin
@@ -423,7 +428,7 @@ export const deleteUser = async (userId: string) => {
     });
 
     if (superAdminCount <= 1) {
-      throw new Error('Cannot delete the last Super Admin');
+      throw new ConflictError('Cannot delete the last Super Admin');
     }
   }
 

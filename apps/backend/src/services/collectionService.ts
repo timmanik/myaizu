@@ -6,6 +6,12 @@ import {
   CollectionVisibility,
 } from '@aizu/shared';
 import { getUserTeamRole } from './teamService';
+import {
+  BadRequestError,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+} from '../middleware/errorHandler';
 
 const prisma = new PrismaClient();
 
@@ -143,7 +149,7 @@ export const getCollectionById = async (collectionId: string, userId: string) =>
   });
 
   if (!collection) {
-    throw new Error('Collection not found');
+    throw new NotFoundError('Collection not found');
   }
 
   // Check access permissions
@@ -155,7 +161,7 @@ export const getCollectionById = async (collectionId: string, userId: string) =>
       (await isUserInTeam(userId, collection.teamId!)));
 
   if (!hasAccess) {
-    throw new Error('Access denied');
+    throw new ForbiddenError('Access denied');
   }
 
   return collection;
@@ -172,12 +178,14 @@ export const createCollection = async (userId: string, data: CreateCollectionDto
     // Check if user is a team admin
     const userRole = await getUserTeamRole(teamId, userId);
     if (userRole !== TeamMemberRole.ADMIN) {
-      throw new Error('Only team admins can create team collections');
+      throw new ForbiddenError('Only team admins can create team collections');
     }
 
     // Ensure team collections cannot be PRIVATE
     if (visibility === CollectionVisibility.PRIVATE) {
-      throw new Error('Team collections cannot be private. Choose TEAM or PUBLIC visibility.');
+      throw new BadRequestError(
+        'Team collections cannot be private. Choose TEAM or PUBLIC visibility.'
+      );
     }
   }
 
@@ -229,25 +237,27 @@ export const updateCollection = async (
   });
 
   if (!collection) {
-    throw new Error('Collection not found');
+    throw new NotFoundError('Collection not found');
   }
 
   // Check if user can modify this collection
   const canModify = await canUserModifyCollection(collection, userId);
   if (!canModify) {
-    throw new Error('You do not have permission to update this collection');
+    throw new ForbiddenError('You do not have permission to update this collection');
   }
 
   // If setting teamId, validate team admin permission and visibility
   if (data.teamId) {
     const userRole = await getUserTeamRole(data.teamId, userId);
     if (userRole !== TeamMemberRole.ADMIN) {
-      throw new Error('Only team admins can create team collections');
+      throw new ForbiddenError('Only team admins can create team collections');
     }
 
     // Ensure team collections cannot be PRIVATE
     if (data.visibility === CollectionVisibility.PRIVATE) {
-      throw new Error('Team collections cannot be private. Choose TEAM or PUBLIC visibility.');
+      throw new BadRequestError(
+        'Team collections cannot be private. Choose TEAM or PUBLIC visibility.'
+      );
     }
   }
 
@@ -290,13 +300,13 @@ export const deleteCollection = async (collectionId: string, userId: string) => 
   });
 
   if (!collection) {
-    throw new Error('Collection not found');
+    throw new NotFoundError('Collection not found');
   }
 
   // Check if user can modify this collection (owner or team admin)
   const canModify = await canUserModifyCollection(collection, userId);
   if (!canModify) {
-    throw new Error('You do not have permission to delete this collection');
+    throw new ForbiddenError('You do not have permission to delete this collection');
   }
 
   await prisma.collection.delete({
@@ -321,7 +331,7 @@ export const addPromptToCollection = async (
   });
 
   if (!collection) {
-    throw new Error('Collection not found');
+    throw new NotFoundError('Collection not found');
   }
 
   // Check permissions: owner can add to any collection, team members can add to team collections
@@ -335,7 +345,7 @@ export const addPromptToCollection = async (
   }
 
   if (!canAdd) {
-    throw new Error('You do not have permission to add prompts to this collection');
+    throw new ForbiddenError('You do not have permission to add prompts to this collection');
   }
 
   // Verify prompt exists
@@ -344,7 +354,7 @@ export const addPromptToCollection = async (
   });
 
   if (!prompt) {
-    throw new Error('Prompt not found');
+    throw new NotFoundError('Prompt not found');
   }
 
   // Check if already in collection
@@ -358,7 +368,7 @@ export const addPromptToCollection = async (
   });
 
   if (existing) {
-    throw new Error('Prompt already in collection');
+    throw new ConflictError('Prompt already in collection');
   }
 
   // Get the max order if not provided
@@ -403,7 +413,7 @@ export const removePromptFromCollection = async (
   });
 
   if (!collection) {
-    throw new Error('Collection not found');
+    throw new NotFoundError('Collection not found');
   }
 
   // Check permissions: owner can remove from any collection, team members can remove from team collections
@@ -417,7 +427,9 @@ export const removePromptFromCollection = async (
   }
 
   if (!canRemove) {
-    throw new Error('You do not have permission to remove prompts from this collection');
+    throw new ForbiddenError(
+      'You do not have permission to remove prompts from this collection'
+    );
   }
 
   // Check if in collection
@@ -431,7 +443,7 @@ export const removePromptFromCollection = async (
   });
 
   if (!existing) {
-    throw new Error('Prompt not in collection');
+    throw new NotFoundError('Prompt not in collection');
   }
 
   await prisma.collectionPrompt.delete({
