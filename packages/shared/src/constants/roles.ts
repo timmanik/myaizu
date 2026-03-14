@@ -22,4 +22,3 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
  * All available roles
  */
 export const ALL_ROLES = Object.values(UserRole);
-

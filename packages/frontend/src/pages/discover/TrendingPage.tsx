@@ -15,11 +15,7 @@ import { useConfirm } from '@/hooks/use-confirm';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { promptsApi } from '@/services/api/prompts';
-import {
-  useMostFavorited,
-  useFastRising,
-  useNewPrompts,
-} from '@/hooks/useTrending';
+import { useMostFavorited, useFastRising, useNewPrompts } from '@/hooks/useTrending';
 import { TrendingUp, Zap, Sparkles } from 'lucide-react';
 import type { Prompt } from '@aizu/shared';
 
@@ -76,15 +72,15 @@ export const TrendingPage = () => {
         // Increment the copy count on the backend
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Copied to clipboard!",
+          title: 'Success',
+          description: 'Copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -125,10 +121,10 @@ export const TrendingPage = () => {
 
   const handleDelete = async (promptId: string) => {
     const confirmed = await confirm({
-      title: "Delete Prompt",
-      description: "Are you sure you want to delete this prompt?",
-      confirmText: "Delete",
-      variant: "destructive",
+      title: 'Delete Prompt',
+      description: 'Are you sure you want to delete this prompt?',
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -137,9 +133,9 @@ export const TrendingPage = () => {
       } catch (error) {
         console.error('Failed to delete prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to delete prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to delete prompt',
         });
       }
     }
@@ -243,9 +239,7 @@ export const TrendingPage = () => {
           title="No Trending Prompts Yet"
           description="Check back later for trending prompts from the community."
         >
-          <Button onClick={() => navigate('/prompts/new')}>
-            Create a Prompt
-          </Button>
+          <Button onClick={() => navigate('/prompts/new')}>Create a Prompt</Button>
         </EmptyState>
       ) : (
         <PromptCardGrid
@@ -273,4 +267,3 @@ export const TrendingPage = () => {
     </PageContainer>
   );
 };
-

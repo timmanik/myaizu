@@ -31,7 +31,10 @@ export function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: profile, isLoading: profileLoading } = usePublicProfile(id!);
   const { data: promptsData, isLoading: promptsLoading } = useUserPublicPrompts(id!, promptsPage);
-  const { data: collectionsData, isLoading: collectionsLoading } = useUserPublicCollections(id!, collectionsPage);
+  const { data: collectionsData, isLoading: collectionsLoading } = useUserPublicCollections(
+    id!,
+    collectionsPage
+  );
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const addToCollectionMutation = useAddToCollection();
@@ -80,15 +83,15 @@ export function ProfilePage() {
         await navigator.clipboard.writeText(prompt.content);
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Prompt copied to clipboard!",
+          title: 'Success',
+          description: 'Prompt copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -162,7 +165,7 @@ export function ProfilePage() {
           {/* Profile Info */}
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{profile.name}</h1>
-            
+
             {/* Role Badge */}
             <div className="mb-2">
               <Badge variant="secondary" className="text-xs">
@@ -193,7 +196,8 @@ export function ProfilePage() {
             )}
 
             <p className="text-gray-600 mb-4">
-              Member since {new Date(profile.createdAt).toLocaleDateString('en-US', {
+              Member since{' '}
+              {new Date(profile.createdAt).toLocaleDateString('en-US', {
                 month: 'long',
                 year: 'numeric',
               })}
@@ -202,9 +206,7 @@ export function ProfilePage() {
             {/* Stats */}
             <div className="flex gap-6 pt-4 border-t border-gray-200">
               <div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {profile.publicPromptsCount}
-                </div>
+                <div className="text-2xl font-bold text-gray-900">{profile.publicPromptsCount}</div>
                 <div className="text-sm text-gray-600">Public Prompts</div>
               </div>
               <div>

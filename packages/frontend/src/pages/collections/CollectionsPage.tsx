@@ -48,26 +48,25 @@ export const CollectionsListPage = ({ mode = 'user', teamId, teamName }: Collect
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   // Build filters based on mode
-  const filters = mode === 'team'
-    ? {
-        search: debouncedSearch || undefined,
-        visibility,
-        sortField,
-        sortOrder,
-        teamId,
-      }
-    : {
-        search: debouncedSearch || undefined,
-        visibility,
-        sortField,
-        sortOrder,
-      };
+  const filters =
+    mode === 'team'
+      ? {
+          search: debouncedSearch || undefined,
+          visibility,
+          sortField,
+          sortOrder,
+          teamId,
+        }
+      : {
+          search: debouncedSearch || undefined,
+          visibility,
+          sortField,
+          sortOrder,
+        };
 
   const { data: collections, isLoading } = useCollections(filters);
 
-  const { data: allTeams = [] } = useTeams(
-    user ? { memberUserId: user.id } : undefined
-  );
+  const { data: allTeams = [] } = useTeams(user ? { memberUserId: user.id } : undefined);
 
   const deleteCollectionMutation = useDeleteCollection();
   const updateCollectionMutation = useUpdateCollection();
@@ -153,10 +152,12 @@ export const CollectionsListPage = ({ mode = 'user', teamId, teamName }: Collect
           </Button>
         </div>
       )}
-      
+
       <PageHeader
         title={mode === 'team' ? `${teamName} Collections` : 'Collections'}
-        description={mode === 'team' ? 'Team collections' : 'Organize your prompts into collections'}
+        description={
+          mode === 'team' ? 'Team collections' : 'Organize your prompts into collections'
+        }
         icon={<Layers className="h-6 w-6" />}
         actions={
           <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -180,43 +181,43 @@ export const CollectionsListPage = ({ mode = 'user', teamId, teamName }: Collect
           sortOptions={COLLECTION_SORT_OPTIONS}
         />
 
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Loading collections...</div>
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-muted-foreground">Loading collections...</div>
+          </div>
         ) : filteredCollections.length === 0 && !debouncedSearch ? (
-        <div className="flex flex-col items-center justify-center h-64 text-center">
-          <Layers className="h-16 w-16 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No collections yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Create your first collection to organize your prompts
-          </p>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Collection
-          </Button>
-        </div>
-      ) : filteredCollections.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 text-center">
-          <p className="text-muted-foreground">No collections found matching your search</p>
-        </div>
-      ) : (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <Layers className="h-16 w-16 text-muted-foreground/20 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No collections yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Create your first collection to organize your prompts
+            </p>
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Collection
+            </Button>
+          </div>
+        ) : filteredCollections.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <p className="text-muted-foreground">No collections found matching your search</p>
+          </div>
+        ) : (
           <>
             {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCollections.map((collection) => (
-            <CollectionCard
-              key={collection.id}
-              collection={collection}
-              onClick={() => navigate(`/collections/${collection.id}`)}
-              onRename={handleRename}
-              onDelete={handleDelete}
-              currentUserId={user?.id}
-              userTeamRoles={userTeamRoles}
-              viewMode="grid"
-            />
-          ))}
-        </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCollections.map((collection) => (
+                  <CollectionCard
+                    key={collection.id}
+                    collection={collection}
+                    onClick={() => navigate(`/collections/${collection.id}`)}
+                    onRename={handleRename}
+                    onDelete={handleDelete}
+                    currentUserId={user?.id}
+                    userTeamRoles={userTeamRoles}
+                    viewMode="grid"
+                  />
+                ))}
+              </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {filteredCollections.map((collection) => (

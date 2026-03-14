@@ -453,36 +453,30 @@ export const deleteUser = async (userId: string) => {
  * Get admin dashboard statistics
  */
 export const getAdminStats = async () => {
-  const [
-    totalUsers,
-    totalTeams,
-    totalPrompts,
-    totalCollections,
-    activeInvites,
-    recentUsers,
-  ] = await Promise.all([
-    prisma.user.count(),
-    prisma.team.count(),
-    prisma.prompt.count(),
-    prisma.collection.count(),
-    prisma.invite.count({
-      where: {
-        usedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-    }),
-    prisma.user.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
-    }),
-  ]);
+  const [totalUsers, totalTeams, totalPrompts, totalCollections, activeInvites, recentUsers] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.team.count(),
+      prisma.prompt.count(),
+      prisma.collection.count(),
+      prisma.invite.count({
+        where: {
+          usedAt: null,
+          expiresAt: { gt: new Date() },
+        },
+      }),
+      prisma.user.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      }),
+    ]);
 
   // Get users by role
   const usersByRole = await prisma.user.groupBy({

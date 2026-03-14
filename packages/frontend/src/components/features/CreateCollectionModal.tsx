@@ -11,13 +11,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useCreateCollection } from '../../hooks/useCreateCollection';
 import { CollectionVisibility, TeamMemberRole } from '@aizu/shared';
 import { Loader2 } from 'lucide-react';
@@ -44,12 +38,12 @@ export function CreateCollectionModal({
   );
 
   const createCollection = useCreateCollection();
-  
+
   // Fetch user's teams
   const { data: allTeams = [], isLoading: teamsLoading } = useTeams(
     user ? { memberUserId: user.id } : undefined
   );
-  
+
   // Update selected author and visibility when defaultTeamId changes
   useEffect(() => {
     if (open) {
@@ -61,7 +55,7 @@ export function CreateCollectionModal({
   // Filter to only teams where user is an ADMIN
   const adminTeams = useMemo(() => {
     if (!user || !allTeams) return [];
-    
+
     return allTeams.filter((team) => {
       const membership = team.members?.find((m) => m.userId === user.id);
       return membership?.role === TeamMemberRole.ADMIN;
@@ -88,7 +82,7 @@ export function CreateCollectionModal({
 
     try {
       const teamId = selectedAuthor !== 'personal' ? selectedAuthor : undefined;
-      
+
       await createCollection.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
@@ -122,8 +116,8 @@ export function CreateCollectionModal({
           <DialogHeader>
             <DialogTitle>Create New Collection</DialogTitle>
             <DialogDescription>
-              Create a collection to organize your prompts. You can add prompts to
-              collections later.
+              Create a collection to organize your prompts. You can add prompts to collections
+              later.
             </DialogDescription>
           </DialogHeader>
 
@@ -180,9 +174,7 @@ export function CreateCollectionModal({
               <Label htmlFor="visibility">Visibility</Label>
               <Select
                 value={visibility}
-                onValueChange={(value) =>
-                  setVisibility(value as CollectionVisibility)
-                }
+                onValueChange={(value) => setVisibility(value as CollectionVisibility)}
                 disabled={createCollection.isPending}
               >
                 <SelectTrigger id="visibility">
@@ -214,13 +206,8 @@ export function CreateCollectionModal({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!name.trim() || createCollection.isPending}
-            >
-              {createCollection.isPending && (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              )}
+            <Button type="submit" disabled={!name.trim() || createCollection.isPending}>
+              {createCollection.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Create Collection
             </Button>
           </DialogFooter>
@@ -229,4 +216,3 @@ export function CreateCollectionModal({
     </Dialog>
   );
 }
-

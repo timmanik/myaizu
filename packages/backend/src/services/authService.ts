@@ -135,4 +135,3 @@ export async function getCurrentUser(userId: string): Promise<Omit<User, 'passwo
   const { password, ...userWithoutPassword } = user;
   return userWithoutPassword;
 }
-

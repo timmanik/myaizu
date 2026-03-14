@@ -9,4 +9,3 @@ export const useTeamPrompts = (teamId: string, filters?: TeamPromptsFilters) => 
     enabled: !!teamId,
   });
 };
-

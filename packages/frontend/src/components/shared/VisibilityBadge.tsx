@@ -25,10 +25,7 @@ const VISIBILITY_CONFIG = {
   },
 };
 
-export const VisibilityBadge = ({
-  visibility,
-  className,
-}: VisibilityBadgeProps) => {
+export const VisibilityBadge = ({ visibility, className }: VisibilityBadgeProps) => {
   const config = VISIBILITY_CONFIG[visibility];
   const Icon = config.icon;
 
@@ -42,4 +39,3 @@ export const VisibilityBadge = ({
     </Badge>
   );
 };
-

@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react';
 import { useOrganization, useUpdateOrganization } from '../../hooks/useOrganization';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../components/ui/card';
 import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Building2, Save } from 'lucide-react';
@@ -52,8 +58,7 @@ const AdminOrganizationPage = () => {
   };
 
   const hasChanges =
-    organization &&
-    (name !== organization.name || logoUrl !== (organization.logoUrl || ''));
+    organization && (name !== organization.name || logoUrl !== (organization.logoUrl || ''));
 
   if (isLoading) {
     return (
@@ -154,19 +159,11 @@ const AdminOrganizationPage = () => {
             )}
 
             <div className="flex gap-2 pt-4">
-              <Button
-                type="submit"
-                disabled={updateOrganization.isPending || !hasChanges}
-              >
+              <Button type="submit" disabled={updateOrganization.isPending || !hasChanges}>
                 <Save className="h-4 w-4 mr-2" />
                 {updateOrganization.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleReset}
-                disabled={!hasChanges}
-              >
+              <Button type="button" variant="outline" onClick={handleReset} disabled={!hasChanges}>
                 Reset
               </Button>
             </div>
@@ -187,15 +184,11 @@ const AdminOrganizationPage = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Last Updated</p>
-              <p className="text-sm mt-1">
-                {new Date(organization.updatedAt).toLocaleString()}
-              </p>
+              <p className="text-sm mt-1">{new Date(organization.updatedAt).toLocaleString()}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Created</p>
-              <p className="text-sm mt-1">
-                {new Date(organization.createdAt).toLocaleString()}
-              </p>
+              <p className="text-sm mt-1">{new Date(organization.createdAt).toLocaleString()}</p>
             </div>
           </div>
         </CardContent>
@@ -205,4 +198,3 @@ const AdminOrganizationPage = () => {
 };
 
 export default AdminOrganizationPage;
-

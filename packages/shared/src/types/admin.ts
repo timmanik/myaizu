@@ -119,4 +119,3 @@ export interface InviteWithCreator {
     email: string;
   };
 }
-

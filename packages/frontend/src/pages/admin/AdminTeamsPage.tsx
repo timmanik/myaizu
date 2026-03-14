@@ -8,8 +8,21 @@ import {
 } from '../../hooks/useAdminTeams';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../../components/ui/dialog';
 import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -89,10 +102,10 @@ const AdminTeamsPage = () => {
 
   const handleDeleteTeam = async (teamId: string) => {
     const confirmed = await confirm({
-      title: "Delete Team",
-      description: "Are you sure you want to delete this team? This action cannot be undone.",
-      confirmText: "Delete",
-      variant: "destructive",
+      title: 'Delete Team',
+      description: 'Are you sure you want to delete this team? This action cannot be undone.',
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (!confirmed) {
@@ -292,11 +305,7 @@ const AdminTeamsPage = () => {
                     <UserPlus className="h-3 w-3 mr-1" />
                     Add Admin
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteTeam(team.id)}
-                  >
+                  <Button variant="destructive" size="sm" onClick={() => handleDeleteTeam(team.id)}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
@@ -317,12 +326,7 @@ const AdminTeamsPage = () => {
             <form onSubmit={handleUpdateTeam} className="space-y-4">
               <div>
                 <Label htmlFor="edit-name">Team Name *</Label>
-                <Input
-                  id="edit-name"
-                  name="name"
-                  required
-                  defaultValue={selectedTeam.name}
-                />
+                <Input id="edit-name" name="name" required defaultValue={selectedTeam.name} />
               </div>
               <div>
                 <Label htmlFor="edit-description">Description</Label>
@@ -359,9 +363,7 @@ const AdminTeamsPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Assign Team Admin</DialogTitle>
-            <DialogDescription>
-              Add a user as an admin for {selectedTeam?.name}
-            </DialogDescription>
+            <DialogDescription>Add a user as an admin for {selectedTeam?.name}</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAssignAdmin} className="space-y-4">
             <div>
@@ -398,4 +400,3 @@ const AdminTeamsPage = () => {
 };
 
 export default AdminTeamsPage;
-

@@ -240,4 +240,3 @@ export const getAdminStats = async (_req: Request, res: Response) => {
     });
   }
 };
-

@@ -9,4 +9,3 @@ export function useSearch(query: string, enabled = true) {
     staleTime: 30000, // 30 seconds
   });
 }
-

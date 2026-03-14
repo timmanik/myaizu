@@ -18,10 +18,12 @@ const app: Express = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors({
-  origin: config.corsOrigin,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: config.corsOrigin,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -58,4 +60,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-

@@ -29,10 +29,7 @@ export const getOrganization = async (): Promise<Organization> => {
 /**
  * Update organization settings (Super Admin only)
  */
-export const updateOrganization = async (
-  data: UpdateOrganizationDto
-): Promise<Organization> => {
+export const updateOrganization = async (data: UpdateOrganizationDto): Promise<Organization> => {
   const response = await api.put('/organization', data);
   return response.data.data;
 };
-

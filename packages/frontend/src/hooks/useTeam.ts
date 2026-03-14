@@ -8,4 +8,3 @@ export const useTeam = (id: string) => {
     enabled: !!id,
   });
 };
-

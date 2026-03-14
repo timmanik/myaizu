@@ -36,4 +36,3 @@ export default function TeamPromptsPage() {
 
   return <PromptsListPage mode="team" teamId={id!} teamName={team.name} />;
 }
-

@@ -17,4 +17,3 @@ router.get('/teams', searchController.searchTeams.bind(searchController));
 router.get('/users', searchController.searchUsers.bind(searchController));
 
 export default router;
-

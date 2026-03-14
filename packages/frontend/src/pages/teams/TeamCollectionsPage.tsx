@@ -36,4 +36,3 @@ export default function TeamCollectionsPage() {
 
   return <CollectionsListPage mode="team" teamId={id!} teamName={team.name} />;
 }
-

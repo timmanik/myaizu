@@ -19,4 +19,3 @@ export function UnauthorizedPage() {
     </div>
   );
 }
-

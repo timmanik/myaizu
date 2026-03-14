@@ -101,21 +101,11 @@ export function RenameCollectionDialog({
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={isPending}
-            >
+            <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!name.trim() || isPending}
-            >
-              {isPending && (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              )}
+            <Button type="submit" disabled={!name.trim() || isPending}>
+              {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Save Changes
             </Button>
           </DialogFooter>
@@ -124,4 +114,3 @@ export function RenameCollectionDialog({
     </Dialog>
   );
 }
-

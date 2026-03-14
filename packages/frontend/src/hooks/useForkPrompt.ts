@@ -13,7 +13,7 @@ export const useForkPrompt = () => {
     onSuccess: (response) => {
       // Invalidate prompts queries
       queryClient.invalidateQueries({ queryKey: ['prompts'] });
-      
+
       toast({
         title: 'Success',
         description: 'Prompt remixed successfully! Opening in editor...',

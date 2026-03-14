@@ -4,14 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Eye,
-  History,
-  BarChart3,
-  Copy,
-  Heart,
-  GitBranch,
-} from 'lucide-react';
+import { Eye, History, BarChart3, Copy, Heart, GitBranch } from 'lucide-react';
 
 interface PromptDetailContentProps {
   prompt: Prompt;
@@ -141,9 +134,7 @@ export const PromptDetailContent = ({
         <TabsContent value="preview" className="space-y-4 mt-0">
           {/* Preview Section */}
           <Card className="p-4">
-            <h3 className="text-sm font-semibold mb-3">
-              Prompt Content Preview
-            </h3>
+            <h3 className="text-sm font-semibold mb-3">Prompt Content Preview</h3>
             <div className="bg-muted p-4 rounded-md">
               <pre className="whitespace-pre-wrap text-sm font-mono">
                 {renderPreviewWithHighlightedVariables()}
@@ -161,24 +152,14 @@ export const PromptDetailContent = ({
                     <Label htmlFor={variable.name} className="text-xs">
                       {variable.name}
                       {variable.description && (
-                        <span className="text-muted-foreground ml-1">
-                          ({variable.description})
-                        </span>
+                        <span className="text-muted-foreground ml-1">({variable.description})</span>
                       )}
                     </Label>
                     <Input
                       id={variable.name}
-                      value={
-                        getVariableValues()[variable.name] ||
-                        variable.defaultValue ||
-                        ''
-                      }
-                      onChange={(e) =>
-                        onVariableChange(variable.name, e.target.value)
-                      }
-                      placeholder={
-                        variable.defaultValue || `Enter ${variable.name}`
-                      }
+                      value={getVariableValues()[variable.name] || variable.defaultValue || ''}
+                      onChange={(e) => onVariableChange(variable.name, e.target.value)}
+                      placeholder={variable.defaultValue || `Enter ${variable.name}`}
                       className="mt-1"
                     />
                   </div>
@@ -190,12 +171,8 @@ export const PromptDetailContent = ({
           {/* Additional Instructions */}
           {prompt.additionalInstructions && (
             <Card className="p-4">
-              <h3 className="text-sm font-semibold mb-3">
-                Additional Instructions
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {prompt.additionalInstructions}
-              </p>
+              <h3 className="text-sm font-semibold mb-3">Additional Instructions</h3>
+              <p className="text-sm text-muted-foreground">{prompt.additionalInstructions}</p>
             </Card>
           )}
 
@@ -206,26 +183,22 @@ export const PromptDetailContent = ({
               {prompt.promptType === 'STANDARD_PROMPT'
                 ? 'Standard Prompt'
                 : prompt.promptType === 'CUSTOM_GPT'
-                ? 'Custom GPT'
-                : prompt.promptType === 'CLAUDE_PROJECT'
-                ? 'Claude Project'
-                : prompt.promptType === 'GEMINI_GEM'
-                ? 'Gemini Gem'
-                : prompt.promptType === 'CUSTOM_APP'
-                ? 'Custom App'
-                : 'Other'}
+                  ? 'Custom GPT'
+                  : prompt.promptType === 'CLAUDE_PROJECT'
+                    ? 'Claude Project'
+                    : prompt.promptType === 'GEMINI_GEM'
+                      ? 'Gemini Gem'
+                      : prompt.promptType === 'CUSTOM_APP'
+                        ? 'Custom App'
+                        : 'Other'}
             </p>
             {prompt.config && (
               <div className="mt-2 space-y-1">
                 {prompt.config.useWebSearch && (
-                  <p className="text-xs text-muted-foreground">
-                    • Uses web search
-                  </p>
+                  <p className="text-xs text-muted-foreground">• Uses web search</p>
                 )}
                 {prompt.config.useDeepResearch && (
-                  <p className="text-xs text-muted-foreground">
-                    • Uses deep research
-                  </p>
+                  <p className="text-xs text-muted-foreground">• Uses deep research</p>
                 )}
               </div>
             )}
@@ -235,9 +208,7 @@ export const PromptDetailContent = ({
         <TabsContent value="history" className="mt-0">
           <Card className="p-6 text-center">
             <History className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">
-              Version History Coming Soon
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Version History Coming Soon</h3>
             <p className="text-sm text-muted-foreground">
               Track changes and view previous versions of this prompt.
             </p>
@@ -249,29 +220,21 @@ export const PromptDetailContent = ({
             <Card className="p-6">
               <div className="text-center">
                 <Copy className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <div className="text-3xl font-bold mb-1">
-                  {prompt.copyCount}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Total Copies
-                </div>
+                <div className="text-3xl font-bold mb-1">{prompt.copyCount}</div>
+                <div className="text-sm text-muted-foreground">Total Copies</div>
               </div>
             </Card>
             <Card className="p-6">
               <div className="text-center">
                 <Heart className="h-8 w-8 mx-auto mb-2 text-red-600" />
-                <div className="text-3xl font-bold mb-1">
-                  {prompt.favoriteCount}
-                </div>
+                <div className="text-3xl font-bold mb-1">{prompt.favoriteCount}</div>
                 <div className="text-sm text-muted-foreground">Favorites</div>
               </div>
             </Card>
             <Card className="p-6">
               <div className="text-center">
                 <GitBranch className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-                <div className="text-3xl font-bold mb-1">
-                  {prompt.copyCount || 0}
-                </div>
+                <div className="text-3xl font-bold mb-1">{prompt.copyCount || 0}</div>
                 <div className="text-sm text-muted-foreground">Remixes</div>
               </div>
             </Card>
@@ -281,9 +244,7 @@ export const PromptDetailContent = ({
             <h3 className="text-lg font-semibold mb-4">Usage Over Time</h3>
             <div className="text-center py-8">
               <BarChart3 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Detailed analytics coming soon
-              </p>
+              <p className="text-sm text-muted-foreground">Detailed analytics coming soon</p>
             </div>
           </Card>
         </TabsContent>
@@ -291,4 +252,3 @@ export const PromptDetailContent = ({
     </Tabs>
   );
 };
-

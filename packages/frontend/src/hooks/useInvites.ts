@@ -62,8 +62,6 @@ export const useValidateInvite = (token: string) => {
  */
 export const useAcceptInvite = () => {
   return useMutation({
-    mutationFn: (data: { token: string; name: string; password: string }) =>
-      acceptInvite(data),
+    mutationFn: (data: { token: string; name: string; password: string }) => acceptInvite(data),
   });
 };
-

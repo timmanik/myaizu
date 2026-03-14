@@ -51,10 +51,7 @@ export const getAllTeams = async (search?: string): Promise<TeamWithDetails[]> =
   return response.data.data;
 };
 
-export const updateTeam = async (
-  teamId: string,
-  data: UpdateTeamDto
-): Promise<TeamWithDetails> => {
+export const updateTeam = async (teamId: string, data: UpdateTeamDto): Promise<TeamWithDetails> => {
   const response = await api.put(`/admin/teams/${teamId}`, data);
   return response.data.data;
 };
@@ -63,10 +60,7 @@ export const deleteTeam = async (teamId: string): Promise<void> => {
   await api.delete(`/admin/teams/${teamId}`);
 };
 
-export const assignTeamAdmin = async (
-  teamId: string,
-  data: AssignTeamAdminDto
-): Promise<any> => {
+export const assignTeamAdmin = async (teamId: string, data: AssignTeamAdminDto): Promise<any> => {
   const response = await api.post(`/admin/teams/${teamId}/admins`, data);
   return response.data.data;
 };
@@ -105,4 +99,3 @@ export const deleteUser = async (userId: string): Promise<void> => {
  */
 
 export { getAllInvites, revokeInvite } from './invites';
-

@@ -14,7 +14,11 @@ const createInviteSchema = z.object({
  * POST /api/admin/invites
  * Create a new invite (Super Admin only)
  */
-export async function createInviteHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function createInviteHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   try {
     const data = createInviteSchema.parse(req.body);
 
@@ -92,4 +96,3 @@ export async function revokeInviteHandler(req: Request, res: Response, next: Nex
     next(error);
   }
 }
-

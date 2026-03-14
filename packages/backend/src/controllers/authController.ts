@@ -83,4 +83,3 @@ export async function logoutHandler(_req: Request, res: Response) {
     message: 'Logged out successfully',
   });
 }
-

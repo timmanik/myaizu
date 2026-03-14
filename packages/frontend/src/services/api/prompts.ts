@@ -25,27 +25,25 @@ export const promptsApi = {
     limit = 20
   ): Promise<PromptListResponse> => {
     const params = new URLSearchParams();
-    
+
     if (filters?.platform) params.append('platform', filters.platform);
     if (filters?.visibility) params.append('visibility', filters.visibility);
-    if (filters?.tags) filters.tags.forEach(tag => params.append('tags', tag));
+    if (filters?.tags) filters.tags.forEach((tag) => params.append('tags', tag));
     if (filters?.authorId) params.append('authorId', filters.authorId);
     if (filters?.teamId) params.append('teamId', filters.teamId);
     if (filters?.search) params.append('search', filters.search);
     if (filters?.isFavorited) params.append('isFavorited', 'true');
-    
+
     if (sort) {
       params.append('sortField', sort.field);
       params.append('sortOrder', sort.order);
     }
-    
+
     params.append('page', page.toString());
     params.append('limit', limit.toString());
 
-    const response = await apiClient.get<Prompt[]>(
-      `/prompts?${params.toString()}`
-    );
-    
+    const response = await apiClient.get<Prompt[]>(`/prompts?${params.toString()}`);
+
     return {
       prompts: response.data || [],
       total: response.pagination?.total || response.data?.length || 0,
@@ -86,9 +84,7 @@ export const promptsApi = {
    * Toggle favorite status
    */
   toggleFavorite: async (id: string) => {
-    return apiClient.post<{ isFavorited: boolean }>(
-      `/prompts/${id}/favorite`
-    );
+    return apiClient.post<{ isFavorited: boolean }>(`/prompts/${id}/favorite`);
   },
 
   /**

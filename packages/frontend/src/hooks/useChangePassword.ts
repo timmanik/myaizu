@@ -7,4 +7,3 @@ export function useChangePassword() {
     mutationFn: (data: ChangePasswordDto) => changePassword(data),
   });
 }
-

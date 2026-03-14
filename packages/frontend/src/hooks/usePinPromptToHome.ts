@@ -21,16 +21,18 @@ export const usePinPromptToHome = () => {
     onError: (error: any) => {
       // The error structure from our API client is: { status, success, error: { code, message } }
       const errorMessage = error.error?.message || error.message || 'Failed to pin prompt';
-      
+
       // Check if the error is about the pin limit
-      const isPinLimitError = errorMessage.includes('can only pin up to 3 prompts') || 
-                              errorMessage.includes('Unpin one first');
-      
+      const isPinLimitError =
+        errorMessage.includes('can only pin up to 3 prompts') ||
+        errorMessage.includes('Unpin one first');
+
       if (isPinLimitError) {
         // Show a white informational message for pin limit
         toast({
           title: 'Pin Limit Reached!',
-          description: 'You already have 3 pinned prompts. Remove one or more to add more pinned prompts.',
+          description:
+            'You already have 3 pinned prompts. Remove one or more to add more pinned prompts.',
           variant: 'default',
         });
       } else {
@@ -44,4 +46,3 @@ export const usePinPromptToHome = () => {
     },
   });
 };
-

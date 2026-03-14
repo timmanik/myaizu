@@ -74,24 +74,24 @@ export function UserMenu() {
       {shouldRender && (
         <>
           {/* Overlay with fade animation */}
-          <div 
+          <div
             className={`fixed inset-0 z-10 transition-opacity duration-200 ${
               showContent ? 'opacity-100' : 'opacity-0'
             }`}
             onClick={handleClose}
           />
           {/* Dropdown with fade + scale animation */}
-          <div 
+          <div
             className={`absolute right-0 mt-2 w-56 rounded-md border bg-popover p-1 shadow-lg z-20 transition-all duration-200 origin-top-right ${
-              showContent 
-                ? 'opacity-100 scale-100' 
-                : 'opacity-0 scale-95'
+              showContent ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             }`}
           >
             <div className="px-2 py-1.5 text-sm">
               <div className="font-medium">{user.name}</div>
               <div className="text-xs text-muted-foreground">{user.email}</div>
-              <div className="text-xs text-muted-foreground mt-1">{user.role.replace('_', ' ')}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {user.role.replace('_', ' ')}
+              </div>
             </div>
             <div className="h-px bg-border my-1" />
             <Button
@@ -130,4 +130,3 @@ export function UserMenu() {
     </div>
   );
 }
-

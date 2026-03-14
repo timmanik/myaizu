@@ -58,10 +58,7 @@ export function NewItemDropdown() {
         )}
       </div>
 
-      <CreateCollectionModal
-        open={isCollectionModalOpen}
-        onOpenChange={setIsCollectionModalOpen}
-      />
+      <CreateCollectionModal open={isCollectionModalOpen} onOpenChange={setIsCollectionModalOpen} />
     </>
   );
 }

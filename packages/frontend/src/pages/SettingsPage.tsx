@@ -18,10 +18,7 @@ export function SettingsPage() {
 
   return (
     <PageContainer>
-      <PageHeader
-        title="Settings"
-        description="Manage your account settings and preferences"
-      />
+      <PageHeader title="Settings" description="Manage your account settings and preferences" />
 
       {/* Tab Navigation */}
       <div className="flex space-x-1 border-b border-gray-200 mb-6">
@@ -151,9 +148,7 @@ function ProfileTab() {
             </div>
             <div>
               <h3 className="font-medium text-gray-900">Profile Picture</h3>
-              <p className="text-sm text-gray-500">
-                {authUser?.role || 'Member'}
-              </p>
+              <p className="text-sm text-gray-500">{authUser?.role || 'Member'}</p>
             </div>
           </div>
 
@@ -194,9 +189,7 @@ function ProfileTab() {
             onChange={(e) => handleChange('email', e.target.value)}
             required
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Used for login and notifications
-          </p>
+          <p className="text-xs text-gray-500 mt-1">Used for login and notifications</p>
         </div>
 
         {/* Role */}
@@ -244,10 +237,7 @@ function ProfileTab() {
             >
               Reset
             </Button>
-            <Button
-              type="submit"
-              disabled={!hasChanges || updateProfile.isPending}
-            >
+            <Button type="submit" disabled={!hasChanges || updateProfile.isPending}>
               {updateProfile.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -300,7 +290,7 @@ function SecurityTab() {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
       });
-      
+
       // Reset form
       setFormData({
         currentPassword: '',
@@ -346,9 +336,7 @@ function SecurityTab() {
             onChange={(e) => handleChange('newPassword', e.target.value)}
             required
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Must be at least 8 characters
-          </p>
+          <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
         </div>
 
         {/* Confirm Password */}
@@ -395,4 +383,3 @@ function SecurityTab() {
     </Card>
   );
 }
-

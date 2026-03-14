@@ -170,16 +170,12 @@ export function UserSearchInput({
               Type at least 2 characters to search
             </div>
           ) : isLoading ? (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              Searching...
-            </div>
+            <div className="p-4 text-center text-sm text-muted-foreground">Searching...</div>
           ) : filteredUsers.length === 0 ? (
             <div className="p-4 text-center">
               <User className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
               <p className="text-sm font-medium">No users found</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Try a different search term
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Try a different search term</p>
             </div>
           ) : (
             <div className="py-2">
@@ -218,4 +214,3 @@ export function UserSearchInput({
     </div>
   );
 }
-

@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Prompt } from '@aizu/shared';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { promptsApi } from '@/services/api/prompts';
 import { PromptDetailHeader } from './PromptDetailHeader';
@@ -32,9 +28,7 @@ export const PromptDetailModal = ({
   isOwner,
 }: PromptDetailModalProps) => {
   const navigate = useNavigate();
-  const [variableValues, setVariableValues] = useState<Record<string, string>>(
-    {}
-  );
+  const [variableValues, setVariableValues] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
   if (!prompt) return null;
@@ -84,7 +78,7 @@ export const PromptDetailModal = ({
       };
 
       const values = getVariableValues();
-      
+
       // Replace all {{variable}} with their values
       Object.keys(values).forEach((varName) => {
         const value = values[varName];
@@ -94,13 +88,13 @@ export const PromptDetailModal = ({
           contentToCopy = contentToCopy.replace(regex, value);
         }
       });
-      
+
       // Copy to clipboard
       await navigator.clipboard.writeText(contentToCopy);
-      
+
       // Increment the copy count on the backend
       await promptsApi.incrementCopy(prompt.id);
-      
+
       toast({
         title: 'Success',
         description: 'Prompt copied to clipboard with your variable values!',

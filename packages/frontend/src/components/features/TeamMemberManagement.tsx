@@ -99,10 +99,10 @@ export const TeamMemberManagement = ({
 
   const handleRemoveMember = async (userId: string) => {
     const confirmed = await confirm({
-      title: "Remove Team Member",
-      description: "Are you sure you want to remove this member from the team?",
-      confirmText: "Remove",
-      variant: "destructive",
+      title: 'Remove Team Member',
+      description: 'Are you sure you want to remove this member from the team?',
+      confirmText: 'Remove',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -133,114 +133,110 @@ export const TeamMemberManagement = ({
             Manage Members
           </h3>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Team Member</DialogTitle>
-              <DialogDescription>
-                Search for a user by name or email to add them to the team.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Search users..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch();
-                    }
-                  }}
-                />
-                <Button onClick={handleSearch} disabled={isSearching}>
-                  {isSearching ? 'Searching...' : 'Search'}
-                </Button>
-              </div>
-
-              {searchResults.length > 0 && !selectedUser && (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  <p className="text-sm text-muted-foreground">Select a user:</p>
-                  {searchResults.map((user) => (
-                    <Card
-                      key={user.id}
-                      className="p-3 cursor-pointer hover:bg-accent"
-                      onClick={() => setSelectedUser(user)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <User className="h-8 w-8 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-sm text-muted-foreground">{user.email}</div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-
-              {selectedUser && (
-                <div className="space-y-4">
-                  <Card className="p-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <User className="h-8 w-8 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">{selectedUser.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {selectedUser.email}
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedUser(null)}
-                      >
-                        Change
-                      </Button>
-                    </div>
-                  </Card>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Role</label>
-                    <Select
-                      value={selectedRole}
-                      onValueChange={(value) => setSelectedRole(value as TeamMemberRole)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={TeamMemberRole.MEMBER}>Member</SelectItem>
-                        <SelectItem value={TeamMemberRole.ADMIN}>Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      {selectedRole === TeamMemberRole.ADMIN
-                        ? 'Admins can manage team members and settings.'
-                        : 'Members can view and contribute to team prompts.'}
-                    </p>
-                  </div>
-
-                  <Button
-                    onClick={handleAddMember}
-                    disabled={addMemberMutation.isPending}
-                    className="w-full"
-                  >
-                    {addMemberMutation.isPending ? 'Adding...' : 'Add to Team'}
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add Member
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Team Member</DialogTitle>
+                <DialogDescription>
+                  Search for a user by name or email to add them to the team.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                  <Button onClick={handleSearch} disabled={isSearching}>
+                    {isSearching ? 'Searching...' : 'Search'}
                   </Button>
                 </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+
+                {searchResults.length > 0 && !selectedUser && (
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    <p className="text-sm text-muted-foreground">Select a user:</p>
+                    {searchResults.map((user) => (
+                      <Card
+                        key={user.id}
+                        className="p-3 cursor-pointer hover:bg-accent"
+                        onClick={() => setSelectedUser(user)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <User className="h-8 w-8 text-muted-foreground" />
+                          <div>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-sm text-muted-foreground">{user.email}</div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {selectedUser && (
+                  <div className="space-y-4">
+                    <Card className="p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <User className="h-8 w-8 text-muted-foreground" />
+                          <div>
+                            <div className="font-medium">{selectedUser.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {selectedUser.email}
+                            </div>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedUser(null)}>
+                          Change
+                        </Button>
+                      </div>
+                    </Card>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Role</label>
+                      <Select
+                        value={selectedRole}
+                        onValueChange={(value) => setSelectedRole(value as TeamMemberRole)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={TeamMemberRole.MEMBER}>Member</SelectItem>
+                          <SelectItem value={TeamMemberRole.ADMIN}>Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        {selectedRole === TeamMemberRole.ADMIN
+                          ? 'Admins can manage team members and settings.'
+                          : 'Members can view and contribute to team prompts.'}
+                      </p>
+                    </div>
+
+                    <Button
+                      onClick={handleAddMember}
+                      disabled={addMemberMutation.isPending}
+                      className="w-full"
+                    >
+                      {addMemberMutation.isPending ? 'Adding...' : 'Add to Team'}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       )}
 
       <div className="grid grid-cols-1 gap-3">
@@ -251,7 +247,7 @@ export const TeamMemberManagement = ({
           return (
             <Card key={member.id} className="p-4">
               <div className="flex items-center justify-between">
-                <div 
+                <div
                   className="flex items-center gap-3 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => handleMemberClick(member.userId)}
                 >

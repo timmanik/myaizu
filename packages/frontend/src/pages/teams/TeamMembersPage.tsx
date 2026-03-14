@@ -18,7 +18,7 @@ export default function TeamMembersPage() {
   const currentUserMembership = team?.members?.find((m) => m.userId === user?.id);
   const isTeamAdmin = currentUserMembership?.role === TeamMemberRole.ADMIN;
   const isSuperAdmin = user?.role === UserRole.SUPER_ADMIN;
-  
+
   // Super admins and team admins get full management access
   const canManage = isSuperAdmin || isTeamAdmin;
 
@@ -72,4 +72,3 @@ export default function TeamMembersPage() {
     </PageContainer>
   );
 }
-

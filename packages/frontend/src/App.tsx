@@ -51,88 +51,88 @@ function App() {
           <OrganizationProvider>
             <ConfirmProvider>
               <Toaster />
-            <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/invite" element={<InviteAcceptPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/invite" element={<InviteAcceptPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-            {/* Protected routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<HomePage />} />
-              <Route path="prompts" element={<MyPromptsPage />} />
-              <Route path="prompts/new" element={<PromptBuilderPage />} />
-              <Route path="prompts/:id" element={<PromptDetailPage />} />
-              <Route path="prompts/:id/edit" element={<PromptBuilderPage />} />
-              <Route path="favorites" element={<FavoritesPage />} />
-              <Route path="collections" element={<CollectionsPage />} />
-              <Route path="collections/:id" element={<CollectionDetailPage />} />
-              <Route path="trending" element={<TrendingPage />} />
-              <Route path="teams" element={<AllTeamsPage />} />
-              <Route path="teams/:id" element={<TeamPage />} />
-              <Route path="teams/:id/members" element={<TeamMembersPage />} />
-              <Route path="teams/:id/prompts" element={<TeamPromptsPage />} />
-              <Route path="teams/:id/collections" element={<TeamCollectionsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="users/:id" element={<ProfilePage />} />
-              
-              {/* Admin routes - Super Admin only */}
-              <Route
-                path="admin"
-                element={
-                  <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
-                    <AdminDashboard />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/teams"
-                element={
-                  <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
-                    <AdminTeamsPage />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/users"
-                element={
-                  <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
-                    <AdminUsersPage />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/invites"
-                element={
-                  <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
-                    <AdminInvitesPage />
-                  </RoleProtectedRoute>
-                }
-              />
-              <Route
-                path="admin/organization"
-                element={
-                  <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
-                    <AdminOrganizationPage />
-                  </RoleProtectedRoute>
-                }
-              />
-            </Route>
+                {/* Protected routes */}
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <AppShell />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<HomePage />} />
+                  <Route path="prompts" element={<MyPromptsPage />} />
+                  <Route path="prompts/new" element={<PromptBuilderPage />} />
+                  <Route path="prompts/:id" element={<PromptDetailPage />} />
+                  <Route path="prompts/:id/edit" element={<PromptBuilderPage />} />
+                  <Route path="favorites" element={<FavoritesPage />} />
+                  <Route path="collections" element={<CollectionsPage />} />
+                  <Route path="collections/:id" element={<CollectionDetailPage />} />
+                  <Route path="trending" element={<TrendingPage />} />
+                  <Route path="teams" element={<AllTeamsPage />} />
+                  <Route path="teams/:id" element={<TeamPage />} />
+                  <Route path="teams/:id/members" element={<TeamMembersPage />} />
+                  <Route path="teams/:id/prompts" element={<TeamPromptsPage />} />
+                  <Route path="teams/:id/collections" element={<TeamCollectionsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="users/:id" element={<ProfilePage />} />
 
-            {/* Catch all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+                  {/* Admin routes - Super Admin only */}
+                  <Route
+                    path="admin"
+                    element={
+                      <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
+                        <AdminDashboard />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/teams"
+                    element={
+                      <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
+                        <AdminTeamsPage />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/users"
+                    element={
+                      <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
+                        <AdminUsersPage />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/invites"
+                    element={
+                      <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
+                        <AdminInvitesPage />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/organization"
+                    element={
+                      <RoleProtectedRoute requiredRole={UserRole.SUPER_ADMIN}>
+                        <AdminOrganizationPage />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                </Route>
+
+                {/* Catch all */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
             </ConfirmProvider>
-        </OrganizationProvider>
-      </AuthProvider>
-    </BrowserRouter>
+          </OrganizationProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }

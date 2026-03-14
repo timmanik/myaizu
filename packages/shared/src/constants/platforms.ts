@@ -23,4 +23,3 @@ export const PLATFORM_COLORS: Record<Platform, string> = {
 };
 
 export const PLATFORMS = Object.values(Platform);
-

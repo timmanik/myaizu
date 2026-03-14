@@ -9,14 +9,14 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().default('3001').transform(Number),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
-  
+
   // Database
   DATABASE_URL: z.string().default('postgresql://postgres:postgres@localhost:5432/aizu'),
-  
+
   // JWT
   JWT_SECRET: z.string().default('your-super-secret-jwt-key-change-in-production'),
   JWT_EXPIRES_IN: z.string().default('7d'),
-  
+
   // Redis (optional for now)
   REDIS_URL: z.string().optional(),
 });
@@ -47,4 +47,3 @@ export const config = {
     url: env.REDIS_URL,
   },
 } as const;
-

@@ -19,4 +19,3 @@ router.post('/:id/prompts', collectionController.addPromptToCollection);
 router.delete('/:id/prompts/:promptId', collectionController.removePromptFromCollection);
 
 export default router;
-

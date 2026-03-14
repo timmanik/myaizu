@@ -66,7 +66,7 @@ export function HomePage() {
 
   const handleCopyPrompt = async (promptId: string) => {
     // Look for prompt in both myPrompts and pinnedPrompts
-    const allPrompts = [...myPrompts, ...(pinnedPrompts as Prompt[] || [])];
+    const allPrompts = [...myPrompts, ...((pinnedPrompts as Prompt[]) || [])];
     const prompt = allPrompts.find((p) => p.id === promptId);
     if (prompt) {
       try {
@@ -74,15 +74,15 @@ export function HomePage() {
         // Increment the copy count on the backend
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Prompt copied to clipboard!",
+          title: 'Success',
+          description: 'Prompt copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -106,7 +106,7 @@ export function HomePage() {
 
   const handlePromptClick = (promptId: string) => {
     // Look for prompt in both myPrompts and pinnedPrompts
-    const allPrompts = [...myPrompts, ...(pinnedPrompts as Prompt[] || [])];
+    const allPrompts = [...myPrompts, ...((pinnedPrompts as Prompt[]) || [])];
     const prompt = allPrompts.find((p) => p.id === promptId);
     if (prompt) {
       setSelectedPrompt(prompt);
@@ -133,10 +133,10 @@ export function HomePage() {
 
   const handleDelete = async (promptId: string) => {
     const confirmed = await confirm({
-      title: "Delete Prompt",
-      description: "Are you sure you want to delete this prompt?",
-      confirmText: "Delete",
-      variant: "destructive",
+      title: 'Delete Prompt',
+      description: 'Are you sure you want to delete this prompt?',
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -145,9 +145,9 @@ export function HomePage() {
       } catch (error) {
         console.error('Failed to delete prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to delete prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to delete prompt',
         });
       }
     }
@@ -206,9 +206,7 @@ export function HomePage() {
             <div className="flex items-center gap-2">
               <Pin className="h-5 w-5 text-orange-600" />
               <h2 className="text-xl font-semibold">Pinned Prompts</h2>
-              <span className="text-sm text-muted-foreground">
-                ({pinnedPrompts.length}/3)
-              </span>
+              <span className="text-sm text-muted-foreground">({pinnedPrompts.length}/3)</span>
             </div>
             {loadingPinned ? (
               <div className="text-center py-8">
@@ -270,9 +268,7 @@ export function HomePage() {
                 <FileText className="h-8 w-8 text-gray-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  No prompts yet
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">No prompts yet</h3>
                 <p className="text-muted-foreground mb-6">
                   Create your first prompt to get started with organizing your AI conversations.
                 </p>
@@ -298,4 +294,3 @@ export function HomePage() {
     </PageContainer>
   );
 }
-

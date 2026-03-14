@@ -20,4 +20,3 @@ export function verifyToken(token: string): JwtPayload {
     throw new Error('Invalid or expired token');
   }
 }
-

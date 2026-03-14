@@ -46,9 +46,7 @@ export default function AllTeamsPage() {
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <Users className="h-16 w-16 text-muted-foreground/20 mb-4" />
           <h3 className="text-lg font-semibold mb-2">No teams found</h3>
-          <p className="text-muted-foreground">
-            You are not a member of any teams yet
-          </p>
+          <p className="text-muted-foreground">You are not a member of any teams yet</p>
         </div>
       ) : filteredTeams.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -88,4 +86,3 @@ export default function AllTeamsPage() {
     </PageContainer>
   );
 }
-

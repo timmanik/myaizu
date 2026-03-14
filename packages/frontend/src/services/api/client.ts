@@ -42,10 +42,7 @@ class ApiClient {
     return this.token;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
 
     const headers: Record<string, string> = {
@@ -76,20 +73,19 @@ class ApiClient {
     } catch (error: any) {
       // Only log unexpected errors to console
       // Don't log expected validation errors (400s with specific business rules)
-      const isExpectedValidation = 
-        error.status === 400 && 
-        error.error?.message && (
-          error.error.message.includes('can only pin up to') ||
+      const isExpectedValidation =
+        error.status === 400 &&
+        error.error?.message &&
+        (error.error.message.includes('can only pin up to') ||
           error.error.message.includes('already pinned') ||
           error.error.message.includes('already exists') ||
           error.error.message.includes('Invalid') ||
-          error.error.message.includes('required')
-        );
-      
+          error.error.message.includes('required'));
+
       if (!isExpectedValidation) {
         console.error('API Error:', error);
       }
-      
+
       throw error;
     }
   }

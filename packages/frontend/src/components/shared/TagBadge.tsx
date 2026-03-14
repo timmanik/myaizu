@@ -32,4 +32,3 @@ export const TagBadge = ({ tag, onRemove, className }: TagBadgeProps) => {
     </Badge>
   );
 };
-

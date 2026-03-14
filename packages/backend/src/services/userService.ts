@@ -162,11 +162,7 @@ export async function getPublicProfile(userId: string) {
 /**
  * Get user's public prompts (for viewing by others)
  */
-export async function getUserPublicPrompts(
-  userId: string,
-  page: number = 1,
-  limit: number = 20
-) {
+export async function getUserPublicPrompts(userId: string, page: number = 1, limit: number = 20) {
   const skip = (page - 1) * limit;
 
   const [prompts, total] = await Promise.all([
@@ -477,4 +473,3 @@ export async function unpinPrompt(userId: string, promptId: string) {
 
   return { success: true };
 }
-

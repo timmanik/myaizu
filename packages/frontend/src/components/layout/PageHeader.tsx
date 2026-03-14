@@ -10,7 +10,14 @@ interface PageHeaderProps {
   icon?: ReactNode;
 }
 
-export function PageHeader({ title, description, actions, children, className, icon }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  children,
+  className,
+  icon,
+}: PageHeaderProps) {
   return (
     <div className={cn('mb-6', className)}>
       <div className="flex items-center justify-between gap-4">

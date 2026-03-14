@@ -70,7 +70,7 @@ export const PromptCard = ({
       const target = event.target as HTMLElement;
       const isClickingMenu = menuRef.current?.contains(target);
       const isClickingCollectionPicker = target.closest('[data-collection-picker]');
-      
+
       // Close everything if clicking outside both menu and picker
       if (!isClickingMenu && !isClickingCollectionPicker) {
         setShowMenu(false);
@@ -146,20 +146,20 @@ export const PromptCard = ({
 
   const handleAddToCollection = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     // Determine position based on available space
     if (menuRef.current) {
       const rect = menuRef.current.getBoundingClientRect();
       const spaceOnRight = window.innerWidth - rect.right;
       const neededSpace = 280; // Width of collection picker (264px + some padding)
-      
+
       if (spaceOnRight < neededSpace) {
         setPickerPosition('left');
       } else {
         setPickerPosition('right');
       }
     }
-    
+
     setShowCollectionPicker(true);
   };
 
@@ -264,9 +264,7 @@ export const PromptCard = ({
 
         {/* Description */}
         {prompt.description && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-            {prompt.description}
-          </p>
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{prompt.description}</p>
         )}
 
         {/* Badges */}
@@ -326,24 +324,12 @@ export const PromptCard = ({
                 <GitBranch className="h-4 w-4" />
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleFavorite}
-              className="h-8 px-2"
-            >
+            <Button variant="ghost" size="sm" onClick={handleFavorite} className="h-8 px-2">
               <Heart
-                className={`h-4 w-4 ${
-                  prompt.isFavorited ? 'fill-red-500 text-red-500' : ''
-                }`}
+                className={`h-4 w-4 ${prompt.isFavorited ? 'fill-red-500 text-red-500' : ''}`}
               />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopy}
-              className="h-8 px-2"
-            >
+            <Button variant="ghost" size="sm" onClick={handleCopy} className="h-8 px-2">
               <Copy className="h-4 w-4" />
             </Button>
           </div>
@@ -352,4 +338,3 @@ export const PromptCard = ({
     </Card>
   );
 };
-

@@ -163,9 +163,7 @@ export function SearchDropdown() {
               {/* Results */}
               <div className="flex-1 overflow-y-auto p-3 max-h-[500px]">
                 {isLoading && (
-                  <div className="text-center py-6 text-sm text-muted-foreground">
-                    Searching...
-                  </div>
+                  <div className="text-center py-6 text-sm text-muted-foreground">Searching...</div>
                 )}
 
                 {!isLoading && !showResults && debouncedQuery.length >= 2 && (
@@ -281,76 +279,76 @@ export function SearchDropdown() {
                       )}
 
                     {/* Teams */}
-                    {(activeTab === 'all' || activeTab === 'teams') &&
-                      results.teams.length > 0 && (
-                        <div>
-                          <h3 className="text-xs font-semibold mb-2 flex items-center gap-2 px-2 text-muted-foreground">
-                            <Users className="h-3 w-3" />
-                            Teams
-                            <span>({results.teams.length})</span>
-                          </h3>
-                          <div className="space-y-1">
-                            {results.teams.map((team) => (
-                              <button
-                                key={team.id}
-                                onClick={() => handleNavigate(`/teams/${team.id}`)}
-                                className="w-full text-left p-2 rounded hover:bg-muted transition-colors"
-                              >
-                                <h4 className="text-sm font-medium">{team.name}</h4>
-                                {team.description && (
-                                  <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                                    {team.description}
-                                  </p>
-                                )}
-                                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                                  <span>{team.memberCount} members</span>
-                                  <span>•</span>
-                                  <span>{team.promptCount} prompts</span>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
+                    {(activeTab === 'all' || activeTab === 'teams') && results.teams.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold mb-2 flex items-center gap-2 px-2 text-muted-foreground">
+                          <Users className="h-3 w-3" />
+                          Teams
+                          <span>({results.teams.length})</span>
+                        </h3>
+                        <div className="space-y-1">
+                          {results.teams.map((team) => (
+                            <button
+                              key={team.id}
+                              onClick={() => handleNavigate(`/teams/${team.id}`)}
+                              className="w-full text-left p-2 rounded hover:bg-muted transition-colors"
+                            >
+                              <h4 className="text-sm font-medium">{team.name}</h4>
+                              {team.description && (
+                                <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                                  {team.description}
+                                </p>
+                              )}
+                              <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                <span>{team.memberCount} members</span>
+                                <span>•</span>
+                                <span>{team.promptCount} prompts</span>
+                              </div>
+                            </button>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                    )}
 
                     {/* Users */}
-                    {(activeTab === 'all' || activeTab === 'users') &&
-                      results.users.length > 0 && (
-                        <div>
-                          <h3 className="text-xs font-semibold mb-2 flex items-center gap-2 px-2 text-muted-foreground">
-                            <User className="h-3 w-3" />
-                            Users
-                            <span>({results.users.length})</span>
-                          </h3>
-                          <div className="space-y-1">
-                            {results.users.map((user) => (
-                              <button
-                                key={user.id}
-                                onClick={() => handleNavigate(`/users/${user.id}`)}
-                                className="w-full text-left p-2 rounded hover:bg-muted transition-colors"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                                    {user.avatarUrl ? (
-                                      <img
-                                        src={user.avatarUrl}
-                                        alt={user.name}
-                                        className="h-full w-full rounded-full object-cover"
-                                      />
-                                    ) : (
-                                      <User className="h-4 w-4 text-muted-foreground" />
-                                    )}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="text-sm font-medium truncate">{user.name}</h4>
-                                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                                  </div>
+                    {(activeTab === 'all' || activeTab === 'users') && results.users.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold mb-2 flex items-center gap-2 px-2 text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          Users
+                          <span>({results.users.length})</span>
+                        </h3>
+                        <div className="space-y-1">
+                          {results.users.map((user) => (
+                            <button
+                              key={user.id}
+                              onClick={() => handleNavigate(`/users/${user.id}`)}
+                              className="w-full text-left p-2 rounded hover:bg-muted transition-colors"
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                                  {user.avatarUrl ? (
+                                    <img
+                                      src={user.avatarUrl}
+                                      alt={user.name}
+                                      className="h-full w-full rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <User className="h-4 w-4 text-muted-foreground" />
+                                  )}
                                 </div>
-                              </button>
-                            ))}
-                          </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-sm font-medium truncate">{user.name}</h4>
+                                  <p className="text-xs text-muted-foreground truncate">
+                                    {user.email}
+                                  </p>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -370,4 +368,3 @@ export function SearchDropdown() {
     </div>
   );
 }
-

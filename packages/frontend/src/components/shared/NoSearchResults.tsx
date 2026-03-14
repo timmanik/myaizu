@@ -6,10 +6,7 @@ interface NoSearchResultsProps {
   onClearSearch?: () => void;
 }
 
-export const NoSearchResults = ({
-  searchQuery,
-  onClearSearch,
-}: NoSearchResultsProps) => {
+export const NoSearchResults = ({ searchQuery, onClearSearch }: NoSearchResultsProps) => {
   return (
     <EmptyState
       icon={Search}
@@ -24,4 +21,3 @@ export const NoSearchResults = ({
     />
   );
 };
-

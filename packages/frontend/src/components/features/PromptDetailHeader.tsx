@@ -37,9 +37,7 @@ export const PromptDetailHeader = ({
           <h2 className="text-2xl font-bold mb-2">{prompt.title}</h2>
         )}
         {prompt.description && (
-          <p className="text-sm text-muted-foreground mb-3">
-            {prompt.description}
-          </p>
+          <p className="text-sm text-muted-foreground mb-3">{prompt.description}</p>
         )}
         <div className="flex flex-wrap gap-2 mb-3">
           <PlatformBadge platform={prompt.platform} />
@@ -61,4 +59,3 @@ export const PromptDetailHeader = ({
     </div>
   );
 };
-

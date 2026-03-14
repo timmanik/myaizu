@@ -20,18 +20,15 @@ export const PromptVariablesSection = ({
   const [showPreview, setShowPreview] = useState(false);
 
   // Extract variable names from prompt content (looking for {{variable name}} pattern)
-  const extractedVariables = Array.from(
-    promptContent.matchAll(/\{\{(.+?)\}\}/g),
-    (match) => match[1].trim()
+  const extractedVariables = Array.from(promptContent.matchAll(/\{\{(.+?)\}\}/g), (match) =>
+    match[1].trim()
   );
   const uniqueExtractedVars = [...new Set(extractedVariables)];
 
   // Sync variables with detected ones in prompt content
   useEffect(() => {
     // Create a map of existing variables by name for quick lookup
-    const existingVarsMap = new Map(
-      variables.map((v) => [v.name, v])
-    );
+    const existingVarsMap = new Map(variables.map((v) => [v.name, v]));
 
     // Build new variables array based on detected variables
     const syncedVariables: PromptVariable[] = uniqueExtractedVars.map((varName) => {
@@ -75,10 +72,7 @@ export const PromptVariablesSection = ({
     variables.forEach((variable) => {
       const escapedName = variable.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(`\\{\\{\\s*${escapedName}\\s*\\}\\}`, 'g');
-      preview = preview.replace(
-        regex,
-        variable.defaultValue || `{{${variable.name}}}`
-      );
+      preview = preview.replace(regex, variable.defaultValue || `{{${variable.name}}}`);
     });
     return preview;
   };
@@ -88,26 +82,30 @@ export const PromptVariablesSection = ({
     const preview = generatePreview();
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
-    
+
     // Match all variable patterns (both filled and unfilled)
     const variableRegex = /\{\{[^}]+\}\}/g;
     let match;
-    
+
     while ((match = variableRegex.exec(preview)) !== null) {
       // Add text before the variable
       if (match.index > lastIndex) {
         parts.push(preview.substring(lastIndex, match.index));
       }
       // Add the variable with purple highlight
-      parts.push(<span key={match.index} className="bg-purple-200 text-purple-800 rounded">{match[0]}</span>);
+      parts.push(
+        <span key={match.index} className="bg-purple-200 text-purple-800 rounded">
+          {match[0]}
+        </span>
+      );
       lastIndex = match.index + match[0].length;
     }
-    
+
     // Add remaining text
     if (lastIndex < preview.length) {
       parts.push(preview.substring(lastIndex));
     }
-    
+
     return parts.length > 0 ? parts : preview;
   };
 
@@ -183,7 +181,8 @@ export const PromptVariablesSection = ({
           </div>
         ) : (
           <div className="text-center py-8 text-sm text-muted-foreground">
-            No variables detected. Use {'{{variable name}}'} syntax in your prompt content to add variables.
+            No variables detected. Use {'{{variable name}}'} syntax in your prompt content to add
+            variables.
           </div>
         )}
       </Card>
@@ -193,7 +192,9 @@ export const PromptVariablesSection = ({
         <Card className="p-4">
           <h3 className="text-lg font-semibold mb-3">Preview with Default Values</h3>
           <div className="p-4 bg-gray-50 rounded-md">
-            <pre className="whitespace-pre-wrap text-sm font-mono">{renderPreviewWithHighlightedVariables()}</pre>
+            <pre className="whitespace-pre-wrap text-sm font-mono">
+              {renderPreviewWithHighlightedVariables()}
+            </pre>
           </div>
           {variables.length === 0 && (
             <p className="text-sm text-muted-foreground mt-2">
@@ -205,4 +206,3 @@ export const PromptVariablesSection = ({
     </div>
   );
 };
-

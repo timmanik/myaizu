@@ -30,7 +30,7 @@ const addPromptSchema = z.object({
 export const getCollections = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.userId;
-    
+
     const filters = {
       search: req.query.search as string | undefined,
       visibility: req.query.visibility as CollectionVisibility | undefined,
@@ -153,7 +153,11 @@ export const updateCollection = async (req: Request, res: Response) => {
         success: false,
         error: error.message,
       });
-    } else if (error.message.includes('permission') || error.message.includes('admin') || error.message.includes('private')) {
+    } else if (
+      error.message.includes('permission') ||
+      error.message.includes('admin') ||
+      error.message.includes('private')
+    ) {
       res.status(403).json({
         success: false,
         error: error.message,
@@ -288,4 +292,3 @@ export const removePromptFromCollection = async (req: Request, res: Response) =>
     }
   }
 };
-

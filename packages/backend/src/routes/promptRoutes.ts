@@ -20,4 +20,3 @@ router.post('/:id/copy', promptController.copy.bind(promptController));
 router.post('/:id/fork', promptController.fork.bind(promptController));
 
 export default router;
-

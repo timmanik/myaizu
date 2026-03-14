@@ -22,10 +22,7 @@ export class TrendingService {
           gte: dateThreshold,
         },
       },
-      orderBy: [
-        { favoriteCount: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ favoriteCount: 'desc' }, { createdAt: 'desc' }],
       take: limit,
       include: {
         author: {
@@ -136,9 +133,7 @@ export class TrendingService {
   /**
    * Get all trending categories in one call (for overview)
    */
-  async getTrendingOverview(
-    userId: string
-  ): Promise<{
+  async getTrendingOverview(userId: string): Promise<{
     mostFavorited: SharedPrompt[];
     fastRising: SharedPrompt[];
     new: SharedPrompt[];
@@ -183,6 +178,3 @@ export class TrendingService {
 }
 
 export const trendingService = new TrendingService();
-
-
-

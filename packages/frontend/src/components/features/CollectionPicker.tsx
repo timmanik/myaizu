@@ -83,7 +83,7 @@ export const CollectionPicker = ({
   const handleSelectCollection = async (collectionId: string) => {
     // Optimistically update UI
     setSelectedCollections((prev) => new Set(prev).add(collectionId));
-    
+
     try {
       await onSelect(collectionId);
     } catch (error) {

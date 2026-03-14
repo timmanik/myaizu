@@ -32,22 +32,20 @@ export default function TeamPage() {
   const [viewAsPublic, setViewAsPublic] = useState(false);
 
   const { data: team, isLoading: loadingTeam } = useTeam(id!);
-  
+
   // Check if current user is a team member
   const currentUserMembership = team?.members?.find((m) => m.userId === user?.id);
   const isTeamMember = !!currentUserMembership;
-  
+
   // Fetch prompts with view mode
   const { data: prompts, isLoading: loadingPrompts } = useTeamPrompts(id!, { viewAsPublic });
-  
+
   // Fetch team collections
   const { data: allCollections, isLoading: loadingCollections } = useCollections({ teamId: id });
-  
+
   // Fetch all teams for role mapping
-  const { data: allTeams = [] } = useTeams(
-    user ? { memberUserId: user.id } : undefined
-  );
-  
+  const { data: allTeams = [] } = useTeams(user ? { memberUserId: user.id } : undefined);
+
   // Build a map of team IDs to user's role in that team
   const userTeamRoles = useMemo(() => {
     const roleMap = new Map<string, TeamMemberRole>();
@@ -62,10 +60,10 @@ export default function TeamPage() {
 
     return roleMap;
   }, [allTeams, user]);
-  
+
   // Show only first 6 collections for preview
   const previewCollections = allCollections?.slice(0, 6) || [];
-  
+
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const addToCollectionMutation = useAddToCollection();
@@ -85,15 +83,15 @@ export default function TeamPage() {
         await navigator.clipboard.writeText(prompt.content);
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Prompt copied to clipboard!",
+          title: 'Success',
+          description: 'Prompt copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -167,25 +165,21 @@ export default function TeamPage() {
           description={team.description || undefined}
           icon={<Users className="h-6 w-6" />}
         />
-        
+
         {isTeamMember && (
           <div className="flex items-center gap-3 mt-2 bg-muted px-4 py-2 rounded-lg">
             <Eye className="h-4 w-4 text-muted-foreground" />
             <Label htmlFor="view-toggle" className="text-sm font-medium cursor-pointer">
-              {viewAsPublic ? "Public View" : "Member View"}
+              {viewAsPublic ? 'Public View' : 'Member View'}
             </Label>
-            <Switch
-              id="view-toggle"
-              checked={viewAsPublic}
-              onCheckedChange={setViewAsPublic}
-            />
+            <Switch id="view-toggle" checked={viewAsPublic} onCheckedChange={setViewAsPublic} />
           </div>
         )}
       </div>
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <Card 
+        <Card
           className="p-6 cursor-pointer hover:bg-accent transition-colors"
           onClick={() => navigate(`/teams/${id}/members`)}
         >
@@ -197,7 +191,7 @@ export default function TeamPage() {
             </div>
           </div>
         </Card>
-        <Card 
+        <Card
           className="p-6 cursor-pointer hover:bg-accent transition-colors"
           onClick={() => navigate(`/teams/${id}/prompts`)}
         >
@@ -209,7 +203,7 @@ export default function TeamPage() {
             </div>
           </div>
         </Card>
-        <Card 
+        <Card
           className="p-6 cursor-pointer hover:bg-accent transition-colors"
           onClick={() => navigate(`/teams/${id}/collections`)}
         >
@@ -228,11 +222,7 @@ export default function TeamPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Team Collections</h2>
           {allCollections && allCollections.length > 6 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(`/teams/${id}/collections`)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate(`/teams/${id}/collections`)}>
               View All Collections
             </Button>
           )}
@@ -274,16 +264,16 @@ export default function TeamPage() {
         ) : !prompts || prompts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-center">
             <p className="text-muted-foreground">
-              {viewAsPublic 
-                ? "No public prompts from team members yet"
-                : "No prompts in this team yet"}
+              {viewAsPublic
+                ? 'No public prompts from team members yet'
+                : 'No prompts in this team yet'}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {prompts.map((prompt: any) => (
-              <PromptCard 
-                key={prompt.id} 
+              <PromptCard
+                key={prompt.id}
                 prompt={prompt}
                 onFavorite={handleFavoritePrompt}
                 onCopy={handleCopyPrompt}
@@ -309,4 +299,3 @@ export default function TeamPage() {
     </PageContainer>
   );
 }
-

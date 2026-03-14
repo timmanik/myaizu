@@ -17,4 +17,3 @@ export const useViewMode = (defaultMode: ViewMode = 'grid') => {
     isList: viewMode === 'list',
   };
 };
-

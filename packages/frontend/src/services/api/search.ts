@@ -47,7 +47,7 @@ export const searchApi = {
     const params = new URLSearchParams();
     params.append('q', query);
     params.append('limit', limit.toString());
-    
+
     const response = await apiClient.get<SearchResults>(`/search?${params.toString()}`);
     // Search endpoint returns data directly without wrapper
     return response as any as SearchResults;
@@ -60,8 +60,10 @@ export const searchApi = {
     const params = new URLSearchParams();
     params.append('q', query);
     params.append('limit', limit.toString());
-    
-    const response = await apiClient.get<{ prompts: Prompt[] }>(`/search/prompts?${params.toString()}`);
+
+    const response = await apiClient.get<{ prompts: Prompt[] }>(
+      `/search/prompts?${params.toString()}`
+    );
     // Search endpoint returns { prompts } directly
     return (response as any).prompts;
   },
@@ -73,8 +75,10 @@ export const searchApi = {
     const params = new URLSearchParams();
     params.append('q', query);
     params.append('limit', limit.toString());
-    
-    const response = await apiClient.get<{ collections: SearchCollection[] }>(`/search/collections?${params.toString()}`);
+
+    const response = await apiClient.get<{ collections: SearchCollection[] }>(
+      `/search/collections?${params.toString()}`
+    );
     // Search endpoint returns { collections } directly
     return (response as any).collections;
   },
@@ -86,8 +90,10 @@ export const searchApi = {
     const params = new URLSearchParams();
     params.append('q', query);
     params.append('limit', limit.toString());
-    
-    const response = await apiClient.get<{ teams: SearchTeam[] }>(`/search/teams?${params.toString()}`);
+
+    const response = await apiClient.get<{ teams: SearchTeam[] }>(
+      `/search/teams?${params.toString()}`
+    );
     // Search endpoint returns { teams } directly
     return (response as any).teams;
   },
@@ -99,10 +105,11 @@ export const searchApi = {
     const params = new URLSearchParams();
     params.append('q', query);
     params.append('limit', limit.toString());
-    
-    const response = await apiClient.get<{ users: SearchUser[] }>(`/search/users?${params.toString()}`);
+
+    const response = await apiClient.get<{ users: SearchUser[] }>(
+      `/search/users?${params.toString()}`
+    );
     // Search endpoint returns { users } directly
     return (response as any).users;
   },
 };
-

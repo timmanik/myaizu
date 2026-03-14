@@ -1,37 +1,37 @@
-import * as React from "react"
+import * as React from 'react';
 
 interface ConfirmOptions {
-  title: string
-  description?: string
-  confirmText?: string
-  cancelText?: string
-  variant?: "default" | "destructive"
+  title: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'default' | 'destructive';
 }
 
 interface ConfirmContextValue {
-  confirm: (options: ConfirmOptions) => Promise<boolean>
+  confirm: (options: ConfirmOptions) => Promise<boolean>;
 }
 
-const ConfirmContext = React.createContext<ConfirmContextValue | null>(null)
+const ConfirmContext = React.createContext<ConfirmContextValue | null>(null);
 
 export function useConfirm() {
-  const context = React.useContext(ConfirmContext)
+  const context = React.useContext(ConfirmContext);
   if (!context) {
-    throw new Error("useConfirm must be used within a ConfirmProvider")
+    throw new Error('useConfirm must be used within a ConfirmProvider');
   }
-  return context.confirm
+  return context.confirm;
 }
 
 interface ConfirmProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function ConfirmProvider({ children }: ConfirmProviderProps) {
   const [confirmState, setConfirmState] = React.useState<{
-    isOpen: boolean
-    options: ConfirmOptions
-    resolve: (value: boolean) => void
-  } | null>(null)
+    isOpen: boolean;
+    options: ConfirmOptions;
+    resolve: (value: boolean) => void;
+  } | null>(null);
 
   const confirm = React.useCallback((options: ConfirmOptions) => {
     return new Promise<boolean>((resolve) => {
@@ -39,30 +39,33 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
         isOpen: true,
         options,
         resolve,
-      })
-    })
-  }, [])
+      });
+    });
+  }, []);
 
   const handleConfirm = React.useCallback(() => {
     if (confirmState) {
-      confirmState.resolve(true)
-      setConfirmState(null)
+      confirmState.resolve(true);
+      setConfirmState(null);
     }
-  }, [confirmState])
+  }, [confirmState]);
 
   const handleCancel = React.useCallback(() => {
     if (confirmState) {
-      confirmState.resolve(false)
-      setConfirmState(null)
+      confirmState.resolve(false);
+      setConfirmState(null);
     }
-  }, [confirmState])
+  }, [confirmState]);
 
-  const handleOpenChange = React.useCallback((open: boolean) => {
-    if (!open && confirmState) {
-      confirmState.resolve(false)
-      setConfirmState(null)
-    }
-  }, [confirmState])
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (!open && confirmState) {
+        confirmState.resolve(false);
+        setConfirmState(null);
+      }
+    },
+    [confirmState]
+  );
 
   return (
     <ConfirmContext.Provider value={{ confirm }}>
@@ -77,15 +80,15 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
         />
       )}
     </ConfirmContext.Provider>
-  )
+  );
 }
 
 interface ConfirmDialogProps {
-  isOpen: boolean
-  options: ConfirmOptions
-  onConfirm: () => void
-  onCancel: () => void
-  onOpenChange: (open: boolean) => void
+  isOpen: boolean;
+  options: ConfirmOptions;
+  onConfirm: () => void;
+  onCancel: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 import {
@@ -95,37 +98,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
-function ConfirmDialog({
-  isOpen,
-  options,
-  onConfirm,
-  onCancel,
-  onOpenChange,
-}: ConfirmDialogProps) {
+function ConfirmDialog({ isOpen, options, onConfirm, onCancel, onOpenChange }: ConfirmDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{options.title}</DialogTitle>
-          {options.description && (
-            <DialogDescription>{options.description}</DialogDescription>
-          )}
+          {options.description && <DialogDescription>{options.description}</DialogDescription>}
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
-            {options.cancelText || "Cancel"}
+            {options.cancelText || 'Cancel'}
           </Button>
-          <Button
-            variant={options.variant || "default"}
-            onClick={onConfirm}
-          >
-            {options.confirmText || "Confirm"}
+          <Button variant={options.variant || 'default'} onClick={onConfirm}>
+            {options.confirmText || 'Confirm'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -18,4 +18,3 @@ router.delete('/:id/members/:userId', teamController.removeTeamMember);
 router.put('/:id/members/:userId/role', teamController.updateTeamMemberRole);
 
 export default router;
-

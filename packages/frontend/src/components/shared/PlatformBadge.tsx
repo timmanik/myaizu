@@ -12,12 +12,8 @@ export const PlatformBadge = ({ platform, className }: PlatformBadgeProps) => {
   const colorClass = PLATFORM_COLORS[platform];
 
   return (
-    <Badge
-      variant="outline"
-      className={`${colorClass} ${className || ''}`}
-    >
+    <Badge variant="outline" className={`${colorClass} ${className || ''}`}>
       {label}
     </Badge>
   );
 };
-

@@ -493,4 +493,3 @@ const getMaxOrderInCollection = async (collectionId: string): Promise<number> =>
   });
   return (maxResult._max.order || 0) + 1;
 };
-

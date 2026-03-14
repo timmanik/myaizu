@@ -20,9 +20,7 @@ export const collectionsApi = {
     if (filters?.sortField) params.append('sortField', filters.sortField);
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);
 
-    const response = await apiClient.get<Collection[]>(
-      `/collections?${params.toString()}`
-    );
+    const response = await apiClient.get<Collection[]>(`/collections?${params.toString()}`);
     return response.data || [];
   },
 

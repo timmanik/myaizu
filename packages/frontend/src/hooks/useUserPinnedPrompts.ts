@@ -7,4 +7,3 @@ export const useUserPinnedPrompts = () => {
     queryFn: () => getPinnedPrompts(),
   });
 };
-

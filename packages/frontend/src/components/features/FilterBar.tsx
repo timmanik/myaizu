@@ -63,12 +63,8 @@ export const FilterBar = ({
             className="pl-9"
           />
         </div>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowFilters(!showFilters)}
-        >
+
+        <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
           <SlidersHorizontal className="h-4 w-4 mr-2" />
           Filters
         </Button>
@@ -154,9 +150,7 @@ export const FilterBar = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  onSortChange?.(sortField, sortOrder === 'asc' ? 'desc' : 'asc')
-                }
+                onClick={() => onSortChange?.(sortField, sortOrder === 'asc' ? 'desc' : 'asc')}
                 className="px-3"
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
@@ -168,4 +162,3 @@ export const FilterBar = ({
     </div>
   );
 };
-

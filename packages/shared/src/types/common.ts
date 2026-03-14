@@ -50,4 +50,3 @@ export interface Timestamps {
 export interface SoftDelete {
   deletedAt?: Date;
 }
-

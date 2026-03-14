@@ -19,11 +19,7 @@ const changePasswordSchema = z.object({
  * PUT /api/user/profile
  * Update current user's profile
  */
-export async function updateProfileHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function updateProfileHandler(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.user) {
       res.status(401).json({
@@ -49,11 +45,7 @@ export async function updateProfileHandler(
  * POST /api/user/change-password
  * Change current user's password
  */
-export async function changePasswordHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function changePasswordHandler(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.user) {
       res.status(401).json({
@@ -79,11 +71,7 @@ export async function changePasswordHandler(
  * GET /api/user/profile
  * Get current user's full profile
  */
-export async function getProfileHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function getProfileHandler(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.user) {
       res.status(401).json({
@@ -108,11 +96,7 @@ export async function getProfileHandler(
  * GET /api/users/:id
  * Get public profile of any user
  */
-export async function getPublicProfileHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function getPublicProfileHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
     const user = await userService.getPublicProfile(id);
@@ -130,11 +114,7 @@ export async function getPublicProfileHandler(
  * GET /api/users/:id/prompts
  * Get user's public prompts
  */
-export async function getUserPromptsHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function getUserPromptsHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
     const page = parseInt(req.query.page as string) || 1;
@@ -155,11 +135,7 @@ export async function getUserPromptsHandler(
  * GET /api/users/:id/collections
  * Get user's public collections
  */
-export async function getUserCollectionsHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function getUserCollectionsHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
     const page = parseInt(req.query.page as string) || 1;
@@ -180,11 +156,7 @@ export async function getUserCollectionsHandler(
  * GET /api/users/me/pinned
  * Get current user's pinned prompts
  */
-export async function getPinnedPromptsHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function getPinnedPromptsHandler(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.user) {
       res.status(401).json({
@@ -213,11 +185,7 @@ const pinPromptSchema = z.object({
  * POST /api/users/me/pin
  * Pin a prompt to user's home page
  */
-export async function pinPromptHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function pinPromptHandler(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.user) {
       res.status(401).json({
@@ -243,11 +211,7 @@ export async function pinPromptHandler(
  * DELETE /api/users/me/pin/:promptId
  * Unpin a prompt from user's home page
  */
-export async function unpinPromptHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function unpinPromptHandler(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.user) {
       res.status(401).json({
@@ -268,4 +232,3 @@ export async function unpinPromptHandler(
     next(error);
   }
 }
-

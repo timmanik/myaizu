@@ -1,9 +1,5 @@
 import { PrismaClient, TeamMemberRole as PrismaTeamMemberRole } from '@prisma/client';
-import {
-  TeamMemberRole,
-  TeamFilters,
-  TeamPromptsFilters,
-} from '@aizu/shared';
+import { TeamMemberRole, TeamFilters, TeamPromptsFilters } from '@aizu/shared';
 
 const prisma = new PrismaClient();
 
@@ -63,7 +59,7 @@ export const getTeams = async (userId: string, filters: TeamFilters = {}) => {
     teams.map(async (team) => {
       // Check if the current user is a member of this team
       const isMember = await isTeamMember(team.id, userId);
-      
+
       // Build the count query based on membership
       const promptCount = await prisma.prompt.count({
         where: isMember
@@ -213,7 +209,7 @@ export const getTeamPrompts = async (
 ) => {
   // Check if user is a member
   const isMember = await isTeamMember(teamId, userId);
-  
+
   // Determine view mode: public view if not a member OR if explicitly requested
   const viewAsPublic = filters.viewAsPublic || !isMember;
 
@@ -221,7 +217,7 @@ export const getTeamPrompts = async (
 
   // Build visibility conditions based on view mode
   const visibilityConditions: any[] = [];
-  
+
   if (viewAsPublic) {
     // Public view: only PUBLIC prompts from team members
     visibilityConditions.push({
@@ -299,7 +295,7 @@ export const getTeamPrompts = async (
     },
   });
 
-  return prompts.map(p => mapPromptToShared(p, userId));
+  return prompts.map((p) => mapPromptToShared(p, userId));
 };
 
 /**
@@ -502,7 +498,6 @@ export const updateTeamMemberRole = async (
   return updated;
 };
 
-
 /**
  * Helper function to transform Prisma prompt to shared Prompt type
  */
@@ -529,4 +524,3 @@ const mapPromptToShared = (prompt: any, userId: string): any => {
     updatedAt: prompt.updatedAt.toISOString(),
   };
 };
-

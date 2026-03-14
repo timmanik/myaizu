@@ -15,7 +15,7 @@ export interface Collection {
   teamId: string | null;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Optional populated relations
   owner?: {
     id: string;
@@ -38,7 +38,7 @@ export interface CollectionPrompt {
   promptId: string;
   order: number;
   createdAt: Date;
-  
+
   // Optional populated relations
   prompt?: {
     id: string;
@@ -103,4 +103,3 @@ export interface CollectionFilters {
   sortField?: 'createdAt' | 'updatedAt' | 'name';
   sortOrder?: 'asc' | 'desc';
 }
-

@@ -3,7 +3,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi } from '../../services/api/auth';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '../../components/ui/card';
 
 export function InviteAcceptPage() {
   const [searchParams] = useSearchParams();
@@ -15,7 +22,11 @@ export function InviteAcceptPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
-  const [inviteData, setInviteData] = useState<{ valid: boolean; email?: string; error?: string } | null>(null);
+  const [inviteData, setInviteData] = useState<{
+    valid: boolean;
+    email?: string;
+    error?: string;
+  } | null>(null);
 
   const navigate = useNavigate();
 
@@ -99,7 +110,9 @@ export function InviteAcceptPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Invalid Invite</CardTitle>
-            <CardDescription>{error || 'This invite link is not valid or has expired.'}</CardDescription>
+            <CardDescription>
+              {error || 'This invite link is not valid or has expired.'}
+            </CardDescription>
           </CardHeader>
           <CardFooter>
             <Button onClick={() => navigate('/login')} className="w-full">
@@ -182,4 +195,3 @@ export function InviteAcceptPage() {
     </div>
   );
 }
-

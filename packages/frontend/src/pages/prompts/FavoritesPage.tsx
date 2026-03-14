@@ -28,7 +28,7 @@ export default function FavoritesPage() {
   const { toast } = useToast();
   const confirm = useConfirm();
   const { viewMode, setViewMode } = useViewMode();
-  
+
   // Individual filter states
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState<Platform | undefined>(undefined);
@@ -39,7 +39,7 @@ export default function FavoritesPage() {
   });
   const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const deleteMutation = useDeletePrompt();
@@ -88,15 +88,15 @@ export default function FavoritesPage() {
         // Increment the copy count on the backend
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Prompt copied to clipboard!",
+          title: 'Success',
+          description: 'Prompt copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -124,10 +124,10 @@ export default function FavoritesPage() {
 
   const handleDeletePrompt = async (promptId: string) => {
     const confirmed = await confirm({
-      title: "Delete Prompt",
-      description: "Are you sure you want to delete this prompt?",
-      confirmText: "Delete",
-      variant: "destructive",
+      title: 'Delete Prompt',
+      description: 'Are you sure you want to delete this prompt?',
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -136,9 +136,9 @@ export default function FavoritesPage() {
       } catch (error) {
         console.error('Failed to delete prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to delete prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to delete prompt',
         });
       }
     }
@@ -239,4 +239,3 @@ export default function FavoritesPage() {
     </PageContainer>
   );
 }
-

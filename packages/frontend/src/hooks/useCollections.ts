@@ -8,4 +8,3 @@ export const useCollections = (filters?: CollectionFilters) => {
     queryFn: () => collectionsApi.getCollections(filters),
   });
 };
-

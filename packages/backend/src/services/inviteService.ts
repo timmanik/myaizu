@@ -96,4 +96,3 @@ export async function revokeInvite(inviteId: string): Promise<void> {
     where: { id: inviteId },
   });
 }
-

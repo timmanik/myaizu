@@ -20,15 +20,15 @@ export const RoleProtectedRoute = ({ children, requiredRole }: RoleProtectedRout
     if (user.role === UserRole.SUPER_ADMIN) {
       return true;
     }
-    
+
     if (requiredRole === UserRole.TEAM_ADMIN && user.role === UserRole.TEAM_ADMIN) {
       return true;
     }
-    
+
     if (requiredRole === UserRole.MEMBER) {
       return true;
     }
-    
+
     return false;
   };
 

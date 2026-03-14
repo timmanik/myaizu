@@ -46,16 +46,16 @@ export function CollectionCard({
   // Check if user can modify this collection
   const canModify = (() => {
     if (!currentUserId) return false;
-    
+
     // Owner can always modify
     if (collection.ownerId === currentUserId) return true;
-    
+
     // If it's a team collection, check if user is a team admin
     if (collection.teamId && userTeamRoles) {
       const role = userTeamRoles.get(collection.teamId);
       return role === 'ADMIN';
     }
-    
+
     return false;
   })();
 
@@ -198,9 +198,7 @@ export function CollectionCard({
         )}
       </div>
       {collection.description && (
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-          {collection.description}
-        </p>
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{collection.description}</p>
       )}
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>
@@ -212,4 +210,3 @@ export function CollectionCard({
     </Card>
   );
 }
-

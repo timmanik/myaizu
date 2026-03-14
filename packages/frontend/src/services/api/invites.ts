@@ -90,4 +90,3 @@ export const acceptInvite = async (data: {
   });
   return response.data.data;
 };
-

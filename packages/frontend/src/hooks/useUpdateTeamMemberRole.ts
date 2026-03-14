@@ -8,21 +8,20 @@ export const useUpdateTeamMemberRole = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({ 
-      teamId, 
-      userId, 
-      data 
-    }: { 
-      teamId: string; 
-      userId: string; 
+    mutationFn: ({
+      teamId,
+      userId,
+      data,
+    }: {
+      teamId: string;
+      userId: string;
       data: UpdateTeamMemberRoleDto;
-    }) =>
-      teamsApi.updateTeamMemberRole(teamId, userId, data),
+    }) => teamsApi.updateTeamMemberRole(teamId, userId, data),
     onSuccess: (_, variables) => {
       // Invalidate team queries to refresh member list
       queryClient.invalidateQueries({ queryKey: ['team', variables.teamId] });
       queryClient.invalidateQueries({ queryKey: ['teams'] });
-      
+
       toast({
         title: 'Success',
         description: 'Team member role updated successfully',
@@ -37,4 +36,3 @@ export const useUpdateTeamMemberRole = () => {
     },
   });
 };
-

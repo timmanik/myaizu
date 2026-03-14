@@ -10,7 +10,7 @@ export const SUGGESTED_TAGS = [
   'Translation',
   'Summarization',
   'Brainstorming',
-  
+
   // Technical
   'Debugging',
   'Code Review',
@@ -21,7 +21,7 @@ export const SUGGESTED_TAGS = [
   'Frontend',
   'Backend',
   'DevOps',
-  
+
   // Content creation
   'Blog Post',
   'Social Media',
@@ -31,7 +31,7 @@ export const SUGGESTED_TAGS = [
   'Story',
   'Poetry',
   'Technical Writing',
-  
+
   // Professional
   'Business',
   'Strategy',
@@ -40,14 +40,14 @@ export const SUGGESTED_TAGS = [
   'Report',
   'Proposal',
   'Meeting',
-  
+
   // Data & AI
   'Data Analysis',
   'Machine Learning',
   'SQL',
   'Visualization',
   'AI Training',
-  
+
   // Design & Art
   'Image Generation',
   'Logo Design',
@@ -55,7 +55,7 @@ export const SUGGESTED_TAGS = [
   'Art Direction',
   'Character Design',
   'Illustration',
-  
+
   // Education
   'Tutorial',
   'Explanation',
@@ -63,14 +63,14 @@ export const SUGGESTED_TAGS = [
   'Teaching',
   'Quiz',
   'Study Guide',
-  
+
   // Productivity
   'Task Management',
   'Time Management',
   'Organization',
   'Automation',
   'Workflow',
-  
+
   // Communication
   'Customer Service',
   'Feedback',
@@ -79,7 +79,7 @@ export const SUGGESTED_TAGS = [
   'Negotiation',
 ] as const;
 
-export type SuggestedTag = typeof SUGGESTED_TAGS[number];
+export type SuggestedTag = (typeof SUGGESTED_TAGS)[number];
 
 // Tag colors for display
 export const TAG_COLORS = [
@@ -98,4 +98,3 @@ export const getTagColor = (tag: string): string => {
   const hash = tag.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return TAG_COLORS[hash % TAG_COLORS.length];
 };
-

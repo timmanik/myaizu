@@ -12,4 +12,3 @@ export const PROMPT_TYPE_LABELS: Record<PromptType, string> = {
 };
 
 export const PROMPT_TYPES = Object.values(PromptType);
-

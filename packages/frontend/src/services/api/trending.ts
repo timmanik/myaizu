@@ -10,14 +10,11 @@ export interface TrendingOverview {
 /**
  * Get most favorited prompts
  */
-export async function getMostFavorited(
-  days: number = 7,
-  limit: number = 20
-): Promise<Prompt[]> {
+export async function getMostFavorited(days: number = 7, limit: number = 20): Promise<Prompt[]> {
   const params = new URLSearchParams();
   params.append('days', days.toString());
   params.append('limit', limit.toString());
-  
+
   const response = await apiClient.get<Prompt[]>(`/trending/most-favorited?${params.toString()}`);
   // Trending endpoint returns array directly without wrapper
   return response as any as Prompt[];
@@ -26,14 +23,11 @@ export async function getMostFavorited(
 /**
  * Get fast rising prompts
  */
-export async function getFastRising(
-  days: number = 7,
-  limit: number = 20
-): Promise<Prompt[]> {
+export async function getFastRising(days: number = 7, limit: number = 20): Promise<Prompt[]> {
   const params = new URLSearchParams();
   params.append('days', days.toString());
   params.append('limit', limit.toString());
-  
+
   const response = await apiClient.get<Prompt[]>(`/trending/fast-rising?${params.toString()}`);
   // Trending endpoint returns array directly without wrapper
   return response as any as Prompt[];
@@ -45,7 +39,7 @@ export async function getFastRising(
 export async function getNewPrompts(limit: number = 20): Promise<Prompt[]> {
   const params = new URLSearchParams();
   params.append('limit', limit.toString());
-  
+
   const response = await apiClient.get<Prompt[]>(`/trending/new?${params.toString()}`);
   // Trending endpoint returns array directly without wrapper
   return response as any as Prompt[];
@@ -59,4 +53,3 @@ export async function getTrendingOverview(): Promise<TrendingOverview> {
   // Trending endpoint returns object directly without wrapper
   return response as any as TrendingOverview;
 }
-

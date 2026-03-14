@@ -25,10 +25,7 @@ export const getOrganization = async () => {
 /**
  * Update organization settings (Super Admin only)
  */
-export const updateOrganization = async (data: {
-  name?: string;
-  logoUrl?: string | null;
-}) => {
+export const updateOrganization = async (data: { name?: string; logoUrl?: string | null }) => {
   let organization = await prisma.organization.findFirst();
 
   if (!organization) {
@@ -53,4 +50,3 @@ export const updateOrganization = async (data: {
 
   return organization;
 };
-

@@ -13,7 +13,6 @@ const updateMemberRoleSchema = z.object({
   role: z.nativeEnum(TeamMemberRole),
 });
 
-
 /**
  * GET /api/teams
  * Get all teams the user has access to

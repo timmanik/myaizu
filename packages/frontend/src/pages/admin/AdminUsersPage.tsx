@@ -66,10 +66,10 @@ const AdminUsersPage = () => {
 
   const handleDeleteUser = async (userId: string, userName: string) => {
     const confirmed = await confirm({
-      title: "Delete User",
+      title: 'Delete User',
       description: `Are you sure you want to delete ${userName}? This action cannot be undone.`,
-      confirmText: "Delete",
-      variant: "destructive",
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (!confirmed) {
@@ -182,18 +182,14 @@ const AdminUsersPage = () => {
                       <Badge variant={getRoleBadgeVariant(user.role)}>
                         {user.role.replace('_', ' ')}
                       </Badge>
-                      {user.id === currentUser?.id && (
-                        <Badge variant="outline">You</Badge>
-                      )}
+                      {user.id === currentUser?.id && <Badge variant="outline">You</Badge>}
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>{user._count.prompts} prompts</span>
                       <span>{user._count.collections} collections</span>
                       <span>{user._count.teamMemberships} teams</span>
-                      <span>
-                        Joined {new Date(user.createdAt).toLocaleDateString()}
-                      </span>
+                      <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -232,9 +228,7 @@ const AdminUsersPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Change User Role</DialogTitle>
-            <DialogDescription>
-              Update the role for {selectedUser?.name}
-            </DialogDescription>
+            <DialogDescription>Update the role for {selectedUser?.name}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -256,8 +250,8 @@ const AdminUsersPage = () => {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground mt-1">
-                Super Admin: Full system access | Team Admin: Can manage teams | Member:
-                Regular user
+                Super Admin: Full system access | Team Admin: Can manage teams | Member: Regular
+                user
               </p>
             </div>
             <div className="flex justify-end gap-2">
@@ -287,4 +281,3 @@ const AdminUsersPage = () => {
 };
 
 export default AdminUsersPage;
-

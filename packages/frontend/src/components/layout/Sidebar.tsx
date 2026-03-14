@@ -1,4 +1,16 @@
-import { Home, Heart, Users, TrendingUp, ChevronLeft, Layers, FileText, LayoutDashboard, UserCog, Mail, Building2 } from 'lucide-react';
+import {
+  Home,
+  Heart,
+  Users,
+  TrendingUp,
+  ChevronLeft,
+  Layers,
+  FileText,
+  LayoutDashboard,
+  UserCog,
+  Mail,
+  Building2,
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
@@ -62,12 +74,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { data: teams } = useTeams(user?.id ? { memberUserId: user.id } : undefined);
 
   const showAdminSection = user?.role === 'SUPER_ADMIN';
-  
+
   // Map teams to include a color for the sidebar
-  const teamsWithColor = teams?.map((team, index) => ({
-    ...team,
-    color: teamColors[index % teamColors.length],
-  })) || [];
+  const teamsWithColor =
+    teams?.map((team, index) => ({
+      ...team,
+      color: teamColors[index % teamColors.length],
+    })) || [];
 
   return (
     <motion.aside
@@ -81,9 +94,9 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {isOpen ? (
           <>
             <div className="flex items-center gap-2 font-semibold px-4">
-          {organization.logoUrl && (
-            <img src={organization.logoUrl} alt={organization.name} className="h-6 w-6" />
-          )}
+              {organization.logoUrl && (
+                <img src={organization.logoUrl} alt={organization.name} className="h-6 w-6" />
+              )}
               <motion.span
                 layout
                 initial={{ opacity: 0 }}
@@ -93,16 +106,16 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               >
                 {organization.name}
               </motion.span>
-        </div>
-        <Button variant="ghost" size="icon" onClick={onToggle}>
-          <motion.div
-            animate={{ rotate: isOpen ? 0 : 180 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </motion.div>
-        </Button>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onToggle}>
+              <motion.div
+                animate={{ rotate: isOpen ? 0 : 180 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </motion.div>
+            </Button>
           </>
         ) : (
           <Button variant="ghost" size="icon" onClick={onToggle} className="mx-auto">
@@ -143,31 +156,29 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               transition={{ delay: 0.125 }}
               className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
             >
-            My Teams
+              My Teams
             </motion.h3>
           )}
           <div className="space-y-1">
-            {teamsWithColor.length > 0 ? (
-              teamsWithColor.map((team) => (
-                <TeamLink
-                  key={team.id}
-                  team={team}
-                  isActive={location.pathname === `/teams/${team.id}`}
-                  isCollapsed={!isOpen}
-                />
-              ))
-            ) : (
-              isOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.125 }}
-                  className="px-3 py-2 text-sm text-muted-foreground"
-                >
-                  No teams yet
-                </motion.div>
-              )
-            )}
+            {teamsWithColor.length > 0
+              ? teamsWithColor.map((team) => (
+                  <TeamLink
+                    key={team.id}
+                    team={team}
+                    isActive={location.pathname === `/teams/${team.id}`}
+                    isCollapsed={!isOpen}
+                  />
+                ))
+              : isOpen && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.125 }}
+                    className="px-3 py-2 text-sm text-muted-foreground"
+                  >
+                    No teams yet
+                  </motion.div>
+                )}
           </div>
         </div>
 
@@ -182,7 +193,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               transition={{ delay: 0.125 }}
               className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
             >
-            Discover
+              Discover
             </motion.h3>
           )}
           <div className="space-y-1">
@@ -209,7 +220,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   transition={{ delay: 0.125 }}
                   className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
                 >
-                Admin
+                  Admin
                 </motion.h3>
               )}
               <div className="space-y-1">
@@ -300,10 +311,7 @@ function TeamLink({ team, isActive, isCollapsed }: TeamLinkProps) {
         title={isCollapsed ? team.name : undefined}
       >
         <motion.div layout className="grid h-full w-10 place-content-center">
-          <div
-            className="h-3 w-3 rounded-full"
-            style={{ backgroundColor: team.color }}
-          />
+          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: team.color }} />
         </motion.div>
         {!isCollapsed && (
           <motion.span

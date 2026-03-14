@@ -1,5 +1,11 @@
 import { useAdminStats } from '../../hooks/useAdminStats';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Users, Briefcase, FileText, Folder, Mail } from 'lucide-react';
 import type { Role } from '@aizu/shared';
@@ -199,4 +205,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

@@ -45,24 +45,24 @@ export interface Prompt {
   platform: Platform;
   visibility: PromptVisibility;
   tags: string[];
-  
+
   // Prompt type and configuration
   promptType: PromptType;
   additionalInstructions?: string;
   config: PromptConfig;
-  
+
   // Ownership
   authorId: string;
   authorName?: string;
   teamId?: string;
-  
+
   // Stats
   copyCount: number;
   favoriteCount: number;
-  
+
   // User-specific data (if applicable)
   isFavorited?: boolean;
-  
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -117,4 +117,3 @@ export interface PromptListResponse {
   page: number;
   limit: number;
 }
-

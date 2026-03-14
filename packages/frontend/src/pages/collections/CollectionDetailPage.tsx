@@ -40,9 +40,7 @@ export default function CollectionDetailPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const { data: collection, isLoading } = useCollection(id!);
-  const { data: allTeams = [] } = useTeams(
-    user ? { memberUserId: user.id } : undefined
-  );
+  const { data: allTeams = [] } = useTeams(user ? { memberUserId: user.id } : undefined);
   const favoriteMutation = useFavoritePrompt();
   const forkMutation = useForkPrompt();
   const deleteMutation = useDeletePrompt();
@@ -54,17 +52,19 @@ export default function CollectionDetailPage() {
   const allPrompts = useMemo(() => {
     const prompts = collection?.collectionPrompts?.map((cp) => cp.prompt).filter((p) => p) || [];
     // Map to ensure all required Prompt fields are present with defaults
-    return prompts.map((p) => {
-      if (!p) return null;
-      return {
-        ...p,
-        authorName: (p as any).author?.name,
-        createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
-        updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
-        promptType: 'STANDARD_PROMPT' as const,
-        config: { useWebSearch: false, useDeepResearch: false },
-      } as Prompt;
-    }).filter((p): p is Prompt => p !== null);
+    return prompts
+      .map((p) => {
+        if (!p) return null;
+        return {
+          ...p,
+          authorName: (p as any).author?.name,
+          createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
+          updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
+          promptType: 'STANDARD_PROMPT' as const,
+          config: { useWebSearch: false, useDeepResearch: false },
+        } as Prompt;
+      })
+      .filter((p): p is Prompt => p !== null);
   }, [collection]);
 
   // Filter and sort prompts
@@ -90,7 +90,7 @@ export default function CollectionDetailPage() {
     // Apply sorting
     filtered.sort((a, b) => {
       let compareValue = 0;
-      
+
       switch (sortField) {
         case 'title':
           compareValue = a.title.localeCompare(b.title);
@@ -120,10 +120,10 @@ export default function CollectionDetailPage() {
   // Check if user can modify this collection
   const canModifyCollection = useMemo(() => {
     if (!user || !collection) return false;
-    
+
     // Owner can always modify
     if (collection.ownerId === user.id) return true;
-    
+
     // If it's a team collection, check if user is a team admin
     if (collection.teamId) {
       const team = allTeams.find((t) => t.id === collection.teamId);
@@ -132,7 +132,7 @@ export default function CollectionDetailPage() {
         return membership?.role === 'ADMIN';
       }
     }
-    
+
     return false;
   }, [user, collection, allTeams]);
 
@@ -203,15 +203,15 @@ export default function CollectionDetailPage() {
         // Increment the copy count on the backend
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Prompt copied to clipboard!",
+          title: 'Success',
+          description: 'Prompt copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -239,10 +239,10 @@ export default function CollectionDetailPage() {
 
   const handleDeletePrompt = async (promptId: string) => {
     const confirmed = await confirm({
-      title: "Delete Prompt",
-      description: "Are you sure you want to delete this prompt?",
-      confirmText: "Delete",
-      variant: "destructive",
+      title: 'Delete Prompt',
+      description: 'Are you sure you want to delete this prompt?',
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -251,9 +251,9 @@ export default function CollectionDetailPage() {
       } catch (error) {
         console.error('Failed to delete prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to delete prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to delete prompt',
         });
       }
     }
@@ -359,13 +359,13 @@ export default function CollectionDetailPage() {
         />
 
         {allPrompts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 text-center">
-          <Layers className="h-16 w-16 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No prompts in this collection</h3>
-          <p className="text-muted-foreground">
-            Add prompts to this collection from the prompt details page
-          </p>
-        </div>
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <Layers className="h-16 w-16 text-muted-foreground/20 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No prompts in this collection</h3>
+            <p className="text-muted-foreground">
+              Add prompts to this collection from the prompt details page
+            </p>
+          </div>
         ) : filteredPrompts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <p className="text-muted-foreground">No prompts found matching your filters</p>
@@ -399,7 +399,7 @@ export default function CollectionDetailPage() {
             )}
           </>
         )}
-        </div>
+      </div>
 
       <PromptDetailModal
         prompt={selectedPrompt}

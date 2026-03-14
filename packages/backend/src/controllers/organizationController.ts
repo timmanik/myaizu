@@ -45,4 +45,3 @@ export const updateOrganization = async (req: Request, res: Response) => {
     });
   }
 };
-

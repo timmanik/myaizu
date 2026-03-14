@@ -76,4 +76,3 @@ export class TrendingController {
 }
 
 export const trendingController = new TrendingController();
-

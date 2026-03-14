@@ -14,7 +14,7 @@ export const useAddTeamMember = () => {
       // Invalidate team queries to refresh member list
       queryClient.invalidateQueries({ queryKey: ['team', variables.teamId] });
       queryClient.invalidateQueries({ queryKey: ['teams'] });
-      
+
       toast({
         title: 'Success',
         description: 'Team member added successfully',
@@ -29,4 +29,3 @@ export const useAddTeamMember = () => {
     },
   });
 };
-

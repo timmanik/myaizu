@@ -45,11 +45,7 @@ export class SearchService {
   /**
    * Unified search across all entity types
    */
-  async searchAll(
-    query: string,
-    userId: string,
-    limit = 10
-  ): Promise<SearchResult> {
+  async searchAll(query: string, userId: string, limit = 10): Promise<SearchResult> {
     const [prompts, collections, teams, users] = await Promise.all([
       this.searchPrompts(query, userId, limit),
       this.searchCollections(query, userId, limit),
@@ -68,11 +64,7 @@ export class SearchService {
   /**
    * Search prompts by title, content, and description
    */
-  async searchPrompts(
-    query: string,
-    userId: string,
-    limit = 20
-  ): Promise<SharedPrompt[]> {
+  async searchPrompts(query: string, userId: string, limit = 20): Promise<SharedPrompt[]> {
     const prompts = await prisma.prompt.findMany({
       where: {
         AND: [
@@ -123,10 +115,7 @@ export class SearchService {
         ],
       },
       take: limit,
-      orderBy: [
-        { favoriteCount: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ favoriteCount: 'desc' }, { createdAt: 'desc' }],
       include: {
         author: {
           select: {
@@ -147,11 +136,7 @@ export class SearchService {
   /**
    * Search collections by name and description
    */
-  async searchCollections(
-    query: string,
-    userId: string,
-    limit = 20
-  ): Promise<SearchCollection[]> {
+  async searchCollections(query: string, userId: string, limit = 20): Promise<SearchCollection[]> {
     const collections = await prisma.collection.findMany({
       where: {
         AND: [
@@ -195,9 +180,7 @@ export class SearchService {
         ],
       },
       take: limit,
-      orderBy: [
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ createdAt: 'desc' }],
       include: {
         owner: {
           select: {
@@ -219,11 +202,7 @@ export class SearchService {
   /**
    * Search teams by name and description
    */
-  async searchTeams(
-    query: string,
-    userId: string,
-    limit = 20
-  ): Promise<SearchTeam[]> {
+  async searchTeams(query: string, userId: string, limit = 20): Promise<SearchTeam[]> {
     const teams = await prisma.team.findMany({
       where: {
         OR: [
@@ -242,9 +221,7 @@ export class SearchService {
         ],
       },
       take: limit,
-      orderBy: [
-        { name: 'asc' },
-      ],
+      orderBy: [{ name: 'asc' }],
       include: {
         members: {
           where: {
@@ -269,10 +246,7 @@ export class SearchService {
   /**
    * Search users by name and email
    */
-  async searchUsers(
-    query: string,
-    limit = 20
-  ): Promise<SearchUser[]> {
+  async searchUsers(query: string, limit = 20): Promise<SearchUser[]> {
     const users = await prisma.user.findMany({
       where: {
         OR: [
@@ -291,9 +265,7 @@ export class SearchService {
         ],
       },
       take: limit,
-      orderBy: [
-        { name: 'asc' },
-      ],
+      orderBy: [{ name: 'asc' }],
       select: {
         id: true,
         name: true,
@@ -362,4 +334,3 @@ export class SearchService {
 }
 
 export const searchService = new SearchService();
-

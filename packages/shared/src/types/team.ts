@@ -11,7 +11,7 @@ export interface Team {
   description: string | null;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Optional populated relations
   members?: TeamMember[];
   _count?: {
@@ -27,7 +27,7 @@ export interface TeamMember {
   teamId: string;
   role: TeamMemberRole;
   createdAt: Date;
-  
+
   // Optional populated relations
   user?: {
     id: string;
@@ -75,4 +75,3 @@ export interface TeamPromptsFilters {
   sortOrder?: 'asc' | 'desc';
   viewAsPublic?: boolean;
 }
-

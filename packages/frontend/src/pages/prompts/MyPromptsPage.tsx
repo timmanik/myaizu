@@ -62,33 +62,43 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
   const debouncedSearch = useDebounce(search, 300);
 
   // Conditional data fetching based on mode
-  const userFilters = mode === 'user' ? {
-    ...baseFilters,
-    search: debouncedSearch,
-    authorId: user?.id,
-  } : undefined;
+  const userFilters =
+    mode === 'user'
+      ? {
+          ...baseFilters,
+          search: debouncedSearch,
+          authorId: user?.id,
+        }
+      : undefined;
 
-  const teamFilters = mode === 'team' ? {
-    search: debouncedSearch,
-    platform: platform,
-    tags: baseFilters.tags,
-    sortField: sort.field === 'copyCount' ? 'favoriteCount' : sort.field as 'createdAt' | 'updatedAt' | 'title' | 'favoriteCount',
-    sortOrder: sort.order,
-  } : undefined;
+  const teamFilters =
+    mode === 'team'
+      ? {
+          search: debouncedSearch,
+          platform: platform,
+          tags: baseFilters.tags,
+          sortField:
+            sort.field === 'copyCount'
+              ? 'favoriteCount'
+              : (sort.field as 'createdAt' | 'updatedAt' | 'title' | 'favoriteCount'),
+          sortOrder: sort.order,
+        }
+      : undefined;
 
-  const { data: userData, isLoading: userLoading, error: userError } = usePrompts(
-    userFilters!, 
-    sort,
-    1,
-    20
-  );
-  const { data: teamData, isLoading: teamLoading, error: teamError } = useTeamPrompts(
-    teamId!,
-    teamFilters
-  );
+  const {
+    data: userData,
+    isLoading: userLoading,
+    error: userError,
+  } = usePrompts(userFilters!, sort, 1, 20);
+  const {
+    data: teamData,
+    isLoading: teamLoading,
+    error: teamError,
+  } = useTeamPrompts(teamId!, teamFilters);
 
   // Use appropriate data based on mode
-  const data = mode === 'user' ? userData : { prompts: teamData || [], total: teamData?.length || 0 };
+  const data =
+    mode === 'user' ? userData : { prompts: teamData || [], total: teamData?.length || 0 };
   const isLoading = mode === 'user' ? userLoading : teamLoading;
   const error = mode === 'user' ? userError : teamError;
 
@@ -101,9 +111,8 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
   const { mutate: unpinFromHome } = useUnpinPromptFromHome();
 
   // Get list of pinned prompt IDs for checking (only for user mode)
-  const pinnedPromptIds = mode === 'user' 
-    ? ((pinnedPrompts as Prompt[] | undefined)?.map((p) => p.id) || [])
-    : [];
+  const pinnedPromptIds =
+    mode === 'user' ? (pinnedPrompts as Prompt[] | undefined)?.map((p) => p.id) || [] : [];
 
   const handleCreatePrompt = () => {
     navigate('/prompts/new');
@@ -115,10 +124,10 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
 
   const handleDeletePrompt = async (promptId: string) => {
     const confirmed = await confirm({
-      title: "Delete Prompt",
-      description: "Are you sure you want to delete this prompt?",
-      confirmText: "Delete",
-      variant: "destructive",
+      title: 'Delete Prompt',
+      description: 'Are you sure you want to delete this prompt?',
+      confirmText: 'Delete',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -127,9 +136,9 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
       } catch (error) {
         console.error('Failed to delete prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to delete prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to delete prompt',
         });
       }
     }
@@ -151,15 +160,15 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
         // Increment the copy count on the backend
         await promptsApi.incrementCopy(promptId);
         toast({
-          title: "Success",
-          description: "Prompt copied to clipboard!",
+          title: 'Success',
+          description: 'Prompt copied to clipboard!',
         });
       } catch (error) {
         console.error('Failed to copy prompt:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to copy prompt",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to copy prompt',
         });
       }
     }
@@ -223,7 +232,11 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
 
       <PageHeader
         title={mode === 'user' ? 'My Prompts' : `${teamName} Team Prompts`}
-        description={mode === 'user' ? 'Manage your personal prompt library' : `Browse and search prompts from ${teamName} members`}
+        description={
+          mode === 'user'
+            ? 'Manage your personal prompt library'
+            : `Browse and search prompts from ${teamName} members`
+        }
         actions={
           mode === 'user' ? (
             <Button onClick={handleCreatePrompt}>
@@ -269,9 +282,7 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No prompts yet</h3>
-            <p className="text-muted-foreground">
-              This team doesn't have any prompts yet.
-            </p>
+            <p className="text-muted-foreground">This team doesn't have any prompts yet.</p>
           </div>
         )}
 
@@ -293,7 +304,9 @@ export const PromptsListPage = ({ mode = 'user', teamId, teamName }: PromptsPage
                 onAddToCollection={handleAddToCollection}
                 currentUserId={user?.id}
                 showUserPinAction={mode === 'user'}
-                isPinnedToHome={mode === 'user' ? (promptId) => pinnedPromptIds.includes(promptId) : undefined}
+                isPinnedToHome={
+                  mode === 'user' ? (promptId) => pinnedPromptIds.includes(promptId) : undefined
+                }
                 onPinToHome={mode === 'user' ? handlePinToHome : undefined}
                 onUnpinFromHome={mode === 'user' ? handleUnpinFromHome : undefined}
               />
@@ -340,4 +353,3 @@ export const MyPromptsPage = () => <PromptsListPage mode="user" />;
 
 // Default export
 export default PromptsListPage;
-

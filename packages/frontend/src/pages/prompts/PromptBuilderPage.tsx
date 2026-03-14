@@ -14,7 +14,14 @@ import { useCreatePrompt } from '@/hooks/useCreatePrompt';
 import { useUpdatePrompt } from '@/hooks/useUpdatePrompt';
 import { useToast } from '@/hooks/use-toast';
 import { useConfirm } from '@/hooks/use-confirm';
-import type { Platform, PromptVisibility, CreatePromptDto, PromptVariable, PromptType, PromptConfig } from '@aizu/shared';
+import type {
+  Platform,
+  PromptVisibility,
+  CreatePromptDto,
+  PromptVariable,
+  PromptType,
+  PromptConfig,
+} from '@aizu/shared';
 import { PLATFORMS, PLATFORM_LABELS, PROMPT_TYPES, PROMPT_TYPE_LABELS } from '@aizu/shared';
 import { ArrowLeft, Save, X } from 'lucide-react';
 
@@ -61,12 +68,12 @@ export const PromptBuilderPage = () => {
   // Render content with highlighted variables for overlay
   const renderContentWithHighlightedVariables = () => {
     if (!content) return '';
-    
+
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
     const variableRegex = /\{\{[^}]+\}\}/g;
     let match;
-    
+
     while ((match = variableRegex.exec(content)) !== null) {
       if (match.index > lastIndex) {
         parts.push(content.substring(lastIndex, match.index));
@@ -78,11 +85,11 @@ export const PromptBuilderPage = () => {
       );
       lastIndex = match.index + match[0].length;
     }
-    
+
     if (lastIndex < content.length) {
       parts.push(content.substring(lastIndex));
     }
-    
+
     return parts;
   };
 
@@ -130,9 +137,9 @@ export const PromptBuilderPage = () => {
 
     if (!title.trim() || !content.trim()) {
       toast({
-        variant: "destructive",
-        title: "Validation Error",
-        description: "Title and content are required",
+        variant: 'destructive',
+        title: 'Validation Error',
+        description: 'Title and content are required',
       });
       return;
     }
@@ -163,19 +170,19 @@ export const PromptBuilderPage = () => {
     } catch (error) {
       console.error('Failed to save prompt:', error);
       toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save prompt",
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to save prompt',
       });
     }
   };
 
   const handleCancel = async () => {
     const confirmed = await confirm({
-      title: "Discard Changes",
-      description: "Are you sure you want to discard your changes?",
-      confirmText: "Discard",
-      variant: "destructive",
+      title: 'Discard Changes',
+      description: 'Are you sure you want to discard your changes?',
+      confirmText: 'Discard',
+      variant: 'destructive',
     });
 
     if (confirmed) {
@@ -190,9 +197,7 @@ export const PromptBuilderPage = () => {
       <PageHeader
         title={isEditing ? 'Edit Prompt' : 'Create Prompt'}
         description={
-          isEditing
-            ? 'Update your prompt details'
-            : 'Create a new prompt for your library'
+          isEditing ? 'Update your prompt details' : 'Create a new prompt for your library'
         }
       >
         <Button variant="ghost" onClick={handleCancel}>
@@ -218,9 +223,7 @@ export const PromptBuilderPage = () => {
                 required
                 className="mt-2"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {title.length}/200 characters
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{title.length}/200 characters</p>
             </div>
 
             {/* Description */}
@@ -265,15 +268,15 @@ export const PromptBuilderPage = () => {
                   {renderContentWithHighlightedVariables()}
                 </div>
                 {/* Actual textarea - invisible but captures input */}
-              <Textarea
-                ref={textareaRef}
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                onScroll={handleScroll}
-                placeholder="Enter your prompt content here..."
-                required
-                rows={10}
+                <Textarea
+                  ref={textareaRef}
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  onScroll={handleScroll}
+                  placeholder="Enter your prompt content here..."
+                  required
+                  rows={10}
                   className="font-mono relative bg-transparent"
                   style={{
                     color: 'transparent',
@@ -336,9 +339,7 @@ export const PromptBuilderPage = () => {
             <div>
               <Label htmlFor="additionalInstructions">
                 Additional Instructions{' '}
-                <span className="text-xs text-muted-foreground font-normal">
-                  (Optional)
-                </span>
+                <span className="text-xs text-muted-foreground font-normal">(Optional)</span>
               </Label>
               <Textarea
                 id="additionalInstructions"
@@ -362,9 +363,7 @@ export const PromptBuilderPage = () => {
                   <input
                     type="checkbox"
                     checked={config.useWebSearch}
-                    onChange={(e) =>
-                      setConfig({ ...config, useWebSearch: e.target.checked })
-                    }
+                    onChange={(e) => setConfig({ ...config, useWebSearch: e.target.checked })}
                     className="w-4 h-4 rounded border-gray-300"
                   />
                   <span className="text-sm">Use web search (when available)</span>
@@ -373,9 +372,7 @@ export const PromptBuilderPage = () => {
                   <input
                     type="checkbox"
                     checked={config.useDeepResearch}
-                    onChange={(e) =>
-                      setConfig({ ...config, useDeepResearch: e.target.checked })
-                    }
+                    onChange={(e) => setConfig({ ...config, useDeepResearch: e.target.checked })}
                     className="w-4 h-4 rounded border-gray-300"
                   />
                   <span className="text-sm">Enable deep research (when available)</span>
@@ -391,21 +388,13 @@ export const PromptBuilderPage = () => {
               <select
                 id="visibility"
                 value={visibility}
-                onChange={(e) =>
-                  setVisibility(e.target.value as PromptVisibility)
-                }
+                onChange={(e) => setVisibility(e.target.value as PromptVisibility)}
                 className="w-full px-3 py-2 border rounded-md mt-2"
                 required
               >
-                <option value="PRIVATE">
-                  Private - Only you can see this
-                </option>
-                <option value="PUBLIC">
-                  Public - Everyone in the organization can see this
-                </option>
-                <option value="TEAM">
-                  Team - Only team members can see this
-                </option>
+                <option value="PRIVATE">Private - Only you can see this</option>
+                <option value="PUBLIC">Public - Everyone in the organization can see this</option>
+                <option value="TEAM">Team - Only team members can see this</option>
               </select>
             </div>
 
@@ -432,17 +421,11 @@ export const PromptBuilderPage = () => {
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {tags.map((tag) => (
-                    <TagBadge
-                      key={tag}
-                      tag={tag}
-                      onRemove={() => handleRemoveTag(tag)}
-                    />
+                    <TagBadge key={tag} tag={tag} onRemove={() => handleRemoveTag(tag)} />
                   ))}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {tags.length}/10 tags
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{tags.length}/10 tags</p>
             </div>
           </div>
         </Card>
@@ -462,15 +445,10 @@ export const PromptBuilderPage = () => {
           </Button>
           <Button type="submit" disabled={isSaving}>
             <Save className="h-4 w-4 mr-2" />
-            {isSaving
-              ? 'Saving...'
-              : isEditing
-              ? 'Update Prompt'
-              : 'Create Prompt'}
+            {isSaving ? 'Saving...' : isEditing ? 'Update Prompt' : 'Create Prompt'}
           </Button>
         </div>
       </form>
     </PageContainer>
   );
 };
-

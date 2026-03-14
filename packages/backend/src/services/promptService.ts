@@ -13,10 +13,7 @@ export class PromptService {
   /**
    * Create a new prompt
    */
-  async createPrompt(
-    userId: string,
-    data: CreatePromptDto
-  ): Promise<SharedPrompt> {
+  async createPrompt(userId: string, data: CreatePromptDto): Promise<SharedPrompt> {
     const prompt = await prisma.prompt.create({
       data: {
         title: data.title,
@@ -144,9 +141,10 @@ export class PromptService {
     if (data.visibility !== undefined) updateData.visibility = data.visibility;
     if (data.tags !== undefined) updateData.tags = data.tags;
     if (data.promptType !== undefined) updateData.promptType = data.promptType;
-    if (data.additionalInstructions !== undefined) updateData.additionalInstructions = data.additionalInstructions;
+    if (data.additionalInstructions !== undefined)
+      updateData.additionalInstructions = data.additionalInstructions;
     if (data.config !== undefined) updateData.config = data.config as any;
-    
+
     // Handle teamId with connect/disconnect
     if (data.teamId !== undefined) {
       if (data.teamId === null) {
@@ -192,10 +190,7 @@ export class PromptService {
   /**
    * Toggle favorite status
    */
-  async toggleFavorite(
-    promptId: string,
-    userId: string
-  ): Promise<{ isFavorited: boolean }> {
+  async toggleFavorite(promptId: string, userId: string): Promise<{ isFavorited: boolean }> {
     const existing = await prisma.favorite.findUnique({
       where: {
         userId_promptId: {
@@ -251,11 +246,11 @@ export class PromptService {
   async forkPrompt(promptId: string, userId: string): Promise<SharedPrompt> {
     // Get the original prompt
     const originalPrompt = await this.getPrompt(promptId, userId);
-    
+
     if (!originalPrompt) {
       throw new Error('Prompt not found or you do not have permission to fork it');
     }
-    
+
     // Increment the copy count of the original
     await this.incrementCopyCount(promptId);
 
@@ -288,7 +283,6 @@ export class PromptService {
     return this.mapPromptToShared(forkedPrompt, userId);
   }
 
-
   // Helper methods
 
   private canViewPrompt(prompt: any, userId: string): boolean {
@@ -316,10 +310,7 @@ export class PromptService {
     return false;
   }
 
-  private buildWhereClause(
-    userId: string,
-    filters: PromptFilters
-  ): Prisma.PromptWhereInput {
+  private buildWhereClause(userId: string, filters: PromptFilters): Prisma.PromptWhereInput {
     const where: Prisma.PromptWhereInput = {};
 
     // Filter by platform
@@ -360,7 +351,7 @@ export class PromptService {
 
     // Build the OR conditions for search and visibility
     const orConditions: Prisma.PromptWhereInput[] = [];
-    
+
     // Apply visibility rules if not filtering by specific author
     if (!filters.authorId) {
       const visibilityConditions: Prisma.PromptWhereInput[] = [
@@ -371,19 +362,19 @@ export class PromptService {
         // Team prompts (Phase 3 - for now will be empty)
         // { visibility: 'TEAM', teamId: { in: userTeamIds } },
       ];
-      
+
       // If there's a search, combine search with each visibility condition
       if (filters.search) {
         const searchConditions = [
           { title: { contains: filters.search, mode: 'insensitive' as const } },
           { content: { contains: filters.search, mode: 'insensitive' as const } },
         ];
-        
+
         // Create combined conditions: (visibility1 AND (searchTitle OR searchContent)) OR (visibility2 AND ...)
-        visibilityConditions.forEach(visCondition => {
-          searchConditions.forEach(searchCondition => {
+        visibilityConditions.forEach((visCondition) => {
+          searchConditions.forEach((searchCondition) => {
             orConditions.push({
-              AND: [visCondition, searchCondition]
+              AND: [visCondition, searchCondition],
             });
           });
         });
@@ -441,4 +432,3 @@ export class PromptService {
 }
 
 export const promptService = new PromptService();
-

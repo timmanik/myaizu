@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { promptService } from '../services/promptService';
-import type {
-  CreatePromptDto,
-  UpdatePromptDto,
-  PromptFilters,
-  PromptSort,
-} from '@aizu/shared';
+import type { CreatePromptDto, UpdatePromptDto, PromptFilters, PromptSort } from '@aizu/shared';
 import { z } from 'zod';
 
 // Validation schemas
@@ -34,19 +29,16 @@ const createPromptSchema = z.object({
   visibility: z.enum(['PUBLIC', 'TEAM', 'PRIVATE']),
   tags: z.array(z.string()).max(10).optional(),
   teamId: z.string().optional(),
-  promptType: z.enum([
-    'STANDARD_PROMPT',
-    'CUSTOM_GPT',
-    'CLAUDE_PROJECT',
-    'GEMINI_GEM',
-    'CUSTOM_APP',
-    'OTHER',
-  ]).optional(),
+  promptType: z
+    .enum(['STANDARD_PROMPT', 'CUSTOM_GPT', 'CLAUDE_PROJECT', 'GEMINI_GEM', 'CUSTOM_APP', 'OTHER'])
+    .optional(),
   additionalInstructions: z.string().max(500).optional(),
-  config: z.object({
-    useWebSearch: z.boolean().optional(),
-    useDeepResearch: z.boolean().optional(),
-  }).optional(),
+  config: z
+    .object({
+      useWebSearch: z.boolean().optional(),
+      useDeepResearch: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 const updatePromptSchema = createPromptSchema.partial();
@@ -63,10 +55,7 @@ export class PromptController {
       // Validate input
       const validatedData = createPromptSchema.parse(req.body);
 
-      const prompt = await promptService.createPrompt(
-        userId,
-        validatedData as CreatePromptDto
-      );
+      const prompt = await promptService.createPrompt(userId, validatedData as CreatePromptDto);
 
       res.status(201).json({
         success: true,
@@ -137,13 +126,7 @@ export class PromptController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
 
-      const result = await promptService.listPrompts(
-        userId,
-        filters,
-        sort,
-        page,
-        limit
-      );
+      const result = await promptService.listPrompts(userId, filters, sort, page, limit);
 
       res.json({
         success: true,
@@ -172,11 +155,7 @@ export class PromptController {
       // Validate input
       const validatedData = updatePromptSchema.parse(req.body);
 
-      const prompt = await promptService.updatePrompt(
-        id,
-        userId,
-        validatedData as UpdatePromptDto
-      );
+      const prompt = await promptService.updatePrompt(id, userId, validatedData as UpdatePromptDto);
 
       res.json({
         success: true,
@@ -268,4 +247,3 @@ export class PromptController {
 }
 
 export const promptController = new PromptController();
-

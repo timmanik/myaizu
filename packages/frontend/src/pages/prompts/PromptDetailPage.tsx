@@ -18,9 +18,7 @@ export const PromptDetailPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [variableValues, setVariableValues] = useState<Record<string, string>>(
-    {}
-  );
+  const [variableValues, setVariableValues] = useState<Record<string, string>>({});
 
   const { data: response, isLoading, error } = usePrompt(id);
   const favoriteMutation = useFavoritePrompt();
@@ -171,4 +169,3 @@ export const PromptDetailPage = () => {
 };
 
 export default PromptDetailPage;
-

@@ -62,10 +62,10 @@ const AdminInvitesPage = () => {
 
   const handleRevokeInvite = async (inviteId: string) => {
     const confirmed = await confirm({
-      title: "Revoke Invite",
-      description: "Are you sure you want to revoke this invite?",
-      confirmText: "Revoke",
-      variant: "destructive",
+      title: 'Revoke Invite',
+      description: 'Are you sure you want to revoke this invite?',
+      confirmText: 'Revoke',
+      variant: 'destructive',
     });
 
     if (!confirmed) {
@@ -185,9 +185,7 @@ const AdminInvitesPage = () => {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Invite Link</DialogTitle>
-              <DialogDescription>
-                Generate a unique invite link for a new user
-              </DialogDescription>
+              <DialogDescription>Generate a unique invite link for a new user</DialogDescription>
             </DialogHeader>
             {!generatedInvite ? (
               <form onSubmit={handleCreateInvite} className="space-y-4">
@@ -218,11 +216,7 @@ const AdminInvitesPage = () => {
                   </p>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateOpen(false)}
-                  >
+                  <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
                     Cancel
                   </Button>
                   <Button type="submit" disabled={createInvite.isPending}>
@@ -279,9 +273,7 @@ const AdminInvitesPage = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {invites?.filter(
-                (i) => !i.usedAt && new Date() <= new Date(i.expiresAt)
-              ).length || 0}
+              {invites?.filter((i) => !i.usedAt && new Date() <= new Date(i.expiresAt)).length || 0}
             </div>
           </CardContent>
         </Card>
@@ -290,9 +282,7 @@ const AdminInvitesPage = () => {
             <CardTitle className="text-sm font-medium">Used</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {invites?.filter((i) => i.usedAt).length || 0}
-            </div>
+            <div className="text-2xl font-bold">{invites?.filter((i) => i.usedAt).length || 0}</div>
           </CardContent>
         </Card>
       </div>
@@ -331,16 +321,10 @@ const AdminInvitesPage = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>
-                          Created {new Date(invite.createdAt).toLocaleDateString()}
-                        </span>
-                        <span>
-                          Expires {new Date(invite.expiresAt).toLocaleDateString()}
-                        </span>
+                        <span>Created {new Date(invite.createdAt).toLocaleDateString()}</span>
+                        <span>Expires {new Date(invite.expiresAt).toLocaleDateString()}</span>
                         {invite.usedAt && (
-                          <span>
-                            Used {new Date(invite.usedAt).toLocaleDateString()}
-                          </span>
+                          <span>Used {new Date(invite.usedAt).toLocaleDateString()}</span>
                         )}
                       </div>
                     </div>

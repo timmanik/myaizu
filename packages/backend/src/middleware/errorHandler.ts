@@ -78,4 +78,3 @@ export class NotFoundError extends Error implements AppError {
     this.name = 'NotFoundError';
   }
 }
-

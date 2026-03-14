@@ -20,4 +20,3 @@ router.get('/:id/prompts', userController.getUserPromptsHandler);
 router.get('/:id/collections', userController.getUserCollectionsHandler);
 
 export default router;
-

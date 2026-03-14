@@ -8,4 +8,3 @@ export const useCollection = (id: string) => {
     enabled: !!id,
   });
 };
-

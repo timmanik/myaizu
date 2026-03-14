@@ -47,9 +47,7 @@ export const teamsApi = {
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);
     if (filters?.viewAsPublic) params.append('viewAsPublic', 'true');
 
-    const response = await apiClient.get<Prompt[]>(
-      `/teams/${id}/prompts?${params.toString()}`
-    );
+    const response = await apiClient.get<Prompt[]>(`/teams/${id}/prompts?${params.toString()}`);
     return response.data || [];
   },
 
