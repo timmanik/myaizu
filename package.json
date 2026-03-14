@@ -11,7 +11,7 @@
     "build": "pnpm --filter \"./packages/*\" build",
     "build:frontend": "pnpm --filter @aizu/frontend build",
     "build:backend": "pnpm --filter @aizu/backend build",
-    "typecheck": "pnpm --filter \"./packages/*\" typecheck",
+    "typecheck": "pnpm --filter @aizu/shared build && pnpm --filter @aizu/backend prisma:generate && pnpm --filter \"./packages/*\" typecheck",
     "check": "pnpm typecheck && pnpm build",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
