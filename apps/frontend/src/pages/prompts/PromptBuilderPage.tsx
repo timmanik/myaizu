@@ -36,6 +36,7 @@ export const PromptBuilderPage = () => {
   const { data: promptData } = usePrompt(id);
   const createMutation = useCreatePrompt();
   const updateMutation = useUpdatePrompt();
+  const isExistingTeamPrompt = promptData?.data?.visibility === 'TEAM';
 
   // Form state
   const [title, setTitle] = useState('');
@@ -394,8 +395,16 @@ export const PromptBuilderPage = () => {
               >
                 <option value="PRIVATE">Private - Only you can see this</option>
                 <option value="PUBLIC">Public - Everyone in the organization can see this</option>
-                <option value="TEAM">Team - Only team members can see this</option>
+                {isExistingTeamPrompt && (
+                  <option value="TEAM">Team - Only team members can see this</option>
+                )}
               </select>
+              {!isExistingTeamPrompt && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Team-scoped prompt sharing is temporarily hidden until the backend supports it
+                  end to end.
+                </p>
+              )}
             </div>
 
             {/* Tags */}
