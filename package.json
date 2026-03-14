@@ -5,17 +5,17 @@
   "description": "Open source prompt management platform for teams",
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm --parallel --filter \"./packages/*\" dev",
+    "dev": "pnpm --parallel --filter \"./apps/*\" --filter \"./packages/*\" dev",
     "dev:frontend": "pnpm --filter @aizu/frontend dev",
     "dev:backend": "pnpm --filter @aizu/backend dev",
-    "build": "pnpm --filter \"./packages/*\" build",
+    "build": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" build",
     "build:frontend": "pnpm --filter @aizu/frontend build",
     "build:backend": "pnpm --filter @aizu/backend build",
-    "typecheck": "pnpm --filter @aizu/shared build && pnpm --filter @aizu/backend prisma:generate && pnpm --filter \"./packages/*\" typecheck",
+    "typecheck": "pnpm --filter @aizu/shared build && pnpm --filter @aizu/backend prisma:generate && pnpm --filter \"./apps/*\" --filter \"./packages/*\" typecheck",
     "check": "pnpm typecheck && pnpm build",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "clean": "pnpm --filter \"./packages/*\" clean && rm -rf node_modules"
+    "clean": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" clean && rm -rf node_modules"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

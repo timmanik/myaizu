@@ -13,13 +13,14 @@ Aizu is an open source prompt management platform for teams.
 ## Repository Layout
 
 ```text
-packages/
+apps/
   backend/   Express API + Prisma
   frontend/  React + Vite web app
+packages/
   shared/    Shared TypeScript types and constants
 ```
 
-Keeping the application code in `packages/` is intentional: this repo uses a monorepo layout with pnpm workspaces.
+This repo follows a conventional pnpm monorepo layout: deployable applications live in `apps/`, and reusable code lives in `packages/`.
 
 ## Tech Stack
 
@@ -125,8 +126,8 @@ See `.env.example` for the full list. The most important values are:
 
 ## Package Documentation
 
-- `packages/frontend/README.md`
-- `packages/backend/README.md`
+- `apps/frontend/README.md`
+- `apps/backend/README.md`
 - `packages/shared/README.md`
 
 ## Project Status

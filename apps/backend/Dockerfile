@@ -10,8 +10,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 
 # Copy only the packages needed for the backend workspace install
+COPY apps/backend ./apps/backend
 COPY packages/shared ./packages/shared
-COPY packages/backend ./packages/backend
 
 # Install dependencies for the monorepo (backend relies on @aizu/shared)
 RUN pnpm install
@@ -19,7 +19,7 @@ RUN pnpm install
 # Build the shared package
 RUN pnpm --filter @aizu/shared build
 
-WORKDIR /app/packages/backend
+WORKDIR /app/apps/backend
 
 EXPOSE 3001
 

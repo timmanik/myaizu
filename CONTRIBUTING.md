@@ -31,9 +31,9 @@ Thanks for your interest in contributing.
 ## Repository Layout
 
 ```text
-packages/backend   API server
-packages/frontend  Web application
-packages/shared    Shared types and constants
+apps/backend      API server
+apps/frontend     Web application
+packages/shared   Shared types and constants
 ```
 
 ## Validation

@@ -4,6 +4,7 @@ FROM node:20-alpine AS base
 RUN apk add --no-cache libc6-compat && npm install -g pnpm@8.15.0
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps ./apps
 COPY packages ./packages
 RUN pnpm install --frozen-lockfile
 
@@ -36,10 +37,10 @@ RUN pnpm add --save-prod \
     @prisma/client@^5.7.0
 
 # Copy the bundled application (includes @aizu/shared)
-COPY --from=backend-build /app/packages/backend/dist/index.js ./dist/index.js
+COPY --from=backend-build /app/apps/backend/dist/index.js ./dist/index.js
 
 # Copy Prisma schema and migrations
-COPY --from=base /app/packages/backend/prisma ./prisma
+COPY --from=base /app/apps/backend/prisma ./prisma
 
 # Generate Prisma client for production
 RUN pnpm prisma generate
@@ -49,6 +50,6 @@ EXPOSE 3001
 CMD ["node", "dist/index.js"]
 
 FROM nginx:1.25-alpine AS frontend
-COPY packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=frontend-build /app/packages/frontend/dist /usr/share/nginx/html
+COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=frontend-build /app/apps/frontend/dist /usr/share/nginx/html
 EXPOSE 80
