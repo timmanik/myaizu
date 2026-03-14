@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { BadRequestError, NotFoundError } from '../middleware/errorHandler';
 import { hashPassword, comparePassword } from '../utils/password';
 
@@ -8,7 +8,6 @@ export interface UpdateProfileData {
   name?: string;
   email?: string;
   avatarUrl?: string | null;
-  role?: string;
 }
 
 export interface ChangePasswordData {
@@ -37,7 +36,6 @@ export async function updateProfile(userId: string, data: UpdateProfileData) {
       ...(data.name && { name: data.name }),
       ...(data.email && { email: data.email }),
       ...(data.avatarUrl !== undefined && { avatarUrl: data.avatarUrl || null }),
-      ...(data.role && { role: data.role as Role }),
     },
   });
 

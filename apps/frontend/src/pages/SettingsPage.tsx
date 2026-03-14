@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Button } from '../components/ui/button';
@@ -67,22 +67,21 @@ function ProfileTab() {
     name: profile?.name || '',
     email: profile?.email || '',
     avatarUrl: profile?.avatarUrl || '',
-    role: profile?.role || '',
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Update form when profile loads
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setFormData({
         name: profile.name,
         email: profile.email,
         avatarUrl: profile.avatarUrl || '',
-        role: profile.role || '',
       });
+      setHasChanges(false);
     }
-  });
+  }, [profile]);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -97,7 +96,6 @@ function ProfileTab() {
         name: formData.name,
         email: formData.email,
         avatarUrl: formData.avatarUrl || null,
-        role: formData.role,
       });
       setHasChanges(false);
       setShowSuccess(true);
@@ -113,9 +111,9 @@ function ProfileTab() {
         name: profile.name,
         email: profile.email,
         avatarUrl: profile.avatarUrl || '',
-        role: profile.role || '',
       });
       setHasChanges(false);
+      setShowSuccess(false);
     }
   };
 
@@ -192,21 +190,6 @@ function ProfileTab() {
           <p className="text-xs text-gray-500 mt-1">Used for login and notifications</p>
         </div>
 
-        {/* Role */}
-        <div>
-          <Label htmlFor="role">Role</Label>
-          <Input
-            id="role"
-            type="text"
-            value={formData.role}
-            onChange={(e) => handleChange('role', e.target.value)}
-            placeholder="e.g., Developer, Designer, Manager"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Your role or job title (displayed on your profile)
-          </p>
-        </div>
-
         {/* Account Info */}
         <div className="pt-4 border-t border-gray-200">
           <h3 className="font-medium text-gray-900 mb-2">Account Information</h3>
@@ -214,6 +197,10 @@ function ProfileTab() {
             <div className="flex justify-between">
               <span>Member since:</span>
               <span>{new Date(profile?.createdAt || '').toLocaleDateString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Access level:</span>
+              <span>{profile?.role || 'Member'}</span>
             </div>
           </div>
         </div>

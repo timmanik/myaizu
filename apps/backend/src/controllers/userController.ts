@@ -7,7 +7,6 @@ const updateProfileSchema = z.object({
   name: z.string().min(1, 'Name cannot be empty').optional(),
   email: z.string().email('Invalid email address').optional(),
   avatarUrl: z.string().url('Invalid URL').nullable().optional(),
-  role: z.string().optional(),
 });
 
 const changePasswordSchema = z.object({
